@@ -1,0 +1,14 @@
+{
+  "hotel-de-europe": {
+    "hotelName": "Hotel de l'Europe",
+    "contactName": "Sarah"
+  },
+  "villa-bianchi": {
+    "hotelName": "Villa Bianchi",
+    "contactName": "Marco"
+  },
+  "casa-belmar": {
+    "hotelName": "Casa Belmar",
+    "contactName": "Inès"
+  }
+}
