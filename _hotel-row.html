@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hotel row — window spotlight</title>
+<style>
+  :root {
+    --h: 86vh;                /* centre building height — near full screen */
+    --scale-left: 0.86;
+    --scale-right: 0.92;
+    --overlap-left: 10vw;
+    --overlap-right: 5vw;
+    --drop-left: 4vh;
+    --nudge-left: 1vw;
+    --shift-x: 3vw;            /* whole row nudged left */
+    --tuck: 120%;
+    --slide-ms: 1250;
+    --gap-ms: 520;
+    --shadow: 5px 9px 14px rgba(0,0,0,0.13);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #fff; font-family: system-ui, sans-serif; color: #000; }
+  .spacer { height: 90vh; display: flex; align-items: center; justify-content: center;
+            font: 11px/1 sans-serif; letter-spacing: .2em; text-transform: uppercase; color: #bbb; }
+
+  .stage {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    padding: 0 16px;
+  }
+  .row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    transform: translateX(calc(var(--shift-x) * -1));
+  }
+
+  /* wrapper = the animated element (slide-in transform lives here) */
+  .piece {
+    position: relative;
+    display: block;
+    opacity: 0;
+    will-change: transform, opacity;
+    transition:
+      transform calc(var(--slide-ms) * 1ms) cubic-bezier(0.16, 1, 0.3, 1),
+      opacity   250ms ease-out;
+  }
+  .piece > img {
+    display: block;
+    height: var(--h);
+    width: auto;
+    filter: drop-shadow(var(--shadow));
+  }
+  .piece.left  { margin-right: calc(var(--overlap-left) * -1);  z-index: 1; transform: translate(var(--tuck), var(--drop-left)); }
+  .piece.center{ z-index: 3; transform: translateY(22px); }
+  .piece.right { margin-left: calc(var(--overlap-right) * -1); z-index: 1; transform: translateX(calc(var(--tuck) * -1)); }
+  .piece.left  > img { height: calc(var(--h) * var(--scale-left)); }
+  .piece.right > img { height: calc(var(--h) * var(--scale-right)); }
+
+  .stage.in .piece.center { opacity: 1; transform: translateY(0); }
+  .stage.in .piece.left   { opacity: 1; transform: translate(calc(var(--nudge-left) * -1), var(--drop-left)); transition-delay: calc(var(--gap-ms) * 1ms); }
+  .stage.in .piece.right  { opacity: 1; transform: translateX(0); transition-delay: calc(var(--gap-ms) * 2ms); }
+
+  /* --- colour "screens" set into the windows: portrait-ish, inset in the
+     opening, a deliberate modern pop against the grainy facades.
+
+     Never more than one lit at a time. Once the (bare) buildings finish
+     assembling, the script below runs a spotlight: the elevator fades in
+     as it rides up, holds, fades out — then the next window fades in
+     elsewhere, holds, fades out — looping through the rest. .is-current is
+     what JS toggles; everything here just reacts to that class. --- */
+  .win {
+    position: absolute;
+    left: var(--wx);
+    top: var(--wy);
+    width: var(--ww);
+    height: var(--wh);
+    overflow: hidden;
+    background: #111;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.5), inset 0 0 5px 1px rgba(0,0,0,0.4);
+    opacity: 0;
+    transition: opacity 400ms ease-out;
+  }
+  .win > img, .win > video {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .win.is-current { opacity: 1; }
+
+  /* the keyhole window: several room interiors stacked and cross-faded
+     between (see cycleKeyhole in the script) rather than one still. */
+  .win-cycle-img {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 320ms ease;
+  }
+  .win-cycle-img.is-active { opacity: 1; }
+
+  /* the elevator: parked low and invisible until its turn, then fades in
+     AND rides up the facade in one motion. --wy is its FINAL stop. Its
+     clip (doors opening) plays through this same window — see
+     setCurrentWindow below. transition:none lives on .is-current (not the
+     base state) so the keyframe animation isn't fought by a transition
+     while running, but the moment is-current is removed it falls back to
+     the base .win opacity transition above — a proper fade-out instead of
+     an instant cut, so the handoff to the next window overlaps softly. */
+  .win.lift {
+    transform: translateY(calc(var(--h) * 0.55));
+  }
+  .win.lift.is-current {
+    transition: none;
+    animation: lift-rise 4s cubic-bezier(0.5, 0, 0.2, 1) both;
+  }
+  @keyframes lift-rise {
+    0%   { transform: translateY(calc(var(--h) * 0.55)); opacity: 0; }
+    8%   { opacity: 1; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .piece { transition: opacity .3s ease; transform: none !important; }
+    .win.lift.is-current { animation: none; transform: none; }
+  }
+
+  .replay {
+    font: 11px/1 system-ui, sans-serif; letter-spacing: .15em; text-transform: uppercase;
+    background: #000; color: #fff; border: 0; padding: 9px 16px; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+  <div class="spacer">scroll down</div>
+
+  <section class="stage" id="stage">
+    <div class="row">
+      <div class="piece left">
+        <img src="public/images/hotel-illustration/left.png" alt="" />
+        <!-- left loggia -> room service: a real clip (butler walking closer
+             through the peephole view), not a still. -->
+        <div class="win" data-win="room-service" style="--wx:18%; --wy:15%; --ww:19%; --wh:32%">
+          <video id="roomServiceVideo" src="public/video/hotel-illustration/room-service.mp4" poster="public/images/hotel-illustration/windows/room-service.jpg" muted playsinline preload="metadata"></video>
+        </div>
+        <!-- ground-arcade arch -> keyhole: cross-fades through a few room
+             interiors on its own rather than showing one still. -->
+        <div class="win" data-win="keyhole" id="keyholeWin" style="--wx:42%; --wy:63%; --ww:16%; --wh:23%">
+          <img class="win-cycle-img is-active" src="public/images/hotel-illustration/windows/keyhole-1.jpg" alt="" />
+          <img class="win-cycle-img" src="public/images/hotel-illustration/windows/keyhole-2.jpg" alt="" />
+          <img class="win-cycle-img" src="public/images/hotel-illustration/windows/keyhole-3.jpg" alt="" />
+          <img class="win-cycle-img" src="public/images/hotel-illustration/windows/keyhole-4.jpg" alt="" />
+          <img class="win-cycle-img" src="public/images/hotel-illustration/windows/keyhole-5.jpg" alt="" />
+        </div>
+      </div>
+
+      <div class="piece center">
+        <img src="public/images/hotel-illustration/center.png" alt="" />
+        <!-- elevator: fades in + rides up, first in the rotation. A real
+             clip now (doors opening on a locked camera), not a still —
+             only plays during its own turn, see setCurrentWindow. -->
+        <div class="win lift" data-win="elevator" style="--wx:40%; --wy:27%; --ww:20%; --wh:31%">
+          <video id="elevatorVideo" src="public/video/hotel-illustration/elevator.mp4" poster="public/images/hotel-illustration/windows/elevator.jpg" muted playsinline preload="metadata"></video>
+        </div>
+      </div>
+
+      <div class="piece right">
+        <img src="public/images/hotel-illustration/right.png" alt="" />
+        <!-- second-floor arched window -> breakfast: a hand lifting the
+             silver dome cover away to reveal french toast underneath. -->
+        <div class="win" data-win="breakfast" style="--wx:11%; --wy:19%; --ww:17%; --wh:27%">
+          <video id="breakfastVideo" src="public/video/hotel-illustration/breakfast.mp4" poster="public/images/hotel-illustration/windows/breakfast.jpg" muted playsinline preload="metadata"></video>
+        </div>
+      </div>
+    </div>
+    <button class="replay" onclick="replay()">Replay</button>
+  </section>
+
+  <div class="spacer">scroll up</div>
+
+<script>
+  var stage = document.getElementById("stage");
+  var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Rotation order + how long each window stays lit before the next one
+  // takes over. The elevator's hold covers its own 4s rise (see the
+  // lift-rise keyframe) plus a beat to actually register it arrived.
+  var KEYHOLE_CYCLE_MS = 700;
+  var WINDOW_ORDER = ["elevator", "room-service", "keyhole", "breakfast"];
+  // The elevator's, room-service's, and breakfast's clips are all 4s; each
+  // hold is just that plus a short beat, so the handoff follows close
+  // behind the clip actually finishing rather than dwelling on the last
+  // frame. The keyhole's covers one full pass through its 5 room interiors.
+  var WINDOW_HOLD_MS = { elevator: 4400, "room-service": 3300, keyhole: KEYHOLE_CYCLE_MS * 5, breakfast: 4400 };
+  var FIRST_WINDOW_DELAY_MS = 1300; // once the buildings have assembled
+  var WINDOW_VIDEO_IDS = { elevator: "elevatorVideo", "room-service": "roomServiceVideo", breakfast: "breakfastVideo" };
+  var winEls = {};
+  WINDOW_ORDER.forEach(function (key) {
+    winEls[key] = document.querySelector('.win[data-win="' + key + '"]');
+  });
+  var spotlightTimer;
+  var keyholeImgEls = Array.prototype.slice.call(document.querySelectorAll("#keyholeWin .win-cycle-img"));
+  var keyholeCycleTimer;
+  var keyholeIndex = 0;
+
+  function setKeyholeIndex(i) {
+    keyholeIndex = i;
+    keyholeImgEls.forEach(function (img, idx) {
+      img.classList.toggle("is-active", idx === i);
+    });
+  }
+  function startKeyholeCycle() {
+    clearInterval(keyholeCycleTimer);
+    setKeyholeIndex(0);
+    keyholeCycleTimer = setInterval(function () {
+      setKeyholeIndex((keyholeIndex + 1) % keyholeImgEls.length);
+    }, KEYHOLE_CYCLE_MS);
+  }
+  function stopKeyholeCycle() {
+    clearInterval(keyholeCycleTimer);
+  }
+
+  function setCurrentWindow(key) {
+    WINDOW_ORDER.forEach(function (k) {
+      winEls[k].classList.toggle("is-current", k === key);
+    });
+    // A window's clip only plays during its own turn — paused (and
+    // rewound) the rest of the time.
+    Object.keys(WINDOW_VIDEO_IDS).forEach(function (k) {
+      var video = document.getElementById(WINDOW_VIDEO_IDS[k]);
+      if (!video) return;
+      if (k === key) {
+        video.currentTime = 0;
+        video.play().catch(function () {});
+      } else {
+        video.pause();
+      }
+    });
+    // Same idea for the keyhole's cross-fade: only cycles during its turn.
+    if (key === "keyhole") startKeyholeCycle();
+    else stopKeyholeCycle();
+  }
+
+  function runSpotlight(i, delay) {
+    spotlightTimer = setTimeout(function () {
+      var key = WINDOW_ORDER[i];
+      setCurrentWindow(key);
+      runSpotlight((i + 1) % WINDOW_ORDER.length, WINDOW_HOLD_MS[key]);
+    }, delay);
+  }
+
+  function startReveal() {
+    clearTimeout(spotlightTimer);
+    if (reducedMotion) {
+      WINDOW_ORDER.forEach(function (k) { winEls[k].classList.add("is-current"); });
+      return;
+    }
+    WINDOW_ORDER.forEach(function (k) { winEls[k].classList.remove("is-current"); });
+    runSpotlight(0, FIRST_WINDOW_DELAY_MS);
+  }
+
+  function stopReveal() {
+    clearTimeout(spotlightTimer);
+    WINDOW_ORDER.forEach(function (k) { winEls[k].classList.remove("is-current"); });
+    Object.keys(WINDOW_VIDEO_IDS).forEach(function (k) {
+      var video = document.getElementById(WINDOW_VIDEO_IDS[k]);
+      if (video) video.pause();
+    });
+  }
+
+  new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) { stage.classList.add("in"); startReveal(); } });
+  }, { threshold: 0.35 }).observe(stage);
+
+  function replay() {
+    stage.classList.remove("in");
+    stopReveal();
+    void stage.offsetWidth;
+    stage.classList.add("in");
+    startReveal();
+  }
+
+  // Local file:// video loads have shown intermittent failures on files
+  // independently verified to be correct — a plain .load() retry has
+  // reliably resolved it when that's happened, so silently retry a few
+  // times on error rather than leaving the broken-media icon up.
+  (function attachVideoRetry() {
+    var MAX_RETRIES = 3;
+    document.querySelectorAll("video").forEach(function (v) {
+      var attempts = 0;
+      v.addEventListener("error", function () {
+        if (attempts >= MAX_RETRIES) return;
+        attempts += 1;
+        setTimeout(function () {
+          v.load();
+        }, 400 * attempts);
+      });
+    });
+  })();
+</script>
+</body>
+</html>

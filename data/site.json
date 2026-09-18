@@ -1,0 +1,55 @@
+{
+  "whatsappNumber": "31600000000",
+  "calendarLink": "https://cal.com/yehmedia/intro",
+  "contactEmail": "hello@yehmedia.placeholder",
+  "studioLink": "https://yeh.nl",
+  "heroMorphPhrases": ["Creative Direction.", "Content Creation.", "Strategy.", "For Hospitality."],
+  "introLoadWords": ["Shaping.", "Directing.", "Creating."],
+  "copy": {
+    "preparedFor": "Prepared for {hotelName}.",
+    "pillarsTitle": "Who We Are.",
+    "pillarsBody": "We are not a social media agency. We are an independent studio that treats a property's space as its most valuable asset, building a point of view rooted in your brand DNA first and everything else around it. We do not create content faster. We create it smarter.",
+    "pillarsIntro": "Founded by Hsiu-Li Yeh, a scientist by training, turned interior designer, with 25+ years designing hotels, restaurants, resorts, wellness spaces and luxury residences.",
+    "pillarsReveal": "Her extensive interior design background, including work with OMA/Rem Koolhaas and Jan des Bouvrie, and, before that, a childhood spent in her parents' restaurant, is what Yeh Media brings to every project. The science of how design shapes the energy of a space and the people within it: Neuroaesthetics. This is the thread running through everything below.",
+    "servicesTitle": "Our Services.",
+    "portfolioTitle": "Content We've Shaped.",
+    "portfolioIntro": "From concept to campaign, we turn an eye for interiors into content that performs, whatever the property.",
+    "studioTitle": "The Studio.",
+    "studioText": "Yeh Media is a focused team of concept strategists, art directors and content producers working across the hospitality industry. Our international network of photographers, filmmakers and stylists is curated project by project, matched to each property's own story.",
+    "workWithUsCta": "Work With Us!",
+    "contactTitle": "Let's Work Together.",
+    "contactIntro": "We partner with a select number of properties each season, giving each one our full creative attention. We would love to hear about yours."
+  },
+  "rows": [
+    {
+      "key": "brandDna",
+      "label": "Brand DNA",
+      "interactive": true,
+      "levels": ["Traditional", "Timeless", "Contemporary"],
+      "hints": {
+        "1": "Heritage-led. Architecture and history carry the story.",
+        "2": "Balanced. Classic form, contemporary voice.",
+        "3": "Design-forward. Bold, current, unmistakably now."
+      }
+    },
+    {
+      "key": "storytelling",
+      "label": "Storytelling Style",
+      "interactive": false,
+      "teaser": "Editorial ←→ Cinematic"
+    },
+    {
+      "key": "motivation",
+      "label": "Guest Motivation",
+      "interactive": false,
+      "teaser": "Escape · Celebrate · Recharge · Explore · Connect · Perform"
+    }
+  ],
+  "menu": {
+    "items": [
+      { "label": "Home", "href": "/" },
+      { "label": "Work", "href": "/work" },
+      { "label": "Contact", "href": "/contact" }
+    ]
+  }
+}

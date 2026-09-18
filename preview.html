@@ -1,0 +1,2213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Yeh Media: Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Archivo:wght@100..900&family=Onest:wght@100..900&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  :root {
+    --paper: #ffffff;
+    --ink: #000000;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Onest", sans-serif;
+    font-weight: 300;
+  }
+
+  button, input, textarea {
+    font-family: inherit;
+    color: inherit;
+  }
+
+  button { cursor: pointer; background: none; border: none; }
+
+  a { color: inherit; }
+
+  .grain {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.06;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 0.1  0 0 0 0 0.09  0 0 0 0 0.07  0 0 0 0.9 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-repeat: repeat;
+    animation: grainBreathe 9s ease-in-out infinite;
+  }
+  @keyframes grainBreathe { 0%, 100% { opacity: 0.06; } 50% { opacity: 0.09; } }
+
+  /* Menu — matches the deck's black/white Archivo/Onest system rather
+     than the older cream/serif/merlot voice used elsewhere on the site. */
+  .menu-btn {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 40;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.5);
+    transition: color 0.2s ease;
+  }
+  .menu-btn:hover { color: #000; }
+
+  /* Work With Us — persistent floating CTA to the questionnaire, pops in
+     on the visitor's first scroll/swipe gesture rather than being there
+     instantly. Hidden while the contact section itself is in view (see the
+     IntersectionObserver near the bottom of the script) — no point
+     pointing the page at itself — and hidden on the Studio slide, which
+     carries its own "Work With Us", so the two never show at once. */
+  .work-with-us-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 40;
+    background: #000;
+    color: #fff;
+    border: 1px solid #000;
+    padding: 14px 24px;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out, background-color 0.2s ease, color 0.2s ease;
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+  }
+  .work-with-us-btn.is-shown {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .work-with-us-btn.is-hidden, .work-with-us-btn.is-hidden-studio {
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+  }
+  .work-with-us-btn:hover { background: #fff; color: #000; }
+
+  /* The "Yeh Media" wordmark — one persistent element that travels: big
+     and centered on slide 0 (standing in for what used to be the left
+     panel's own title, now blanked out — see DECK_TITLES), shrinking and
+     sliding into the top-left corner the moment you leave it, morphing
+     back the moment you return. Positions here match where the old
+     .deck-title-window sat for slide 0: mobile centers in the top half,
+     desktop centers in the left half. Hidden (opacity 0) until the intro
+     sequence hands off to it (see the .ready toggle in runIntroSequence/
+     skipIntro), so it doesn't double up with the loader's own "Yeh Media".
+     Menu stays fixed top-right at every width so the two never collide
+     while this one is in its small corner state. */
+  .corner-logo {
+    position: fixed;
+    z-index: 40;
+    padding: 0;
+    line-height: 1.3;
+    font-family: "Archivo", sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: top 0.7s ease-out, left 0.7s ease-out,
+      transform 0.7s ease-out, font-size 0.7s ease-out, opacity 0.3s ease;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* Big state matches .deck-title-window's fluid size exactly, so the
+       loader's final "Yeh Media" and this wordmark occupy the same spot at
+       the same scale — no jump at the hand-off. */
+    font-size: clamp(18px, calc((100vw - 64px) * 0.069), 34px);
+  }
+  @media (min-width: 768px) {
+    .corner-logo {
+      top: 50%;
+      left: 25%;
+      font-size: clamp(18px, calc((50vw - 128px) * 0.073), 48px);
+    }
+  }
+  .corner-logo.ready { opacity: 1; pointer-events: auto; }
+  .corner-logo.small {
+    top: 24px;
+    left: 24px;
+    transform: translate(0, 0);
+    font-size: 17px;
+  }
+  .menu-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .menu-overlay.open { opacity: 1; pointer-events: auto; }
+  .menu-overlay a, .menu-overlay button {
+    font-family: "Archivo", sans-serif;
+    font-weight: 600;
+    font-size: 40px;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: rgba(0,0,0,0.4);
+    transition: color 0.2s ease;
+  }
+  .menu-overlay a:hover, .menu-overlay button:hover { color: #000; }
+  .menu-close {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.5);
+    transition: color 0.2s ease;
+  }
+  .menu-close:hover { color: #000; }
+
+  /* HomeDeck — the homepage as a single static screen. Scrolling/swiping/
+     arrow keys advance through slides in place (left title rolls, right
+     content cross-fades) instead of the page physically scrolling; see the
+     JS deck logic below. Black and white throughout, no photo hero. */
+  .deck {
+    position: fixed;
+    inset: 0;
+    background: #fff;
+    color: #000;
+    display: flex;
+    flex-direction: column;
+    z-index: 5;
+  }
+  /* Applied by leaveDeckTo() when navigating to Work: without this, the
+     deck's fixed positioning would permanently overlay the viewport
+     regardless of document scroll, making the rest of this single-file
+     preview unreachable. Frozen on whichever slide was showing. */
+  .deck.free {
+    position: relative;
+    height: 100vh;
+  }
+  .deck-left, .deck-right {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 32px;
+    height: 50%;
+  }
+  .deck-left { flex-direction: column; gap: 16px; text-align: center; }
+  .deck-right { overflow: hidden; }
+  /* Reuses .roll-window's mechanic for the title too (see below) — these
+     !importants override that rule's phrase-sized defaults, since this
+     class is declared earlier in the file and would otherwise lose to
+     .roll-window's later, equal-specificity declarations.
+     Font-size is fluid, not a fixed clamp: "Content We've Shaped." is long
+     enough that a fixed size clipped against this panel's own width for
+     most of the 768–1600px range (the 64px side padding cuts hard into a
+     panel that's only 50vw at that point). Each tier's clamp mirrors that
+     tier's actual available width (100vw/50vw minus its own padding) so
+     the longest title always fits without wrapping, at whatever size
+     that allows — see the matching comment in HomeDeck.tsx. */
+  .deck-title-window {
+    font-family: "Archivo", sans-serif !important;
+    font-weight: 600 !important;
+    font-size: clamp(18px, calc((100vw - 64px) * 0.069), 34px) !important;
+    letter-spacing: -0.01em !important;
+  }
+  @media (min-width: 768px) {
+    .deck-title-window {
+      font-size: clamp(18px, calc((50vw - 128px) * 0.073), 48px) !important;
+    }
+  }
+  @media (min-width: 768px) {
+    .deck { flex-direction: row; }
+    .deck-left, .deck-right { width: 50%; height: 100%; padding: 0 64px; }
+  }
+
+  /* Both the outgoing and incoming slide's content occupy the same CSS
+     Grid cell (stacking without needing an explicit shared height or
+     position:absolute — the container sizes to whichever is tallest) and
+     cross-fade with a slight vertical drift. */
+  .deck-stack {
+    display: grid;
+    width: 100%;
+    max-width: 420px;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+  }
+  .deck-stack > * { grid-area: 1 / 1; }
+  /* Right panel stays hidden/offset until the intro sequence (see the
+     script below) finishes and removes this class — a plain CSS
+     transition on the wrapper, decoupled from the per-slide roll/fade
+     classes above so it only ever plays once. */
+  .deck-stack.deck-loading { opacity: 0; transform: translateY(16px); }
+  .deck-fade-out { will-change: transform, opacity; animation: deckFadeOut 0.6s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
+  .deck-fade-in { will-change: transform, opacity; animation: deckFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  /* --deck-dir (set inline on #deckStack, 1 forward / -1 backward) flips
+     the drift to match the gesture — see the matching comment in
+     app/globals.css. Without it the drift stayed fixed regardless of
+     direction, so scrolling back up the new slide always entered from the
+     "wrong" side, reading as lag. */
+  @keyframes deckFadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(calc(-20px * var(--deck-dir, 1))); }
+  }
+  @keyframes deckFadeIn {
+    from { opacity: 0; transform: translateY(calc(20px * var(--deck-dir, 1))); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Who We Are: the grey/black paragraph pair cross-fades into a third
+     paragraph once revealed (an extra scroll/swipe/arrow-down while
+     already on that slide — see pillarsRevealed/deckAdvance below). Both
+     groups stay mounted, stacked in the same .deck-stack grid cell, so
+     this is a plain opacity swap with no layout jump between their
+     different heights. */
+  .pillars-intro-group { transition: opacity 0.5s ease-out; }
+  .pillars-intro-group.is-hidden { opacity: 0; pointer-events: none; }
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    pointer-events: none;
+  }
+  .reveal.is-visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+  /* "Neuroaesthetics." — the studio's actual differentiator — breaks onto
+     its own line and gets a second, later beat: it pops in growing from a
+     slight scale a moment after the rest of the paragraph has already
+     faded in, rather than arriving with it, so it reads as the emphasis
+     rather than just more text. */
+  .neuro-emphasis {
+    display: block;
+    margin: 4px 0;
+    font-family: "Archivo", sans-serif;
+    font-weight: 600;
+    font-size: 1.3em;
+    letter-spacing: -0.01em;
+    opacity: 0;
+    transform: scale(0.75);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.is-visible .neuro-emphasis {
+    opacity: 1;
+    transform: scale(1);
+    transition-delay: 350ms;
+  }
+
+  .deck-body {
+    font-family: "Onest", sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0 0 24px;
+  }
+  .deck-list { display: flex; flex-direction: column; gap: 20px; }
+
+  /* Slide 1 — the "imagined hotels" row. Three torn-newsprint building
+     cut-outs that assemble themselves: the centre fades up, then the left
+     and right slide out from behind it, one then the other. #hotelRow's
+     .is-visible fades the whole layer (cross-fading with its neighbours the
+     moment a scroll commits); .is-in runs the assembly once the slide has
+     settled. Driven by hotelRowEnter/Assemble/Leave in the deck JS — no
+     scroll trigger. Mirrors .hotel-row in app/globals.css. */
+  .hotel-row {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 24px;
+    background: #fff;
+    opacity: 0;
+    pointer-events: none;
+    /* Fade-OUT (when .is-visible drops): slow + eased, so the row dissolves
+       into the next slide instead of snapping off it. */
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .hotel-row.is-visible {
+    opacity: 1;
+    transition-duration: 0.55s; /* fade-IN a touch quicker */
+  }
+
+  .hotel-row-track {
+    /* Tuning knobs, kept together (iterated on in _hotel-row.html). */
+    --hotel-h: 86vh; /* near full screen */
+    --hotel-scale-left: 0.86;
+    --hotel-scale-right: 0.92;
+    --hotel-overlap-left: 10vw;
+    --hotel-overlap-right: 5vw;
+    --hotel-drop-left: 4vh;
+    --hotel-nudge-left: 1vw;
+    --hotel-tuck: 120%;
+    --hotel-slide-ms: 1250ms; /* unhurried */
+    --hotel-gap-ms: 520ms;
+    --hotel-shift-x: 3vw; /* whole row nudged left of dead-centre */
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    transform: translateX(calc(var(--hotel-shift-x) * -1));
+  }
+
+  /* the animated element: the wrapper, not the <img>, so the window screens
+     inside it ride along with the slide-in */
+  .hotel-piece {
+    position: relative;
+    display: block;
+    opacity: 0;
+    will-change: transform, opacity;
+    transition:
+      transform var(--hotel-slide-ms) cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 350ms ease-out;
+  }
+  .hotel-piece > img {
+    display: block;
+    height: var(--hotel-h);
+    width: auto;
+    filter: drop-shadow(5px 9px 14px rgba(0, 0, 0, 0.13));
+  }
+
+  .hotel-left {
+    margin-right: calc(var(--hotel-overlap-left) * -1);
+    z-index: 1;
+    transform: translate(var(--hotel-tuck), var(--hotel-drop-left));
+  }
+  .hotel-center {
+    z-index: 3;
+    transform: translateY(22px);
+  }
+  .hotel-right {
+    margin-left: calc(var(--hotel-overlap-right) * -1);
+    z-index: 1;
+    transform: translateX(calc(var(--hotel-tuck) * -1));
+  }
+  .hotel-left > img { height: calc(var(--hotel-h) * var(--hotel-scale-left)); }
+  .hotel-right > img { height: calc(var(--hotel-h) * var(--hotel-scale-right)); }
+
+  .hotel-row.is-in .hotel-center {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .hotel-row.is-in .hotel-left {
+    opacity: 1;
+    transform: translate(calc(var(--hotel-nudge-left) * -1), var(--hotel-drop-left));
+    transition-delay: var(--hotel-gap-ms);
+  }
+  .hotel-row.is-in .hotel-right {
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: calc(var(--hotel-gap-ms) * 2);
+  }
+
+  /* colour "screens" set into window openings — positioned per-instance
+     with --wx/--wy/--ww/--wh (percentages of the building box).
+
+     Never more than one lit at a time. Once the (bare) buildings finish
+     assembling, the deck JS runs a spotlight (see hotelRowAssemble /
+     runHotelSpotlight below): the elevator fades in as it rides up, holds,
+     fades out — then the next window fades in elsewhere, holds, fades
+     out — looping through the rest. .is-current is what JS toggles. */
+  .hotel-win {
+    position: absolute;
+    left: var(--wx);
+    top: var(--wy);
+    width: var(--ww);
+    height: var(--wh);
+    overflow: hidden;
+    background: #111;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.5), inset 0 0 5px 1px rgba(0,0,0,0.4);
+    opacity: 0;
+    transition: opacity 400ms ease-out;
+  }
+  .hotel-win > img, .hotel-win > video {
+    display: block; width: 100%; height: 100%; object-fit: cover;
+  }
+  .hotel-win.is-current { opacity: 1; }
+
+  /* the keyhole window: several room interiors stacked and cross-faded
+     between (see the keyhole cycle logic below) rather than one still. */
+  .hotel-win-cycle-img {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 320ms ease;
+  }
+  .hotel-win-cycle-img.is-active { opacity: 1; }
+
+  /* the elevator: parked low and invisible until its turn, then fades in
+     AND rides up the facade in one motion. Its clip (doors opening) plays
+     through this same window — see setCurrentHotelWindow below.
+     transition:none lives on .is-current (not the base state) so the
+     keyframe animation isn't fought by a transition while running, but the
+     moment is-current is removed it falls back to the base .hotel-win
+     opacity transition above — a proper fade-out instead of an instant
+     cut, so the handoff to the next window overlaps softly. */
+  .hotel-win.lift {
+    transform: translateY(calc(var(--hotel-h) * 0.55));
+  }
+  .hotel-win.lift.is-current {
+    transition: none;
+    animation: hotelLiftRise 4s cubic-bezier(0.5, 0, 0.2, 1) both;
+  }
+  @keyframes hotelLiftRise {
+    0%   { transform: translateY(calc(var(--hotel-h) * 0.55)); opacity: 0; }
+    8%   { opacity: 1; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+
+  @media (max-width: 767px) {
+    .hotel-row-track {
+      --hotel-h: 56vh;
+      --hotel-overlap-left: 14vw;
+      --hotel-overlap-right: 8vw;
+      --hotel-nudge-left: 3vw;
+    }
+  }
+
+  /* Rolling-cube text transition for the hero's morphing phrase: two faces
+     pivot on a shared horizontal axis so the outgoing phrase rolls up and
+     away while the incoming one rolls up into place at the same time —
+     reads as one continuous scrolling motion rather than a crossfade. Sized
+     thin and small enough that even the longest phrase holds one line. */
+  .roll-window {
+    position: relative;
+    width: 100%;
+    height: 1.3em;
+    overflow: hidden;
+    perspective: 600px;
+    font-family: "Onest", sans-serif;
+    font-weight: 400;
+    font-size: clamp(15px, 2.3vw, 28px);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .roll-face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backface-visibility: hidden;
+  }
+  .roll-out {
+    transform-origin: 50% 0%;
+    will-change: transform, opacity;
+    animation: rollOut 0.6s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  }
+  .roll-in {
+    transform-origin: 50% 100%;
+    will-change: transform, opacity;
+    animation: rollIn 0.6s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  }
+  @keyframes rollOut {
+    from { transform: rotateX(0deg); opacity: 1; }
+    to { transform: rotateX(90deg); opacity: 0; }
+  }
+  @keyframes rollIn {
+    from { transform: rotateX(-90deg); opacity: 0; }
+    to { transform: rotateX(0deg); opacity: 1; }
+  }
+
+  /* Split-screen section frame, shared by Pillars/Services/Portfolio/Studio:
+     a title pinned to the left half while its content scrolls on the
+     right. Pure CSS position:sticky, scoped to each section, so it
+     releases naturally once that section's (taller) right column has
+     scrolled past and the next section's title takes over. Black and
+     white, matching the hero — the older cream/merlot styling for these
+     sections is retired here. */
+  /* Plain CSS :hover — the hairline top border solidifies to full black,
+     an index number slides in from the left, and the title nudges right
+     in step, matching Services.tsx's group-hover treatment. */
+  .service-block { display: flex; flex-direction: column; gap: 8px; padding-top: 20px; border-top: 1px solid rgba(0,0,0,0.1); transition: border-color 0.3s ease; cursor: default; }
+  .service-block:hover { border-top-color: rgba(0,0,0,0.8); }
+  .service-block h3 { display: flex; align-items: baseline; gap: 12px; font-family: "Archivo", sans-serif; font-weight: 600; font-size: 17px; letter-spacing: -0.01em; text-transform: uppercase; margin: 0; }
+  .service-index { font-family: "Onest", sans-serif; font-weight: 400; font-size: 10px; letter-spacing: 0.2em; color: rgba(0,0,0,0); transform: translateX(-8px); opacity: 0; transition: color 0.3s ease-out, transform 0.3s ease-out, opacity 0.3s ease-out; }
+  .service-block:hover .service-index { color: rgba(0,0,0,0.4); transform: translateX(0); opacity: 1; }
+  .service-title { display: inline-block; transition: transform 0.3s ease-out; }
+  .service-block:hover .service-title { transform: translateX(4px); }
+  .service-block p { font-family: "Onest", sans-serif; font-weight: 400; font-size: 13px; line-height: 1.5; color: rgba(0,0,0,0.6); margin: 0; transition: color 0.3s ease; }
+  .service-block:hover p { color: rgba(0,0,0,0.75); }
+  @media (prefers-reduced-motion: reduce) {
+    .service-block, .service-index, .service-title, .service-block p { transition: none; }
+  }
+
+  /* Portfolio filmstrip — the focused project sits centered, bigger and in
+     color; neighbors above/below are smaller, grayscale, and partially
+     cropped by the container. JS steps portfolioIndex and re-renders the
+     transform/opacity/detail text; CSS transitions do the actual motion. */
+  .portfolio-carousel { display: flex; align-items: center; gap: 24px; width: 100%; max-width: 512px; }
+  .portfolio-filmstrip-col { display: flex; flex-direction: column; gap: 16px; flex-shrink: 0; }
+  .portfolio-filmstrip { position: relative; width: 128px; height: 480px; overflow: hidden; flex-shrink: 0; }
+  /* Bigger than the other .split-cta links on the page — this one's the
+     main call-to-action out of the filmstrip, not a quiet back-link. */
+  /* Pulled up with a negative margin — the filmstrip box is a fixed
+     3-row-tall window (for the neighbour-preview effect) and the last
+     item has no next row to fill its bottom third, which would
+     otherwise leave a whole empty band before the link. */
+  .portfolio-more-link { font-size: 14px; letter-spacing: 0.15em; margin-top: -124px; }
+  .portfolio-filmstrip-track { position: absolute; inset: 0 0 auto 0; transition: transform 0.5s ease-out; will-change: transform; }
+  .portfolio-filmstrip-row { height: 160px; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s ease; }
+  /* Fixed footprint (the focused size) at all times — the size difference
+     is a transform: scale(), not a width change, so shrinking/growing a
+     thumb is a compositor-only operation instead of forcing layout on
+     every frame (which is what made scrolling through this feel laggy). */
+  .portfolio-thumb { position: relative; width: 128px; aspect-ratio: 4/5; overflow: hidden; transform: scale(0.625); transition: transform 0.5s ease-out; will-change: transform; }
+  .portfolio-thumb.focused { transform: scale(1); }
+  .portfolio-thumb img, .portfolio-thumb video { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(1); transition: filter 0.5s ease; }
+  .portfolio-thumb.focused img, .portfolio-thumb.focused video { filter: grayscale(0); }
+  /* Until a real file is dropped into public/images and this row's <img>
+     is added back in, an empty slot reads as "not in yet" — a bordered
+     box naming its format — rather than a broken image icon. */
+  .portfolio-thumb-empty {
+    width: 100%;
+    height: 100%;
+    border: 1px solid rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .portfolio-thumb-empty span {
+    font-family: "Onest", sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.3);
+  }
+  @media (min-width: 640px) {
+    .portfolio-filmstrip { width: 160px; }
+    .portfolio-thumb { width: 160px; }
+  }
+  .portfolio-detail { flex: 1; min-width: 0; }
+  .portfolio-detail-pager { font-family: "Onest", sans-serif; font-weight: 400; font-size: 10px; letter-spacing: 0.2em; color: rgba(0,0,0,0.35); margin: 0 0 8px; }
+  .portfolio-detail-name { font-family: "Onest", sans-serif; font-weight: 400; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(0,0,0,0.5); margin: 0 0 4px; }
+  .portfolio-detail-title { font-family: "Archivo", sans-serif; font-weight: 600; font-size: 24px; letter-spacing: -0.01em; margin: 0 0 12px; }
+  .portfolio-detail-desc { font-family: "Onest", sans-serif; font-weight: 400; font-size: 14px; color: rgba(0,0,0,0.6); line-height: 1.6; margin: 0 0 16px; }
+
+  .split-cta { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(0,0,0,0.5); text-decoration: underline; text-underline-offset: 4px; transition: color 0.15s ease; }
+  .split-cta:hover { color: #000; }
+
+  .contact-cta-bw {
+    display: inline-block;
+    border: 1px solid #000;
+    color: #000;
+    padding: 16px 32px;
+    font-family: "Onest", sans-serif;
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    width: fit-content;
+  }
+  .contact-cta-bw:hover { background: #000; color: #fff; }
+
+  /* The "Send" button — the button itself is the envelope: its own border
+     is the envelope's rectangle, a full-width flap crease runs edge to
+     edge across the top, and a wax-seal medallion sits at the crease's
+     point, rather than a small icon sitting next to a plain label. Flies
+     off toward the top-right once submitted, rather than the mailto:
+     handoff just happening instantly with no acknowledgement.
+     animation-duration must match the delay before the mailto: navigation
+     in the submit handler below, so the fly-away always gets to play out. */
+  .envelope-send-btn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    border: 1px solid #000;
+    color: #000;
+    background: none;
+    width: 224px;
+    height: 96px;
+    padding-bottom: 16px;
+    cursor: pointer;
+    font-family: "Onest", sans-serif;
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    transition: all 0.15s ease;
+  }
+  .envelope-send-btn:hover { background: #000; color: #fff; }
+  .envelope-send-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .envelope-send-label { position: relative; z-index: 1; }
+
+  @keyframes envelopeFly {
+    0% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 1; }
+    55% { transform: translate(70px, -50px) rotate(16deg) scale(0.92); opacity: 1; }
+    100% { transform: translate(240px, -160px) rotate(24deg) scale(0.5); opacity: 0; }
+  }
+  .envelope-flying { animation: envelopeFly 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards; pointer-events: none; }
+
+  /* Contact — a short qualifying questionnaire, reachable via
+     leaveDeckTo('contact'). Same visual language as Work: hairline rules
+     instead of boxes, mono labels, black-fill toggle buttons instead of
+     native selects/radios. */
+  .contact-section { max-width: 720px; margin: 0 auto; padding: 112px 24px 96px; }
+  .contact-back { display: inline-block; margin-bottom: 48px; }
+  .contact-title { font-family: "Archivo", sans-serif; font-weight: 600; font-size: 36px; letter-spacing: -0.01em; text-transform: uppercase; margin: 0 0 16px; }
+  .contact-intro { font-family: "Onest", sans-serif; font-weight: 400; font-size: 15px; color: rgba(0,0,0,0.6); line-height: 1.6; max-width: 480px; margin: 0 0 64px; }
+  .contact-form { display: flex; flex-direction: column; gap: 64px; }
+  .contact-group { padding-top: 56px; border-top: 1px solid rgba(0,0,0,0.1); }
+  .contact-group:first-child { border-top: 0; padding-top: 0; }
+  .contact-group-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 32px; }
+  .contact-group-index { font-family: "Onest", sans-serif; font-size: 10px; letter-spacing: 0.2em; color: rgba(0,0,0,0.3); }
+  .contact-group-label { font-family: "Onest", sans-serif; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(0,0,0,0.5); }
+  .contact-fields { display: flex; flex-direction: column; gap: 32px; }
+  .contact-fields-grid { display: grid; grid-template-columns: 1fr; gap: 32px; }
+  @media (min-width: 640px) { .contact-fields-grid { grid-template-columns: 1fr 1fr; } }
+  .contact-field-label { display: block; font-family: "Onest", sans-serif; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(0,0,0,0.4); margin-bottom: 10px; }
+  .contact-field-label .optional { text-transform: none; color: rgba(0,0,0,0.25); }
+  .contact-input, .contact-textarea {
+    width: 100%; border: 0; border-bottom: 1px solid rgba(0,0,0,0.2); background: transparent;
+    padding: 8px 0; font-family: "Onest", sans-serif; font-size: 14px; outline: none;
+    transition: border-color 0.15s ease;
+  }
+  .contact-input:focus, .contact-textarea:focus { border-color: #000; }
+  .contact-input::placeholder, .contact-textarea::placeholder { color: rgba(0,0,0,0.25); }
+  .contact-textarea { resize: none; }
+  .contact-toggles { display: flex; flex-wrap: wrap; gap: 8px; }
+  .contact-toggle {
+    border: 1px solid rgba(0,0,0,0.2); background: transparent; color: rgba(0,0,0,0.6);
+    padding: 10px 16px; font-family: "Onest", sans-serif; font-size: 11px; letter-spacing: 0.08em;
+    text-transform: uppercase; cursor: pointer; transition: all 0.15s ease;
+  }
+  .contact-toggle:hover { border-color: #000; color: #000; }
+  .contact-toggle.selected { background: #000; border-color: #000; color: #fff; }
+  .contact-submit-row { display: flex; flex-wrap: wrap; align-items: center; gap: 24px; padding-top: 8px; }
+  .contact-email-link { font-family: "Onest", sans-serif; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(0,0,0,0.5); text-decoration: underline; text-underline-offset: 4px; transition: color 0.15s ease; }
+  .contact-email-link:hover { color: #000; }
+
+  /* Work — the full archive, reachable via leaveDeckTo('work'). A normal
+     scrolling grid rather than the deck's one-at-a-time viewport, since
+     browsing everything wants overview, not pacing. */
+  .work-section { max-width: 1200px; margin: 0 auto; padding: 112px 24px 96px; }
+  .work-back { display: inline-block; margin-bottom: 48px; }
+  .work-title { font-family: "Archivo", sans-serif; font-weight: 600; font-size: 36px; letter-spacing: -0.01em; text-transform: uppercase; margin: 0 0 16px; }
+  .work-intro { font-family: "Onest", sans-serif; font-weight: 400; font-size: 15px; color: rgba(0,0,0,0.6); line-height: 1.6; max-width: 480px; margin: 0 0 64px; }
+  .work-grid { display: grid; grid-template-columns: 1fr; gap: 64px 32px; }
+  @media (min-width: 640px) { .work-grid { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1024px) { .work-grid { grid-template-columns: 1fr 1fr 1fr; } }
+  /* Unlike the deck's uniform filmstrip, each card here shows media in its
+     own native shape: a vertical clip stays vertical, the horizontal
+     interview stays horizontal (aspect-ratio set inline per card, from
+     each project's `aspect`). Photo-only pieces (.natural) aren't boxed at
+     all — they just size to the real image. */
+  .work-card-media { position: relative; width: 100%; overflow: hidden; margin-bottom: 16px; background: #f2f2f2; }
+  .work-card-media.boxed img, .work-card-media.boxed video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .work-card-media.natural img { width: 100%; height: auto; display: block; }
+  .work-card-media.clickable { cursor: pointer; }
+  .work-card-media.clickable:hover img { transform: scale(1.03); }
+  .work-card-media.boxed img { transition: transform 0.5s ease; }
+  .work-card-badge { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: #fff; font-family: "Onest", sans-serif; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; padding: 6px 10px; pointer-events: none; }
+  .work-card-name { font-family: "Onest", sans-serif; font-weight: 400; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(0,0,0,0.5); margin: 0 0 4px; }
+  .work-card-title { font-family: "Archivo", sans-serif; font-weight: 600; font-size: 20px; letter-spacing: -0.01em; margin: 0 0 8px; }
+  .work-card-desc { font-family: "Onest", sans-serif; font-weight: 400; font-size: 14px; color: rgba(0,0,0,0.6); line-height: 1.6; margin: 0; }
+
+  /* Each card fades and rises the first time it scrolls into view — see
+     observeWorkCards/revealWorkCard in the script. */
+  .work-card-wrap {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .work-card-wrap.is-in { opacity: 1; transform: translateY(0); }
+
+  /* KPI stats: a number counting up with a thin underline filling in
+     step. Bigger and bolder than a quiet counter, and retriggers every
+     time it re-enters view (see observeWorkKpis below) rather than only
+     the first time ever — see WORK_PROJECTS' kpis fields for the
+     (placeholder) figures. */
+  .work-kpi-block { margin-top: 24px; }
+  .work-kpi-heading { font-family: "Onest", sans-serif; font-weight: 400; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(0,0,0,0.3); margin: 0 0 12px; }
+  .work-kpi-row { display: flex; flex-wrap: wrap; gap: 24px 40px; }
+  .work-kpi { min-width: 88px; }
+  .work-kpi-value { font-family: "Onest", sans-serif; font-weight: 700; font-size: 32px; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; margin: 0; opacity: 0.3; transform: translateY(6px); transition: opacity 0.3s ease-out, transform 0.3s ease-out; }
+  .work-kpi-value.is-filled { opacity: 1; transform: translateY(0); }
+  .work-kpi-bar { height: 2px; width: 100%; background: rgba(0,0,0,0.1); margin: 8px 0 6px; overflow: hidden; }
+  .work-kpi-bar-fill { height: 2px; width: 100%; background: #000; transform: scaleX(0); transform-origin: left; transition: transform 1.3s ease-out; }
+  .work-kpi-label { font-family: "Onest", sans-serif; font-weight: 400; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(0,0,0,0.4); margin: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .work-card-wrap { opacity: 1; transform: none; transition: none; }
+    .work-kpi-value, .work-kpi-bar-fill { transition: none; }
+  }
+
+  /* BTS Content's homepage filmstrip thumb: several photos cross-fading on
+     their own timer (see the IIFE near the deck script below) — it changes
+     without needing to be scrolled to. */
+  .bts-cycle-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.7s ease; }
+  .bts-cycle-img.active { opacity: 1; }
+
+  /* Lightbox — opened from a multi-item /work card (a photo series, or more
+     than one clip). Left/right arrows and arrow keys page through it. */
+  .lightbox { display: none; position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,0.95); align-items: center; justify-content: center; padding: 40px 16px; }
+  .lightbox.open { display: flex; }
+  .lightbox-title { position: fixed; top: 24px; left: 24px; font-family: "Onest", sans-serif; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.6); }
+  .lightbox-close { position: fixed; top: 24px; right: 24px; font-family: "Onest", sans-serif; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.6); background: none; border: 0; cursor: pointer; }
+  .lightbox-close:hover { color: #fff; }
+  .lightbox-prev, .lightbox-next { position: fixed; top: 50%; transform: translateY(-50%); background: none; border: 0; color: rgba(255,255,255,0.5); font-size: 36px; line-height: 1; cursor: pointer; padding: 20px 12px; }
+  .lightbox-prev:hover, .lightbox-next:hover { color: #fff; }
+  .lightbox-prev { left: 2px; }
+  .lightbox-next { right: 2px; }
+  @media (min-width: 640px) { .lightbox-prev { left: 20px; } .lightbox-next { right: 20px; } }
+  .lightbox-stage { max-width: 1100px; max-height: 85vh; width: 100%; display: flex; align-items: center; justify-content: center; }
+  .lightbox-stage img, .lightbox-stage video { max-height: 85vh; max-width: 100%; object-fit: contain; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .roll-out, .roll-in, .deck-fade-out, .deck-fade-in, .deck-stack, .reveal, .pillars-intro-group, .neuro-emphasis, .envelope-flying,
+    .portfolio-filmstrip-track, .portfolio-filmstrip-row, .portfolio-thumb, .portfolio-thumb img,
+    .hotel-piece {
+      animation-duration: 250ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 250ms !important;
+    }
+    /* No fly-in — just show the three buildings in place, and no spotlight
+       cycle — the deck JS marks every window .is-current at once instead
+       of looping through them (see runHotelSpotlight). */
+    .hotel-row.is-in .hotel-piece { transform: none !important; }
+    .hotel-win.lift.is-current { animation: none; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+
+<button class="menu-btn" onclick="openMenu()">Menu</button>
+<button class="corner-logo" id="cornerLogo" onclick="goHome()">Yeh Media</button>
+<a href="#contact" class="work-with-us-btn" id="workWithUsBtn" onclick="leaveDeckTo('contact'); return false;">Work With Us!</a>
+<div class="menu-overlay" id="menuOverlay">
+  <button class="menu-close" onclick="closeMenu()">Close</button>
+  <a href="#top" onclick="closeMenu(); goHome(); return false;">Home</a>
+  <a href="#work" onclick="closeMenu(); leaveDeckTo('work'); return false;">Work</a>
+  <a href="#contact" onclick="closeMenu(); leaveDeckTo('contact'); return false;">Contact</a>
+</div>
+
+<a id="top"></a>
+<div class="deck" id="deck">
+  <div class="deck-left">
+    <div class="roll-window deck-title-window" id="deckTitleWindow">
+      <span class="roll-face">Shaping.</span>
+    </div>
+  </div>
+  <div class="deck-right">
+    <div class="deck-stack deck-loading" id="deckStack">
+
+      <div class="deck-slide" data-slide="0">
+        <div class="roll-window" id="heroPhraseWindow">
+          <span class="roll-face">Creative Direction.</span>
+        </div>
+      </div>
+
+      <!-- Slide 1 — the "imagined hotels" row. No panel content: the visual
+           is the full-bleed #hotelRow layer below (a sibling of .deck-left/
+           .deck-right), which assembles itself when this slide becomes
+           active. This node just holds the slide's place in the deck. -->
+      <div class="deck-slide" data-slide="1" hidden></div>
+
+      <div class="deck-slide" data-slide="2" hidden>
+        <div class="deck-stack">
+          <div id="pillarsIntroGroup" class="pillars-intro-group">
+            <p class="deck-body" style="color: rgba(0,0,0,0.6);">We are not a social media agency. We are an independent studio that treats a property's space as its most valuable asset, building a point of view rooted in your brand DNA first and everything else around it. We do not create content faster. We create it smarter.</p>
+            <p class="deck-body" style="margin-bottom: 0;">Founded by Hsiu-Li Yeh, a scientist by training, turned interior designer, with 25+ years designing hotels, restaurants, resorts, wellness spaces and luxury residences.</p>
+          </div>
+          <p id="pillarsRevealText" class="deck-body reveal" style="margin-bottom: 0;">Her extensive interior design background, including work with OMA/Rem Koolhaas and Jan des Bouvrie, and, before that, a childhood spent in her parents' restaurant, is what Yeh Media brings to every project. The science of how design shapes the energy of a space and the people within it: <span class="neuro-emphasis">Neuroaesthetics.</span> This is the thread running through everything below.</p>
+        </div>
+      </div>
+
+      <div class="deck-slide" data-slide="3" hidden>
+        <div class="deck-list">
+          <div class="service-block">
+            <h3><span class="service-index">01</span><span class="service-title">Creative Direction</span></h3>
+            <p>The strategic layer, positioning, voice and storytelling rooted in your brand DNA, built the way an architectural designer builds a room: shaping the experience first, not just how it looks.</p>
+          </div>
+          <div class="service-block">
+            <h3><span class="service-index">02</span><span class="service-title">Content Creation</span></h3>
+            <p>Photography, film and social content, shot on-site, that translate a space's atmosphere, its materials, light and mood, into imagery guests respond to on instinct.</p>
+          </div>
+          <div class="service-block">
+            <h3><span class="service-index">03</span><span class="service-title">Strategy</span></h3>
+            <p>Content and channel strategy, grounded in neuroaesthetics: the psychology of why an image or video makes a guest stop scrolling, save, or book, instantly.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="deck-slide" data-slide="4" hidden>
+        <p class="deck-body" style="font-size: 14px; color: rgba(0,0,0,0.6); margin-bottom: 16px;">From concept to campaign, we turn an eye for interiors into content that performs, whatever the property.</p>
+        <div class="portfolio-carousel">
+          <div class="portfolio-filmstrip-col">
+          <div class="portfolio-filmstrip">
+            <div class="portfolio-filmstrip-track" id="portfolioFilmstripTrack">
+              <!-- Mirrors the first FEATURED_COUNT entries of WORK_PROJECTS
+                   below, in order. Keep the two in sync. -->
+              <div class="portfolio-filmstrip-row">
+                <div class="portfolio-thumb focused">
+                  <video src="public/video/portfolio/rotterdam-in-motion.mp4?v=2" poster="public/images/portfolio/rotterdam-in-motion.jpg" muted loop playsinline preload="metadata"></video>
+                </div>
+              </div>
+              <div class="portfolio-filmstrip-row">
+                <div class="portfolio-thumb">
+                  <video src="public/video/portfolio/paris-by-design.mp4?v=2" poster="public/images/portfolio/paris-by-design.jpg" muted loop playsinline preload="metadata"></video>
+                </div>
+              </div>
+              <div class="portfolio-filmstrip-row">
+                <!-- Cross-fades on its own timer — see the IIFE near the
+                     deck script below — so it changes without needing to
+                     be scrolled to. -->
+                <div class="portfolio-thumb" id="btsFilmstripThumb">
+                  <img class="bts-cycle-img active" src="public/images/portfolio/bts-content/01.jpg" alt="" />
+                  <img class="bts-cycle-img" src="public/images/portfolio/bts-content/02.jpg" alt="" />
+                  <img class="bts-cycle-img" src="public/images/portfolio/bts-content/03.jpg" alt="" />
+                  <img class="bts-cycle-img" src="public/images/portfolio/bts-content/04.jpg" alt="" />
+                  <img class="bts-cycle-img" src="public/images/portfolio/bts-content/05.jpg" alt="" />
+                  <img class="bts-cycle-img" src="public/images/portfolio/bts-content/06.jpg" alt="" />
+                </div>
+              </div>
+              <div class="portfolio-filmstrip-row">
+                <div class="portfolio-thumb">
+                  <video src="public/video/portfolio/where-to-stay.mp4?v=2" poster="public/images/portfolio/where-to-stay.jpg" muted loop playsinline preload="metadata"></video>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Only populated on the last featured piece — see
+               renderPortfolio(). Sits under the filmstrip itself rather
+               than in the text column, so it reads as the natural next
+               step after the thumbnail. -->
+          <div id="portfolioFilmstripCta"></div>
+          </div>
+          <div class="portfolio-detail" id="portfolioDetail"></div>
+        </div>
+      </div>
+
+      <div class="deck-slide" data-slide="5" hidden>
+        <p class="deck-body">Yeh Media is a focused team of concept strategists, art directors and content producers working across the hospitality industry. Our international network of photographers, filmmakers and stylists is curated project by project, matched to each property's own story.</p>
+        <a href="#contact" class="contact-cta-bw" style="margin-top:24px;" onclick="leaveDeckTo('contact'); return false;">Work With Us!</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Slide 1's visual: a full-bleed layer over the (blank, on that slide)
+       two-panel split. .is-visible cross-fades the whole layer with its
+       neighbouring slides; .is-in runs the assembly (centre lands, then
+       left, then right) once slide 1 has settled. Driven by hotelRowEnter/
+       Assemble/Leave in the deck JS — plays on arrival, no scroll needed.
+       Inside .deck (z-index 5) so it stays under the corner logo and Menu. -->
+  <div class="hotel-row" id="hotelRow" aria-hidden="true">
+    <div class="hotel-row-track">
+      <div class="hotel-piece hotel-left">
+        <img src="public/images/hotel-illustration/left.png" alt="" />
+        <!-- room service: a real clip now — the butler walking closer
+             through the peephole view — rather than a still. -->
+        <span class="hotel-win" data-win="room-service" style="--wx:18%;--wy:15%;--ww:19%;--wh:32%">
+          <video id="hotelRoomServiceVideo" src="public/video/hotel-illustration/room-service.mp4?v=2" poster="public/images/hotel-illustration/windows/room-service.jpg" muted playsinline preload="metadata"></video>
+        </span>
+        <!-- keyhole: one of the ground-arcade arches. Cross-fades through
+             a few room interiors on its own rather than showing one. -->
+        <span class="hotel-win" data-win="keyhole" id="hotelKeyholeWin" style="--wx:42%;--wy:63%;--ww:16%;--wh:23%">
+          <img class="hotel-win-cycle-img is-active" src="public/images/hotel-illustration/windows/keyhole-1.jpg" alt="" />
+          <img class="hotel-win-cycle-img" src="public/images/hotel-illustration/windows/keyhole-2.jpg" alt="" />
+          <img class="hotel-win-cycle-img" src="public/images/hotel-illustration/windows/keyhole-3.jpg" alt="" />
+          <img class="hotel-win-cycle-img" src="public/images/hotel-illustration/windows/keyhole-4.jpg" alt="" />
+          <img class="hotel-win-cycle-img" src="public/images/hotel-illustration/windows/keyhole-5.jpg" alt="" />
+        </span>
+      </div>
+      <div class="hotel-piece hotel-center">
+        <img src="public/images/hotel-illustration/center.png" alt="" />
+        <!-- elevator: first window to reveal, fading in as it starts its ride
+             up. A real clip (doors opening on a locked camera), not a
+             still — only plays during its own turn, see setCurrentHotelWindow. -->
+        <span class="hotel-win lift" data-win="elevator" style="--wx:40%;--wy:27%;--ww:20%;--wh:31%">
+          <video id="hotelElevatorVideo" src="public/video/hotel-illustration/elevator.mp4?v=2" poster="public/images/hotel-illustration/windows/elevator.jpg" muted playsinline preload="metadata"></video>
+        </span>
+      </div>
+      <div class="hotel-piece hotel-right">
+        <img src="public/images/hotel-illustration/right.png" alt="" />
+        <!-- breakfast: an in-room tray, a hand lifting the silver dome
+             cover away to reveal french toast underneath — only plays
+             during its own turn, see setCurrentHotelWindow. -->
+        <span class="hotel-win" data-win="breakfast" style="--wx:11%;--wy:19%;--ww:17%;--wh:27%">
+          <video id="hotelBreakfastVideo" src="public/video/hotel-illustration/breakfast.mp4?v=3" poster="public/images/hotel-illustration/windows/breakfast.jpg" muted playsinline preload="metadata"></video>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a id="work"></a>
+<section class="work-section">
+  <a href="#top" class="work-back split-cta" onclick="goToDeckSlide(PORTFOLIO_SLIDE_INDEX); return false;">← Back to Yeh Media</a>
+  <h1 class="work-title">Our Work.</h1>
+  <p class="work-intro">From concept to campaign, we turn an eye for interiors into content that performs, whatever the property. The full archive, not the highlight reel.</p>
+  <div class="work-grid" id="workGrid"></div>
+</section>
+
+<a id="contact"></a>
+<section class="contact-section">
+  <a href="#top" class="contact-back split-cta" onclick="goHome(); return false;">← Back to Yeh Media</a>
+  <h1 class="contact-title">Let's Work Together.</h1>
+  <p class="contact-intro">We partner with a select number of properties each season, giving each one our full creative attention. We would love to hear about yours.</p>
+
+  <form class="contact-form" id="contactForm">
+    <div class="contact-group">
+      <div class="contact-group-header"><span class="contact-group-index">01/03</span><span class="contact-group-label">About the property</span></div>
+      <div class="contact-fields">
+        <div>
+          <label class="contact-field-label">What best describes you?</label>
+          <div class="contact-toggles" data-toggle-group="propertyType" data-mode="single">
+            <button type="button" class="contact-toggle" data-value="Independent hotel">Independent hotel</button>
+            <button type="button" class="contact-toggle" data-value="Boutique hotel">Boutique hotel</button>
+            <button type="button" class="contact-toggle" data-value="Hotel group">Hotel group</button>
+            <button type="button" class="contact-toggle" data-value="Resort">Resort</button>
+            <button type="button" class="contact-toggle" data-value="Restaurant or F&B">Restaurant or F&amp;B</button>
+            <button type="button" class="contact-toggle" data-value="Other hospitality brand">Other hospitality brand</button>
+          </div>
+        </div>
+        <div>
+          <label class="contact-field-label">Where is it located?</label>
+          <input class="contact-input" id="contactLocation" placeholder="City, country" />
+        </div>
+        <div>
+          <label class="contact-field-label">Size</label>
+          <div class="contact-toggles" data-toggle-group="size" data-mode="single">
+            <button type="button" class="contact-toggle" data-value="Under 20 rooms">Under 20 rooms</button>
+            <button type="button" class="contact-toggle" data-value="20–100 rooms">20–100 rooms</button>
+            <button type="button" class="contact-toggle" data-value="100+ rooms">100+ rooms</button>
+            <button type="button" class="contact-toggle" data-value="Multiple properties">Multiple properties</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-group">
+      <div class="contact-group-header"><span class="contact-group-index">02/03</span><span class="contact-group-label">About the project</span></div>
+      <div class="contact-fields">
+        <div>
+          <label class="contact-field-label">What are you looking for? Pick any that apply</label>
+          <div class="contact-toggles" data-toggle-group="needs" data-mode="multi">
+            <button type="button" class="contact-toggle" data-value="Social content">Social content</button>
+            <button type="button" class="contact-toggle" data-value="Website photography & film">Website photography &amp; film</button>
+            <button type="button" class="contact-toggle" data-value="Brand film">Brand film</button>
+            <button type="button" class="contact-toggle" data-value="Full content strategy">Full content strategy</button>
+            <button type="button" class="contact-toggle" data-value="Not sure yet">Not sure yet</button>
+          </div>
+        </div>
+        <div>
+          <label class="contact-field-label">Long-term partnership or a one-time project?</label>
+          <div class="contact-toggles" data-toggle-group="engagement" data-mode="single">
+            <button type="button" class="contact-toggle" data-value="Long-term partnership">Long-term partnership</button>
+            <button type="button" class="contact-toggle" data-value="One-time project">One-time project</button>
+            <button type="button" class="contact-toggle" data-value="Not sure yet">Not sure yet</button>
+          </div>
+        </div>
+        <div>
+          <label class="contact-field-label">Do you currently work with a content team or agency?</label>
+          <div class="contact-toggles" data-toggle-group="hasTeam" data-mode="single">
+            <button type="button" class="contact-toggle" data-value="Yes">Yes</button>
+            <button type="button" class="contact-toggle" data-value="No">No</button>
+            <button type="button" class="contact-toggle" data-value="Some freelancers">Some freelancers</button>
+          </div>
+        </div>
+        <div>
+          <label class="contact-field-label">Timeline</label>
+          <div class="contact-toggles" data-toggle-group="timeline" data-mode="single">
+            <button type="button" class="contact-toggle" data-value="ASAP">ASAP</button>
+            <button type="button" class="contact-toggle" data-value="Next 1–3 months">Next 1–3 months</button>
+            <button type="button" class="contact-toggle" data-value="Just exploring">Just exploring</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-group">
+      <div class="contact-group-header"><span class="contact-group-index">03/03</span><span class="contact-group-label">About you</span></div>
+      <div class="contact-fields">
+        <div class="contact-fields-grid">
+          <div>
+            <label class="contact-field-label">Name</label>
+            <input class="contact-input" id="contactName" required />
+          </div>
+          <div>
+            <label class="contact-field-label">Role <span class="optional">(optional)</span></label>
+            <input class="contact-input" id="contactRole" />
+          </div>
+          <div>
+            <label class="contact-field-label">Hotel / property name</label>
+            <input class="contact-input" id="contactHotelName" />
+          </div>
+          <div>
+            <label class="contact-field-label">Email</label>
+            <input class="contact-input" type="email" id="contactEmailField" required />
+          </div>
+          <div>
+            <label class="contact-field-label">Phone <span class="optional">(optional)</span></label>
+            <input class="contact-input" type="tel" id="contactPhone" />
+          </div>
+          <div>
+            <label class="contact-field-label">How did you hear about us? <span class="optional">(optional)</span></label>
+            <input class="contact-input" id="contactHeardFrom" />
+          </div>
+        </div>
+        <div>
+          <label class="contact-field-label">Anything else we should know? <span class="optional">(optional)</span></label>
+          <textarea class="contact-textarea" id="contactNotes" rows="3"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-submit-row">
+      <button type="submit" id="contactSendBtn" class="envelope-send-btn">
+        <svg viewBox="0 0 224 96" preserveAspectRatio="none" class="envelope-send-svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M0 0 112 46 224 0" stroke-width="1.5"></path>
+          <circle cx="112" cy="46" r="7" stroke-width="1.3"></circle>
+          <circle cx="112" cy="46" r="2" fill="currentColor" stroke="none"></circle>
+        </svg>
+        <span class="envelope-send-label">Send</span>
+      </button>
+    </div>
+  </form>
+</section>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <p class="lightbox-title" id="lightboxTitle"></p>
+  <button class="lightbox-close" onclick="closeLightbox(event)">Close</button>
+  <button class="lightbox-prev" onclick="lightboxStep(-1, event)" aria-label="Previous">‹</button>
+  <button class="lightbox-next" onclick="lightboxStep(1, event)" aria-label="Next">›</button>
+  <div class="lightbox-stage" id="lightboxStage" onclick="event.stopPropagation()"></div>
+</div>
+
+<script>
+  // Every video src in this file ends in "?v=2" — a cache-busting query
+  // string. This is opened repeatedly as a plain file:// page across a
+  // long editing session, and browsers happily cache a video by its exact
+  // URL even after the underlying file on disk changes, replaying old
+  // (possibly broken) bytes with no error and no way to tell short of a
+  // private window. Bump every "?v=2" in this file (find/replace is
+  // fine — they're all identical) any time a video file under public/
+  // video/ is replaced, so the next load is guaranteed fresh instead of
+  // relying on a hard refresh.
+  var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Hero — a static label ("Content That Makes Guests") completed by one
+  // bold word that rolls like a cube face turning over: two fresh spans
+  // (outgoing/incoming) are mounted each cycle so their forwards-filled
+  // animations always play cleanly from the start, then collapse back to
+  // one static span holding the new word. Deliberately a different shape
+  // from the intro loader's own rolling sequence above (a list of
+  // standalone phrases) — label + single landing word, mirroring the left
+  // panel's title — rather than the same trick twice in a row. Static on
+  // the first word if the user prefers reduced motion.
+  var HERO_PHRASES = ["Creative Direction.", "Content Creation.", "Strategy.", "For Hospitality."];
+  var rollWindowEl = document.getElementById("heroPhraseWindow");
+  if (rollWindowEl && HERO_PHRASES.length > 1 && !prefersReducedMotion) {
+    var heroCurrent = 0;
+    (function scheduleHeroRoll() {
+      setTimeout(function () {
+        var nextIndex = (heroCurrent + 1) % HERO_PHRASES.length;
+        rollWindowEl.innerHTML =
+          '<span class="roll-face roll-out">' + HERO_PHRASES[heroCurrent] + "</span>" +
+          '<span class="roll-face roll-in">' + HERO_PHRASES[nextIndex] + "</span>";
+        setTimeout(function () {
+          heroCurrent = nextIndex;
+          rollWindowEl.innerHTML = '<span class="roll-face">' + HERO_PHRASES[heroCurrent] + "</span>";
+          scheduleHeroRoll();
+        }, 600); // must match .roll-out/.roll-in's animation-duration above
+      }, 1800);
+    })();
+  }
+
+  // HomeDeck — the homepage as a single static screen. Scrolling/swiping/
+  // arrow keys advance through slides in place (left title rolls, right
+  // content cross-fades) rather than the page physically scrolling.
+  var HOME_TITLE = "Yeh Media";
+  // Slide 0 has no title of its own here — "Yeh Media" is rendered by the
+  // separate #cornerLogo element instead, which travels between this
+  // slide's big centered position and every other slide's small corner
+  // position (see updateCornerLogo). Rolling an empty face away when
+  // leaving slide 0 lets the incoming slide title still cube-flip normally
+  // without a second "Yeh Media" competing with the logo's own morph.
+  // Index 1 is the titleless "imagined hotels" slide — its visual is the
+  // full-bleed #hotelRow layer, so both panels stay blank there.
+  var DECK_TITLES = ["", "", "Who We Are.", "Our Services.", "Content We've Shaped.", "The Studio."];
+  var STUDIO_SLIDE_INDEX = 5;
+  var PORTFOLIO_SLIDE_INDEX = 4;
+  var PILLARS_SLIDE_INDEX = 2;
+  var pillarsRevealed = false;
+  var pillarsRevealTextEl;
+  // Descriptions are plain and short on purpose — what it is, not a pitch
+  // — and don't call out whose project or space each one actually is.
+  // Order matters: the first 4 are what the deck filmstrip teases, in this
+  // order (keep in sync with FEATURED_COUNT / projects[] in Portfolio.tsx).
+  var WORK_PROJECTS = [
+    {
+      tag: "Rotterdam",
+      project: "Rotterdam, in Motion",
+      format: "Cinematic Film",
+      type: "video",
+      src: "public/images/portfolio/rotterdam-in-motion.jpg",
+      video: "public/video/portfolio/rotterdam-in-motion.mp4?v=2",
+      aspect: "9/16",
+      description: "A voiceover-led film that treats the space as the lead, not the backdrop, cut like a story rather than a walkthrough."
+    },
+    {
+      tag: "Paris",
+      project: "Paris, by Design",
+      format: "Instagram · 88.3K views",
+      type: "video",
+      src: "public/images/portfolio/paris-by-design.jpg",
+      video: "public/video/portfolio/paris-by-design.mp4?v=2",
+      aspect: "9/16",
+      description: "An ongoing edit of Paris interiors, each pick chosen for atmosphere and material, never for a star rating.",
+      kpis: [{ label: "Views", value: 88300 }, { label: "Saves", value: 3700 }, { label: "Follows", value: 180 }]
+    },
+    {
+      tag: "Rotterdam",
+      project: "BTS Content",
+      format: "Photo Series",
+      type: "image",
+      src: "public/images/portfolio/bts-content/01.jpg",
+      aspect: "2/3",
+      media: [
+        { type: "image", src: "public/images/portfolio/bts-content/01.jpg" },
+        { type: "image", src: "public/images/portfolio/bts-content/02.jpg" },
+        { type: "image", src: "public/images/portfolio/bts-content/03.jpg" },
+        { type: "image", src: "public/images/portfolio/bts-content/04.jpg" },
+        { type: "image", src: "public/images/portfolio/bts-content/05.jpg" },
+        { type: "image", src: "public/images/portfolio/bts-content/06.jpg" }
+      ],
+      description: "The set, the light, the moments between takes: a behind-the-scenes look at how one Rotterdam shoot came together."
+    },
+    {
+      tag: "Paris",
+      project: "Where to Stay, by Design",
+      format: "Instagram · 45.7K views",
+      type: "video",
+      src: "public/images/portfolio/where-to-stay.jpg",
+      video: "public/video/portfolio/where-to-stay.mp4?v=2",
+      aspect: "9/16",
+      description: "A recurring edit of hotel picks, framed on atmosphere first and amenities second: a format, not a one-off post.",
+      kpis: [{ label: "Views", value: 45700 }, { label: "Follows", value: 270 }, { label: "Saves", value: 1300 }]
+    },
+    {
+      tag: "Rotterdam",
+      project: "The Rotterdam Interview",
+      format: "Interview · Website Feature",
+      type: "video",
+      src: "public/images/portfolio/rotterdam-interview.jpg",
+      video: "public/video/portfolio/rotterdam-interview.mp4?v=2",
+      aspect: "16/9",
+      description: "A longer, unhurried conversation, built to live on the website rather than compete for attention in the feed."
+    },
+    {
+      tag: "Studio",
+      project: "A Morning, Slowed Down",
+      format: "Cinematic Film",
+      type: "video",
+      src: "public/images/portfolio/at-home-studio-1.jpg",
+      video: "public/video/portfolio/at-home-studio-1.mp4?v=2",
+      aspect: "9/16",
+      description: "A quieter film, paced around light and stillness, where the space carries the story without a single line of dialogue."
+    },
+    {
+      tag: "Paris",
+      project: "Fashion Interiors",
+      format: "Instagram · 15.9K views",
+      type: "video",
+      src: "public/images/portfolio/saint-martin-walk.jpg",
+      video: "public/video/portfolio/saint-martin-walk.mp4?v=2",
+      aspect: "9/16",
+      description: "Paris' retail interiors, read with the same eye for form and detail as the fashion inside them.",
+      kpis: [{ label: "Views", value: 15900 }]
+    },
+    {
+      tag: "Rotterdam",
+      project: "A Rotterdam Interior",
+      format: "Process · Photo Series",
+      type: "image",
+      src: "public/images/portfolio/process/01.jpg",
+      aspect: "2/3",
+      media: [
+        { type: "image", src: "public/images/portfolio/process/01.jpg" },
+        { type: "image", src: "public/images/portfolio/process/02.jpg" },
+        { type: "image", src: "public/images/portfolio/process/03.jpg" },
+        { type: "image", src: "public/images/portfolio/process/04.jpg" },
+        { type: "image", src: "public/images/portfolio/process/05.jpg" },
+        { type: "image", src: "public/images/portfolio/process/06.jpg" },
+        { type: "image", src: "public/images/portfolio/process/07.jpg" },
+        { type: "image", src: "public/images/portfolio/process/08.jpg" },
+        { type: "image", src: "public/images/portfolio/process/09.jpg" },
+        { type: "image", src: "public/images/portfolio/process/10.jpg" },
+        { type: "image", src: "public/images/portfolio/process/11.jpg" },
+        { type: "image", src: "public/images/portfolio/process/12.jpg" },
+        { type: "image", src: "public/images/portfolio/process/13.jpg" },
+        { type: "image", src: "public/images/portfolio/process/14.jpg" }
+      ],
+      description: "Sketches, material samples, site walkthroughs: the decisions behind a finished space, caught in the making rather than the result."
+    },
+    {
+      tag: "Studio",
+      project: "Details Worth Staying For",
+      format: "Cinematic Film",
+      type: "video",
+      src: "public/images/portfolio/at-home-studio-2.jpg",
+      video: "public/video/portfolio/at-home-studio-2.mp4?v=2",
+      aspect: "9/16",
+      description: "Where the eye lingers: texture, material, the small objects a wide shot would miss."
+    },
+    {
+      tag: "Studio",
+      project: "Everything Is in the Details",
+      format: "Photo Series",
+      type: "image",
+      src: "public/images/portfolio/details/01.jpg",
+      aspect: "2/3",
+      media: [
+        { type: "image", src: "public/images/portfolio/details/01.jpg" },
+        { type: "image", src: "public/images/portfolio/details/02.jpg" },
+        { type: "image", src: "public/images/portfolio/details/03.jpg" },
+        { type: "image", src: "public/images/portfolio/details/04.jpg" },
+        { type: "image", src: "public/images/portfolio/details/05.jpg" },
+        { type: "image", src: "public/images/portfolio/details/06.jpg" },
+        { type: "image", src: "public/images/portfolio/details/07.jpg" }
+      ],
+      description: "Material, texture, finish: the details that decide whether a space merely looks good or actually feels considered."
+    }
+  ];
+  // The deck's filmstrip teases a handful rather than the full archive —
+  // the rest live in the Work section below, in a grid rather than a
+  // one-at-a-time scroll. Keep in sync with FEATURED_COUNT in Portfolio.tsx.
+  var PORTFOLIO_PROJECTS = WORK_PROJECTS.slice(0, 4);
+  var PORTFOLIO_ROW_STEP = 160;
+  var portfolioIndex = 0;
+  var portfolioFilmstripTrackEl = document.getElementById("portfolioFilmstripTrack");
+  var portfolioFilmstripRowEls = document.querySelectorAll(".portfolio-filmstrip-row");
+  var portfolioDetailEl = document.getElementById("portfolioDetail");
+  var portfolioFilmstripCtaEl = document.getElementById("portfolioFilmstripCta");
+
+  function renderPortfolio() {
+    if (!portfolioFilmstripTrackEl) return;
+    portfolioFilmstripTrackEl.style.transform = "translateY(" + ((1 - portfolioIndex) * PORTFOLIO_ROW_STEP) + "px)";
+    portfolioFilmstripRowEls.forEach(function (rowEl, i) {
+      var distance = Math.abs(i - portfolioIndex);
+      var focused = distance === 0;
+      rowEl.style.opacity = focused ? 1 : distance === 1 ? 0.5 : 0.15;
+      var thumbEl = rowEl.querySelector(".portfolio-thumb");
+      thumbEl.classList.toggle("focused", focused);
+      // only the focused clip plays — keeps the page from pulling every video
+      var vid = rowEl.querySelector("video");
+      if (vid) {
+        if (focused) { vid.play().catch(function () {}); }
+        else { vid.pause(); vid.currentTime = 0; }
+      }
+    });
+
+    var p = PORTFOLIO_PROJECTS[portfolioIndex];
+    // Only on the last featured piece — reaching the end of the
+    // highlights is what naturally invites "see more", rather than
+    // repeating the link under every single project.
+    var isLast = portfolioIndex === PORTFOLIO_PROJECTS.length - 1;
+    portfolioDetailEl.innerHTML =
+      '<p class="portfolio-detail-pager">0' + (portfolioIndex + 1) + " / 0" + PORTFOLIO_PROJECTS.length + "</p>" +
+      '<p class="portfolio-detail-name">' + p.tag + " · " + p.format + "</p>" +
+      '<h3 class="portfolio-detail-title">' + p.project + "</h3>" +
+      '<p class="portfolio-detail-desc">' + p.description + "</p>";
+
+    // Sits under the filmstrip itself rather than in the text column.
+    if (portfolioFilmstripCtaEl) {
+      portfolioFilmstripCtaEl.innerHTML = isLast
+        ? '<a href="#work" class="split-cta portfolio-more-link" onclick="leaveDeckTo(\'work\'); return false;">See more selected projects →</a>'
+        : "";
+    }
+  }
+
+  renderPortfolio();
+
+  // The Work section's grid — the full archive, built once from the same
+  // WORK_PROJECTS data the deck's filmstrip teases a slice of. Each card
+  // shows its media in its own native shape (see .work-card-media in the
+  // CSS above) rather than the deck filmstrip's uniform crop. A project
+  // with more than one item (media.length > 1) shows its cover with a
+  // count badge and opens the Lightbox on click; everything else is just
+  // displayed inline.
+  (function renderWorkGrid() {
+    var grid = document.getElementById("workGrid");
+    if (!grid) return;
+    grid.innerHTML = WORK_PROJECTS.map(function (p, i) {
+      var multi = p.media && p.media.length > 1;
+      var mediaHtml, mediaClass, mediaStyle = "";
+
+      if (multi) {
+        mediaClass = "work-card-media boxed clickable";
+        mediaStyle = p.aspect ? ' style="aspect-ratio:' + p.aspect + '"' : "";
+        mediaHtml = (p.src ? '<img src="' + p.src + '" alt="" />' : "") +
+          '<span class="work-card-badge">' + p.media.length + " " +
+          (p.type === "video" ? "clips" : "photos") + " · view →</span>";
+      } else if (p.video) {
+        // Not muted (unlike the deck filmstrip's background loop above) —
+        // this only plays on a deliberate click, so it can carry sound.
+        mediaClass = "work-card-media boxed";
+        mediaStyle = p.aspect ? ' style="aspect-ratio:' + p.aspect + '"' : "";
+        mediaHtml = '<video src="' + p.video + '" poster="' + (p.src || "") + '" controls playsinline preload="none"></video>';
+      } else if (p.src) {
+        mediaClass = "work-card-media natural";
+        mediaHtml = '<img src="' + p.src + '" alt="" />';
+      } else {
+        mediaClass = "work-card-media boxed";
+        mediaStyle = ' style="aspect-ratio:4/5"';
+        mediaHtml = '<div style="position:absolute; inset:0; border:1px solid rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center;">' +
+          '<span style="font-family:\'Onest\',sans-serif; font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:rgba(0,0,0,0.3);">' +
+          (p.type === "video" ? "Video" : "Photo") + "</span></div>";
+      }
+
+      var mediaTag = multi
+        ? '<div class="' + mediaClass + '"' + mediaStyle + ' onclick="openLightbox(' + i + ', event)">' + mediaHtml + "</div>"
+        : '<div class="' + mediaClass + '"' + mediaStyle + ">" + mediaHtml + "</div>";
+
+      // A small stat row under the caption, counting up into view — see
+      // formatWorkKpiCount/observeWorkKpis below. Placeholder figures
+      // (p.kpis) until the real ones are in hand.
+      var kpiHtml = "";
+      if (p.kpis && p.kpis.length) {
+        kpiHtml = '<div class="work-kpi-block">' +
+          '<p class="work-kpi-heading">What This Video Generated</p>' +
+          '<div class="work-kpi-row">' + p.kpis.map(function (k) {
+            return '<div class="work-kpi">' +
+              '<p class="work-kpi-value" data-value="' + k.value + '" data-suffix="' + (k.suffix || "") + '">0</p>' +
+              '<div class="work-kpi-bar"><div class="work-kpi-bar-fill"></div></div>' +
+              '<p class="work-kpi-label">' + k.label + "</p></div>";
+          }).join("") + "</div></div>";
+      }
+
+      return (
+        '<div class="work-card-wrap">' + mediaTag +
+        '<p class="work-card-name">' + p.tag + " · " + p.format + "</p>" +
+        '<h3 class="work-card-title">' + p.project + "</h3>" +
+        '<p class="work-card-desc">' + p.description + "</p>" +
+        kpiHtml + "</div>"
+      );
+    }).join("");
+
+    observeWorkCards();
+  })();
+
+  // Work grid reveal: each card fades and rises into place the first
+  // time it scrolls into view (one-shot — see Project cards on /work).
+  function observeWorkCards() {
+    var cards = document.querySelectorAll(".work-card-wrap");
+    if (!("IntersectionObserver" in window)) {
+      cards.forEach(function (card) { card.classList.add("is-in"); });
+      observeWorkKpis();
+      return;
+    }
+    var io = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-in");
+          io.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -60px 0px" },
+    );
+    cards.forEach(function (card) {
+      io.observe(card);
+    });
+    observeWorkKpis();
+  }
+
+  // KPI count-up: bigger and bolder than a quiet counter, and retriggers
+  // every time its row re-enters view (never unobserved) rather than
+  // firing only the first time ever — so revisiting /work, or scrolling
+  // past and back, restarts it fresh. See Project["kpis"] in
+  // Portfolio.tsx for where the (placeholder) figures come from.
+  function formatWorkKpiCount(value) {
+    if (value >= 1000000) {
+      var m = value / 1000000;
+      return (m % 1 === 0 ? m.toFixed(0) : m.toFixed(1)) + "M";
+    }
+    if (value >= 1000) {
+      var k = value / 1000;
+      return (k % 1 === 0 ? k.toFixed(0) : k.toFixed(1)) + "K";
+    }
+    return String(Math.round(value));
+  }
+
+  var workKpiTimers = new WeakMap();
+
+  function animateWorkKpi(el, delayMs) {
+    var target = parseFloat(el.getAttribute("data-value"));
+    var suffix = el.getAttribute("data-suffix") || "";
+    var bar = el.parentElement.querySelector(".work-kpi-bar-fill");
+    if (prefersReducedMotion) {
+      el.textContent = formatWorkKpiCount(target) + suffix;
+      el.classList.add("is-filled");
+      if (bar) bar.style.transform = "scaleX(1)";
+      return;
+    }
+    var timer = setTimeout(function () {
+      el.classList.add("is-filled");
+      if (bar) bar.style.transform = "scaleX(1)";
+      var duration = 1300;
+      var start = null;
+      function tick(ts) {
+        if (start === null) start = ts;
+        var progress = Math.min((ts - start) / duration, 1);
+        var eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = formatWorkKpiCount(eased * target) + suffix;
+        if (progress < 1) workKpiTimers.set(el, requestAnimationFrame(tick));
+      }
+      workKpiTimers.set(el, requestAnimationFrame(tick));
+    }, delayMs);
+    workKpiTimers.set(el, timer);
+  }
+
+  function resetWorkKpi(el) {
+    var pending = workKpiTimers.get(el);
+    if (pending !== undefined) {
+      clearTimeout(pending);
+      cancelAnimationFrame(pending);
+    }
+    el.textContent = "0";
+    el.classList.remove("is-filled");
+    var bar = el.parentElement.querySelector(".work-kpi-bar-fill");
+    if (bar) bar.style.transform = "scaleX(0)";
+  }
+
+  function observeWorkKpis() {
+    var rows = document.querySelectorAll(".work-kpi-row");
+    if (!rows.length) return;
+    if (!("IntersectionObserver" in window)) {
+      rows.forEach(function (row) {
+        row.querySelectorAll(".work-kpi-value").forEach(function (el, idx) {
+          animateWorkKpi(el, idx * 150);
+        });
+      });
+      return;
+    }
+    var io = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          var kpiEls = entry.target.querySelectorAll(".work-kpi-value");
+          if (entry.isIntersecting) {
+            kpiEls.forEach(function (el, idx) { animateWorkKpi(el, idx * 150); });
+          } else {
+            kpiEls.forEach(resetWorkKpi);
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -60px 0px" },
+    );
+    rows.forEach(function (row) {
+      io.observe(row);
+    });
+  }
+
+  // Lightbox — opened from a multi-item /work card. Left/right arrows (and
+  // arrow keys) page through lightboxProject.media; Escape or clicking the
+  // backdrop closes it.
+  var lightboxProject = null;
+  var lightboxIndex = 0;
+
+  function openLightbox(i, event) {
+    if (event) event.preventDefault();
+    var p = WORK_PROJECTS[i];
+    if (!p.media || p.media.length < 2) return;
+    lightboxProject = p;
+    lightboxIndex = 0;
+    renderLightbox();
+    document.getElementById("lightbox").classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+  function closeLightbox(event) {
+    if (event) event.stopPropagation();
+    document.getElementById("lightbox").classList.remove("open");
+    document.body.style.overflow = "";
+    document.getElementById("lightboxStage").innerHTML = "";
+    lightboxProject = null;
+  }
+  function lightboxStep(dir, event) {
+    if (event) event.stopPropagation();
+    if (!lightboxProject) return;
+    var n = lightboxProject.media.length;
+    lightboxIndex = (lightboxIndex + dir + n) % n;
+    renderLightbox();
+  }
+  function renderLightbox() {
+    var p = lightboxProject;
+    var item = p.media[lightboxIndex];
+    document.getElementById("lightboxTitle").textContent =
+      p.project + " · 0" + (lightboxIndex + 1) + " / 0" + p.media.length;
+    document.getElementById("lightboxStage").innerHTML = item.type === "video"
+      ? '<video src="' + item.src + '" controls autoplay playsinline></video>'
+      : '<img src="' + item.src + '" alt="" />';
+  }
+  document.addEventListener("keydown", function (e) {
+    if (!lightboxProject) return;
+    if (e.key === "Escape") closeLightbox();
+    else if (e.key === "ArrowRight") lightboxStep(1);
+    else if (e.key === "ArrowLeft") lightboxStep(-1);
+  });
+
+  // BTS Content's homepage filmstrip thumb: cross-fade through its photos
+  // on a timer, independent of scroll/focus — see .bts-cycle-img above.
+  (function cycleBtsThumb() {
+    var imgs = document.querySelectorAll("#btsFilmstripThumb .bts-cycle-img");
+    if (imgs.length < 2) return;
+    var i = 0;
+    setInterval(function () {
+      imgs[i].classList.remove("active");
+      i = (i + 1) % imgs.length;
+      imgs[i].classList.add("active");
+    }, 2200);
+  })();
+
+  // The visual transition itself — must match .roll-out/.roll-in/
+  // .deck-fade-out/.deck-fade-in's animation-duration above.
+  var DECK_TRANSITION_MS = 600;
+  // How long wheel input stays locked after a transition starts — padded
+  // past DECK_TRANSITION_MS so a trackpad's brief momentum tail after the
+  // finger lifts can't sneak through and fire a second, unintended slide
+  // change. Kept as tight a margin over DECK_TRANSITION_MS as practical —
+  // the wider this gap, the more the deck reads as laggy than deliberate.
+  var DECK_WHEEL_LOCK_MS = 700;
+  // A single wheel event's deltaY is not "one swipe" — trackpads emit a
+  // burst of many small events per gesture. Accumulate them and only act
+  // once the burst clearly commits to a direction. Kept low so the deck
+  // reacts near the start of a gesture, not partway in.
+  var DECK_WHEEL_COMMIT_THRESHOLD = 14;
+  var DECK_WHEEL_IDLE_RESET_MS = 140;
+  var deckEl = document.getElementById("deck");
+  var deckTitleWindowEl = document.getElementById("deckTitleWindow");
+  var cornerLogoEl = document.getElementById("cornerLogo");
+  var deckStackEl = document.getElementById("deckStack");
+  var deckSlideEls = document.querySelectorAll(".deck-slide");
+  var hotelRowEl = document.getElementById("hotelRow");
+  pillarsRevealTextEl = document.getElementById("pillarsRevealText");
+  var pillarsIntroGroupEl = document.getElementById("pillarsIntroGroup");
+  var deckCurrent = 0;
+  var deckLocked = false;
+  var deckFreeScroll = false;
+  var deckTouchStartY = null;
+  var deckWheelAccum = 0;
+  var deckWheelIdleTimer;
+  var deckLockTimer;
+  var hotelRowFrame;
+  var hotelRowOutTimer = null;
+
+  // The window "spotlight": never more than one lit at a time. Elevator
+  // first (fading in as it rides up the facade), holds, fades out — then
+  // the next window fades in elsewhere, holds, fades out — looping through
+  // the rest. Only starts once the (bare) buildings have finished
+  // assembling — see hotelRowAssemble below.
+  var HOTEL_KEYHOLE_CYCLE_MS = 700;
+  var HOTEL_WINDOW_ORDER = ["elevator", "room-service", "keyhole", "breakfast"];
+  // The elevator's, room-service's, and breakfast's clips are all 4s; each
+  // hold is just that plus a short beat, so the handoff follows close
+  // behind the clip actually finishing rather than dwelling on the last
+  // frame. The keyhole's covers one full pass through its 5 room interiors.
+  var HOTEL_WINDOW_HOLD_MS = { elevator: 4400, "room-service": 3300, keyhole: HOTEL_KEYHOLE_CYCLE_MS * 5, breakfast: 4400 };
+  var HOTEL_FIRST_WINDOW_DELAY_MS = 1300;
+  // Which windows have a real clip (element id) vs. are still a still image.
+  var HOTEL_WINDOW_VIDEO_IDS = { elevator: "hotelElevatorVideo", "room-service": "hotelRoomServiceVideo", breakfast: "hotelBreakfastVideo" };
+  var hotelWinEls = null;
+  var hotelSpotlightTimer;
+  var hotelKeyholeImgEls = null;
+  var hotelKeyholeCycleTimer;
+  var hotelKeyholeIndex = 0;
+
+  function getHotelKeyholeImgEls() {
+    if (!hotelKeyholeImgEls && hotelRowEl) {
+      var win = hotelRowEl.querySelector("#hotelKeyholeWin");
+      hotelKeyholeImgEls = win ? Array.prototype.slice.call(win.querySelectorAll(".hotel-win-cycle-img")) : [];
+    }
+    return hotelKeyholeImgEls || [];
+  }
+  function setHotelKeyholeIndex(i) {
+    hotelKeyholeIndex = i;
+    getHotelKeyholeImgEls().forEach(function (img, idx) {
+      img.classList.toggle("is-active", idx === i);
+    });
+  }
+  function startHotelKeyholeCycle() {
+    clearInterval(hotelKeyholeCycleTimer);
+    var imgs = getHotelKeyholeImgEls();
+    if (!imgs.length) return;
+    setHotelKeyholeIndex(0);
+    hotelKeyholeCycleTimer = setInterval(function () {
+      setHotelKeyholeIndex((hotelKeyholeIndex + 1) % imgs.length);
+    }, HOTEL_KEYHOLE_CYCLE_MS);
+  }
+  function stopHotelKeyholeCycle() {
+    clearInterval(hotelKeyholeCycleTimer);
+  }
+
+  function getHotelWinEls() {
+    if (!hotelWinEls && hotelRowEl) {
+      hotelWinEls = {};
+      HOTEL_WINDOW_ORDER.forEach(function (key) {
+        hotelWinEls[key] = hotelRowEl.querySelector('.hotel-win[data-win="' + key + '"]');
+      });
+    }
+    return hotelWinEls;
+  }
+  function setCurrentHotelWindow(key) {
+    var els = getHotelWinEls();
+    HOTEL_WINDOW_ORDER.forEach(function (k) {
+      if (els[k]) els[k].classList.toggle("is-current", k === key);
+    });
+    // A window's clip only plays during its own turn — paused (and
+    // rewound) the rest of the time.
+    Object.keys(HOTEL_WINDOW_VIDEO_IDS).forEach(function (k) {
+      var video = document.getElementById(HOTEL_WINDOW_VIDEO_IDS[k]);
+      if (!video) return;
+      if (k === key) {
+        video.currentTime = 0;
+        video.play().catch(function () {});
+      } else {
+        video.pause();
+      }
+    });
+    // Same idea for the keyhole's cross-fade: only cycles during its turn.
+    if (key === "keyhole") startHotelKeyholeCycle();
+    else stopHotelKeyholeCycle();
+  }
+  function runHotelSpotlight(i, delay) {
+    hotelSpotlightTimer = setTimeout(function () {
+      var key = HOTEL_WINDOW_ORDER[i];
+      setCurrentHotelWindow(key);
+      runHotelSpotlight((i + 1) % HOTEL_WINDOW_ORDER.length, HOTEL_WINDOW_HOLD_MS[key]);
+    }, delay);
+  }
+  function startHotelSpotlight() {
+    clearTimeout(hotelSpotlightTimer);
+    var els = getHotelWinEls();
+    if (prefersReducedMotion) {
+      HOTEL_WINDOW_ORDER.forEach(function (k) { if (els[k]) els[k].classList.add("is-current"); });
+      return;
+    }
+    HOTEL_WINDOW_ORDER.forEach(function (k) { if (els[k]) els[k].classList.remove("is-current"); });
+    runHotelSpotlight(0, HOTEL_FIRST_WINDOW_DELAY_MS);
+  }
+  function stopHotelSpotlight() {
+    clearTimeout(hotelSpotlightTimer);
+    var els = getHotelWinEls();
+    HOTEL_WINDOW_ORDER.forEach(function (k) { if (els[k]) els[k].classList.remove("is-current"); });
+    Object.keys(HOTEL_WINDOW_VIDEO_IDS).forEach(function (k) {
+      var video = document.getElementById(HOTEL_WINDOW_VIDEO_IDS[k]);
+      if (video) video.pause();
+    });
+    stopHotelKeyholeCycle();
+  }
+
+  // Slide 1's full-bleed illustration. .is-visible fades the whole layer,
+  // .is-in runs the building assembly — driven separately so the layer can
+  // cross-fade with its neighbours the instant a scroll commits, while the
+  // choreography waits for the slide to actually settle.
+  function hotelRowEnter() {
+    // A scroll toward slide 1 has committed — start fading the layer in
+    // over the outgoing slide.
+    if (!hotelRowEl) return;
+    clearTimeout(hotelRowOutTimer);
+    hotelRowOutTimer = null;
+    hotelRowEl.classList.add("is-visible");
+    hotelRowEl.setAttribute("aria-hidden", "false");
+  }
+  function hotelRowAssemble() {
+    // Slide 1 has settled — run the assembly a frame later so the pieces
+    // have a "from" state to travel out of, then start the window
+    // spotlight once they've had time to land.
+    if (!hotelRowEl) return;
+    cancelAnimationFrame(hotelRowFrame);
+    hotelRowFrame = requestAnimationFrame(function () {
+      if (deckCurrent === 1) {
+        hotelRowEl.classList.add("is-in");
+        startHotelSpotlight();
+      }
+    });
+  }
+  function hotelRowLeave() {
+    // A scroll away from slide 1 has committed — fade the layer out under
+    // the incoming slide, then reset the pose (once it's invisible) so a
+    // return replays from the start.
+    if (!hotelRowEl) return;
+    hotelRowEl.classList.remove("is-visible");
+    hotelRowEl.setAttribute("aria-hidden", "true");
+    stopHotelSpotlight();
+    clearTimeout(hotelRowOutTimer);
+    hotelRowOutTimer = setTimeout(function () {
+      hotelRowEl.classList.remove("is-in");
+      hotelRowOutTimer = null;
+    }, 850);
+  }
+
+  // Intro load sequence — a few words roll through the same spot the real
+  // title lives in, ending on "Yeh Media" (DECK_TITLES[0]) so the handoff
+  // from loader to live site is invisible: same text, same position, same
+  // typeface, only the mechanism driving it changes. The right panel stays
+  // hidden (.deck-loading, see CSS above) until this completes. Any wheel/
+  // touch/key input while loading skips straight to the end instead of
+  // being ignored, so it never reads as a blocking wait.
+  var LOAD_SEQUENCE = ["Shaping.", "Directing.", "Creating.", HOME_TITLE];
+  var LOAD_HOLD_MS = 380;
+  // Must match .roll-out/.roll-in's animation-duration above.
+  var LOAD_ROLL_MS = 600;
+  var deckLoading = !prefersReducedMotion;
+  var loadStep = 0;
+  var loadTimer;
+  var introCancelled = false;
+
+  // Hands off from the loader's own roll-in of "Yeh Media" to the corner
+  // logo: blanks the title window back to DECK_TITLES[0] (empty) and
+  // reveals #cornerLogo in the same instant, already sized and positioned
+  // to match — same text, same spot, no visible seam.
+  function finishLoading() {
+    deckLoading = false;
+    deckStackEl.classList.remove("deck-loading");
+    deckTitleWindowEl.innerHTML = '<span class="roll-face">' + DECK_TITLES[deckCurrent] + "</span>";
+    cornerLogoEl.classList.add("ready");
+  }
+
+  function skipIntro() {
+    if (!deckLoading) return;
+    introCancelled = true;
+    clearTimeout(loadTimer);
+    finishLoading();
+  }
+
+  function runIntroSequence() {
+    if (prefersReducedMotion) {
+      finishLoading();
+      return;
+    }
+
+    function step(next) {
+      loadTimer = setTimeout(function () {
+        if (introCancelled) return;
+        deckTitleWindowEl.innerHTML =
+          '<span class="roll-face roll-out">' + LOAD_SEQUENCE[loadStep] + "</span>" +
+          '<span class="roll-face roll-in">' + LOAD_SEQUENCE[next] + "</span>";
+        loadTimer = setTimeout(function () {
+          if (introCancelled) return;
+          loadStep = next;
+          deckTitleWindowEl.innerHTML = '<span class="roll-face">' + LOAD_SEQUENCE[loadStep] + "</span>";
+          if (next < LOAD_SEQUENCE.length - 1) {
+            step(next + 1);
+          } else {
+            loadTimer = setTimeout(function () {
+              if (introCancelled) return;
+              finishLoading();
+            }, LOAD_HOLD_MS);
+          }
+        }, LOAD_ROLL_MS);
+      }, LOAD_HOLD_MS);
+    }
+
+    step(1);
+  }
+
+  // Who We Are — mirrors pillarsRevealed in HomeDeck.tsx. Both the intro
+  // group and the reveal paragraph stay mounted, stacked in the same
+  // .deck-stack grid cell, so this is just a class-driven opacity
+  // cross-fade between them, no display toggling needed.
+  function hidePillarsReveal() {
+    pillarsRevealed = false;
+    if (pillarsRevealTextEl) pillarsRevealTextEl.classList.remove("is-visible");
+    if (pillarsIntroGroupEl) pillarsIntroGroupEl.classList.remove("is-hidden");
+  }
+  function showPillarsReveal() {
+    pillarsRevealed = true;
+    if (pillarsRevealTextEl) pillarsRevealTextEl.classList.add("is-visible");
+    if (pillarsIntroGroupEl) pillarsIntroGroupEl.classList.add("is-hidden");
+  }
+
+  function deckGoTo(next) {
+    var clamped = Math.max(0, Math.min(DECK_TITLES.length - 1, next));
+    if (deckLocked || clamped === deckCurrent) return;
+
+    // Always leaving/entering fresh — never still showing (or pre-showing)
+    // from a previous visit to this slide.
+    hidePillarsReveal();
+
+    deckStackEl.style.setProperty("--deck-dir", clamped > deckCurrent ? 1 : -1);
+
+    // Slide 1's illustration cross-fades the moment the gesture commits,
+    // ahead of (and overlapping) the deck's own roll — see hotelRow* above.
+    if (clamped === 1 && deckCurrent !== 1) hotelRowEnter();
+    else if (clamped !== 1 && deckCurrent === 1) hotelRowLeave();
+
+    // Entering the portfolio slide: start at its first project when
+    // arriving from before it, or its last when arriving from after it
+    // (e.g. backing into it from Studio should reveal the end first).
+    if (clamped === PORTFOLIO_SLIDE_INDEX) {
+      portfolioIndex = clamped > deckCurrent ? 0 : PORTFOLIO_PROJECTS.length - 1;
+      renderPortfolio();
+    }
+
+    var curEl = deckSlideEls[deckCurrent];
+    var nextEl = deckSlideEls[clamped];
+
+    if (prefersReducedMotion) {
+      curEl.hidden = true;
+      nextEl.hidden = false;
+      deckTitleWindowEl.innerHTML = '<span class="roll-face">' + DECK_TITLES[clamped] + "</span>";
+      deckCurrent = clamped;
+      cornerLogoEl.classList.toggle("small", deckCurrent !== 0);
+      if (deckCurrent === 1 && hotelRowEl) hotelRowEl.classList.add("is-in");
+      syncWorkWithUsForStudio();
+      return;
+    }
+
+    deckTitleWindowEl.innerHTML =
+      '<span class="roll-face roll-out">' + DECK_TITLES[deckCurrent] + "</span>" +
+      '<span class="roll-face roll-in">' + DECK_TITLES[clamped] + "</span>";
+
+    nextEl.hidden = false;
+    nextEl.className = "deck-slide deck-fade-in";
+    curEl.className = "deck-slide deck-fade-out";
+
+    setTimeout(function () {
+      curEl.hidden = true;
+      curEl.className = "deck-slide";
+      nextEl.className = "deck-slide";
+      deckCurrent = clamped;
+      cornerLogoEl.classList.toggle("small", deckCurrent !== 0);
+      deckTitleWindowEl.innerHTML = '<span class="roll-face">' + DECK_TITLES[deckCurrent] + "</span>";
+      if (deckCurrent === 1) hotelRowAssemble();
+      syncWorkWithUsForStudio();
+    }, DECK_TRANSITION_MS);
+
+    // Released later than the visual transition on purpose — see
+    // DECK_WHEEL_LOCK_MS above.
+    lockDeckInput();
+  }
+
+  // Locks wheel/touch/key input for DECK_WHEEL_LOCK_MS, same pause deckGoTo
+  // uses after a slide-to-slide transition. deckAdvance's pillars-reveal
+  // branch below needs this too: without it, a single fast continuous
+  // scroll gesture can cross the commit threshold twice before either DOM
+  // update repaints, revealing the third paragraph and immediately
+  // advancing past it in one motion — the reveal was never actually seen.
+  function lockDeckInput() {
+    deckLocked = true;
+    clearTimeout(deckLockTimer);
+    deckLockTimer = setTimeout(function () {
+      deckLocked = false;
+    }, DECK_WHEEL_LOCK_MS);
+  }
+
+  // The single entry point for "one step forward/back", whether from
+  // wheel, touch or keyboard. On the portfolio slide this steps through
+  // projects first; on the pillars slide it first reveals (or hides) the
+  // third paragraph in place; everywhere else (and once either of those is
+  // exhausted in that direction) it moves to the next/previous slide.
+  function deckAdvance(direction) {
+    if (deckCurrent === PORTFOLIO_SLIDE_INDEX && !deckLocked) {
+      var nextProjectIndex = portfolioIndex + direction;
+      if (nextProjectIndex >= 0 && nextProjectIndex < PORTFOLIO_PROJECTS.length) {
+        portfolioIndex = nextProjectIndex;
+        renderPortfolio();
+        return;
+      }
+    }
+    if (deckCurrent === PILLARS_SLIDE_INDEX && !deckLocked) {
+      if (direction === 1 && !pillarsRevealed) {
+        showPillarsReveal();
+        lockDeckInput();
+        return;
+      }
+      if (direction === -1 && pillarsRevealed) {
+        hidePillarsReveal();
+        lockDeckInput();
+        return;
+      }
+    }
+    deckGoTo(deckCurrent + direction);
+  }
+
+  function lockDeck() {
+    deckFreeScroll = false;
+    deckEl.classList.remove("free");
+    document.body.style.overflow = "hidden";
+  }
+
+  function goHome() {
+    if (deckFreeScroll) {
+      window.scrollTo(0, 0);
+      lockDeck();
+    }
+    deckGoTo(0);
+  }
+
+  function goToDeckSlide(index) {
+    if (deckFreeScroll) {
+      window.scrollTo(0, 0);
+      lockDeck();
+    }
+    deckGoTo(index);
+  }
+
+  function leaveDeckTo(anchorId) {
+    deckFreeScroll = true;
+    deckEl.classList.add("free");
+    document.body.style.overflow = "";
+    // Free-scrolling to Work/Contact leaves the deck's own slide-0 state
+    // behind, so the wordmark shrinks to its small corner form here too —
+    // otherwise (since deckCurrent never actually changes) it stays fixed
+    // big and centered, floating over whatever you scrolled to.
+    cornerLogoEl.classList.add("small");
+    var target = document.getElementById(anchorId);
+    if (target) {
+      requestAnimationFrame(function () {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+  }
+
+  function onDeckWheel(e) {
+    if (deckFreeScroll) return;
+    e.preventDefault();
+    if (deckLoading) {
+      skipIntro();
+      return;
+    }
+    if (deckLocked) return;
+
+    deckWheelAccum += e.deltaY;
+    clearTimeout(deckWheelIdleTimer);
+    deckWheelIdleTimer = setTimeout(function () {
+      deckWheelAccum = 0;
+    }, DECK_WHEEL_IDLE_RESET_MS);
+
+    if (Math.abs(deckWheelAccum) < DECK_WHEEL_COMMIT_THRESHOLD) return;
+    var direction = deckWheelAccum > 0 ? 1 : -1;
+    deckWheelAccum = 0;
+    deckAdvance(direction);
+  }
+
+  function onDeckKeyDown(e) {
+    if (deckFreeScroll) return;
+    if (deckLoading) {
+      skipIntro();
+      return;
+    }
+    if (e.key === "ArrowDown" || e.key === "PageDown") {
+      e.preventDefault();
+      deckAdvance(1);
+    } else if (e.key === "ArrowUp" || e.key === "PageUp") {
+      e.preventDefault();
+      deckAdvance(-1);
+    }
+  }
+
+  function onDeckTouchStart(e) {
+    if (deckFreeScroll) return;
+    if (deckLoading) {
+      skipIntro();
+      return;
+    }
+    deckTouchStartY = e.touches[0] ? e.touches[0].clientY : null;
+  }
+
+  function onDeckTouchEnd(e) {
+    if (deckFreeScroll || deckTouchStartY === null) return;
+    var endY = e.changedTouches[0] ? e.changedTouches[0].clientY : deckTouchStartY;
+    var delta = deckTouchStartY - endY;
+    deckTouchStartY = null;
+    if (Math.abs(delta) < 50) return;
+    deckAdvance(delta > 0 ? 1 : -1);
+  }
+
+  window.addEventListener("wheel", onDeckWheel, { passive: false });
+  window.addEventListener("keydown", onDeckKeyDown);
+  window.addEventListener("touchstart", onDeckTouchStart, { passive: true });
+  window.addEventListener("touchend", onDeckTouchEnd, { passive: true });
+
+  runIntroSequence();
+
+  // The deck owns the viewport.
+  document.body.style.overflow = "hidden";
+
+  var CONTACT_EMAIL = "hello@yehmedia.placeholder"; // swap for the real inbox once there is one
+
+  function openMenu() { document.getElementById("menuOverlay").classList.add("open"); }
+  function closeMenu() { document.getElementById("menuOverlay").classList.remove("open"); }
+
+  // Contact — the qualifying questionnaire's toggle groups (single or
+  // multi-select) plus its submit. No backend: compiles one message and
+  // hands off to the visitor's own mail client via a mailto: link,
+  // addressed to CONTACT_EMAIL, mirroring buildSurveyMailtoLink in
+  // lib/contact.ts. Every "Work With Us" CTA on the site (the floating
+  // button, Studio slide, Menu) opens this page.
+  (function () {
+    var toggleGroups = document.querySelectorAll(".contact-toggles");
+    var contactState = {};
+    toggleGroups.forEach(function (group) {
+      var key = group.getAttribute("data-toggle-group");
+      var mode = group.getAttribute("data-mode");
+      contactState[key] = mode === "multi" ? [] : "";
+      group.querySelectorAll(".contact-toggle").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var val = btn.getAttribute("data-value");
+          if (mode === "multi") {
+            var arr = contactState[key];
+            var i = arr.indexOf(val);
+            if (i === -1) { arr.push(val); btn.classList.add("selected"); }
+            else { arr.splice(i, 1); btn.classList.remove("selected"); }
+          } else if (contactState[key] === val) {
+            contactState[key] = "";
+            btn.classList.remove("selected");
+          } else {
+            contactState[key] = val;
+            group.querySelectorAll(".contact-toggle").forEach(function (b) {
+              b.classList.remove("selected");
+            });
+            btn.classList.add("selected");
+          }
+        });
+      });
+    });
+
+    var contactFormEl = document.getElementById("contactForm");
+    if (contactFormEl) {
+      contactFormEl.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var val = function (id) { return document.getElementById(id).value.trim(); };
+        var name = val("contactName");
+        var role = val("contactRole");
+
+        var lines = ["Hi Yeh Media, I'd like to get in touch."];
+        if (name) lines.push("Name: " + name + (role ? " (" + role + ")" : ""));
+        var hotelName = val("contactHotelName");
+        if (hotelName) lines.push("Property: " + hotelName);
+        if (contactState.propertyType) lines.push("Type: " + contactState.propertyType);
+        var location = val("contactLocation");
+        if (location) lines.push("Location: " + location);
+        if (contactState.size) lines.push("Size: " + contactState.size);
+        if (contactState.needs.length) lines.push("Looking for: " + contactState.needs.join(", "));
+        if (contactState.engagement) lines.push("Engagement: " + contactState.engagement);
+        if (contactState.hasTeam) lines.push("Existing content team: " + contactState.hasTeam);
+        if (contactState.timeline) lines.push("Timeline: " + contactState.timeline);
+        var email = val("contactEmailField");
+        if (email) lines.push("Email: " + email);
+        var phone = val("contactPhone");
+        if (phone) lines.push("Phone: " + phone);
+        var heardFrom = val("contactHeardFrom");
+        if (heardFrom) lines.push("Heard from: " + heardFrom);
+        var notes = val("contactNotes");
+        if (notes) lines.push("Notes: " + notes);
+
+        var subject = hotelName ? "New enquiry: " + hotelName : "New enquiry";
+        var mailtoUrl =
+          "mailto:" + CONTACT_EMAIL +
+          "?subject=" + encodeURIComponent(subject) +
+          "&body=" + encodeURIComponent(lines.join("\n"));
+
+        // The envelope flies off first (see .envelope-flying above) —
+        // mailto:, not window.open — that would just leave a blank tab
+        // behind once the mail client takes over.
+        var sendBtnEl = document.getElementById("contactSendBtn");
+        if (sendBtnEl) {
+          sendBtnEl.disabled = true;
+          sendBtnEl.classList.add("envelope-flying");
+        }
+        setTimeout(function () {
+          window.location.href = mailtoUrl;
+        }, prefersReducedMotion ? 0 : 700);
+      });
+    }
+  })();
+
+  // Work With Us — pops in on the visitor's first scroll/swipe gesture
+  // (immediately under reduced motion) rather than on a timer, hides while
+  // the contact section itself is in view so the CTA never points the page
+  // at itself, and hides on the Studio slide too — see
+  // syncWorkWithUsForStudio, called from deckGoTo above.
+  var workWithUsBtnEl = document.getElementById("workWithUsBtn");
+
+  function syncWorkWithUsForStudio() {
+    if (!workWithUsBtnEl) return;
+    workWithUsBtnEl.classList.toggle("is-hidden-studio", deckCurrent === STUDIO_SLIDE_INDEX);
+  }
+
+  (function () {
+    var btn = workWithUsBtnEl;
+    var contactSection = document.getElementById("contact");
+    if (!btn) return;
+
+    if (prefersReducedMotion) {
+      btn.classList.add("is-shown");
+    } else {
+      var reveal = function () {
+        btn.classList.add("is-shown");
+      };
+      window.addEventListener("wheel", reveal, { passive: true, once: true });
+      window.addEventListener("touchmove", reveal, { passive: true, once: true });
+      window.addEventListener("scroll", reveal, { passive: true, once: true });
+    }
+
+    if (contactSection && "IntersectionObserver" in window) {
+      var io = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            btn.classList.toggle("is-hidden", entry.isIntersecting);
+          });
+        },
+        { threshold: 0 },
+      );
+      io.observe(contactSection);
+    }
+
+    syncWorkWithUsForStudio();
+  })();
+
+  // Local file:// video loads have shown intermittent failures on files
+  // independently verified — byte-for-byte, codec, fast-start atom order
+  // — to be correct: "sometimes it works, sometimes it doesn't" on the
+  // exact same file, the exact same page. Since a plain .load() retry has
+  // reliably resolved it when that's happened, every <video> on the page
+  // (including ones the work grid renders after this runs) silently
+  // retries a few times on its own `error` event rather than leaving the
+  // browser's broken-media icon up for good after one bad attempt.
+  (function attachVideoRetry() {
+    var MAX_RETRIES = 3;
+    document.querySelectorAll("video").forEach(function (v) {
+      var attempts = 0;
+      v.addEventListener("error", function () {
+        if (attempts >= MAX_RETRIES) return;
+        attempts += 1;
+        setTimeout(function () {
+          v.load();
+        }, 400 * attempts);
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+{
+  "1": {
+    "profileName": "The Sanctuary",
+    "shortExplanation": "Placeholder: a short strategic explanation of what a Traditional Brand DNA position means for this hotel's story.",
+    "observations": [
+      "Placeholder observation one.",
+      "Placeholder observation two.",
+      "Placeholder observation three."
+    ],
+    "recommendation": "Placeholder: one overall recommendation for this position."
+  },
+  "2": {
+    "profileName": "The Storyteller",
+    "shortExplanation": "Placeholder: a short strategic explanation of what a Timeless Brand DNA position means for this hotel's story.",
+    "observations": [
+      "Placeholder observation one.",
+      "Placeholder observation two.",
+      "Placeholder observation three."
+    ],
+    "recommendation": "Placeholder: one overall recommendation for this position."
+  },
+  "3": {
+    "profileName": "The Icon",
+    "shortExplanation": "Placeholder: a short strategic explanation of what a Contemporary Brand DNA position means for this hotel's story.",
+    "observations": [
+      "Placeholder observation one.",
+      "Placeholder observation two.",
+      "Placeholder observation three."
+    ],
+    "recommendation": "Placeholder: one overall recommendation for this position."
+  }
+}

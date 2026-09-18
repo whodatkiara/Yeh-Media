@@ -1,0 +1,14 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "yeh-media-dev",
+      "runtimeExecutable": "/bin/bash",
+      "runtimeArgs": [
+        "-c",
+        "export PATH=/Users/chiarasimekova/.nvm/versions/node/v24.18.0/bin:$PATH && npm run dev"
+      ],
+      "port": 3000
+    }
+  ]
+}
