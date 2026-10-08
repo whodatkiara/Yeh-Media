@@ -763,6 +763,45 @@
   .bts-cycle-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.7s ease; }
   .bts-cycle-img.active { opacity: 1; }
 
+  /* Footer + Terms — the General Terms and Conditions laid out like the
+     document itself (numbered sections, numbered clauses), and the footer
+     that links to them. On the deck (a fixed, non-scrolling viewport) the
+     footer is one small line pinned bottom-left, opposite the floating
+     Work With Us button; the full footer sits after the last free-scroll
+     section. Mirrors components/Footer.tsx and app/terms/page.tsx. */
+  .deck-footer-line { position: fixed; bottom: 24px; left: 24px; z-index: 30; margin: 0; font-family: "Onest", sans-serif; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(0,0,0,0.4); }
+  .deck-footer-line a { color: inherit; text-decoration: underline; text-decoration-color: rgba(0,0,0,0.2); text-underline-offset: 4px; transition: color 0.15s ease; }
+  .deck-footer-line a:hover { color: #000; }
+  .deck-footer-copy { display: none; }
+  @media (min-width: 640px) { .deck-footer-copy { display: inline; } }
+  .deck.free ~ .deck-footer-line { display: none; }
+
+  .terms-section { max-width: 720px; margin: 0 auto; padding: 112px 24px 64px; }
+  .terms-back { display: inline-block; margin-bottom: 48px; }
+  .terms-title { font-family: "Archivo", sans-serif; font-weight: 600; font-size: 36px; letter-spacing: -0.01em; text-transform: uppercase; margin: 0 0 16px; }
+  .terms-meta { font-family: "Onest", sans-serif; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(0,0,0,0.4); margin: 0 0 48px; }
+  .terms-intro { font-family: "Onest", sans-serif; font-weight: 400; font-size: 15px; line-height: 1.6; color: rgba(0,0,0,0.6); margin: 0 0 16px; }
+  .terms-block { padding-top: 56px; }
+  .terms-heading { display: flex; align-items: baseline; gap: 12px; margin: 0 0 24px; font-family: "Archivo", sans-serif; font-weight: 600; font-size: 17px; letter-spacing: -0.01em; text-transform: uppercase; }
+  .terms-heading span { font-family: "Onest", sans-serif; font-weight: 400; font-size: 10px; letter-spacing: 0.2em; color: rgba(0,0,0,0.3); }
+  .terms-clause { display: grid; grid-template-columns: 44px 1fr; margin: 0 0 16px; font-family: "Onest", sans-serif; font-weight: 400; font-size: 14px; line-height: 1.6; color: rgba(0,0,0,0.7); }
+  .terms-num { font-size: 11px; letter-spacing: 0.1em; color: rgba(0,0,0,0.3); padding-top: 2px; }
+
+  .site-footer { padding: 0 24px 112px; }
+  .site-footer-inner { max-width: 720px; margin: 0 auto; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 32px; display: flex; flex-direction: column; gap: 24px; font-family: "Onest", sans-serif; font-size: 11px; }
+  .site-footer-inner p { margin: 0; }
+  .site-footer-left { display: flex; flex-direction: column; gap: 8px; line-height: 1.6; color: rgba(0,0,0,0.5); }
+  .site-footer-name { letter-spacing: 0.2em; text-transform: uppercase; color: #000; }
+  .site-footer-right { display: flex; flex-direction: column; gap: 8px; letter-spacing: 0.2em; text-transform: uppercase; }
+  .site-footer-right a { color: rgba(0,0,0,0.5); text-decoration: none; transition: color 0.15s ease; }
+  .site-footer-right a:hover { color: #000; }
+  .site-footer-right .site-footer-terms { text-decoration: underline; text-decoration-color: rgba(0,0,0,0.3); text-underline-offset: 4px; }
+  .site-footer-copy { color: rgba(0,0,0,0.3); }
+  @media (min-width: 640px) {
+    .site-footer-inner { flex-direction: row; justify-content: space-between; }
+    .site-footer-right { align-items: flex-end; }
+  }
+
   /* Lightbox — opened from a multi-item /work card (a photo series, or more
      than one clip). Left/right arrows and arrow keys page through it. */
   .lightbox { display: none; position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,0.95); align-items: center; justify-content: center; padding: 40px 16px; }
@@ -960,6 +999,8 @@
   </div>
 </div>
 
+<p class="deck-footer-line"><span class="deck-footer-copy">© 2026 Yeh Media · </span><a href="#terms" onclick="leaveDeckTo('terms'); return false;">Terms &amp; Conditions</a></p>
+
 <a id="work"></a>
 <section class="work-section">
   <a href="#top" class="work-back split-cta" onclick="goToDeckSlide(PORTFOLIO_SLIDE_INDEX); return false;">← Back to Yeh Media</a>
@@ -1093,6 +1134,140 @@
     </div>
   </form>
 </section>
+
+<a id="terms"></a>
+<section class="terms-section">
+  <a href="#top" class="terms-back split-cta" onclick="goHome(); return false;">← Back to Yeh Media</a>
+  <h1 class="terms-title">General Terms and Conditions.</h1>
+  <p class="terms-meta">Business clients · 7 October 2026</p>
+  <p class="terms-intro">These terms govern brand strategy, photography, film, content creation and social media management supplied by Yeh Media to business clients. The accepted proposal specifies the services, fees, deliverables, accounts and production arrangements for each engagement.</p>
+  <p class="terms-intro">Yeh Media is a trading name of the sole proprietorship trading as Yeh Design, registered with the Dutch Chamber of Commerce under number 34167235. Registered business address: Schouwweg 23, 2243 BB Wassenaar, the Netherlands. Contact: yehmedia@yeh.nl. Website: https://yehmedia.nl.</p>
+  <div class="terms-block">
+    <h2 class="terms-heading"><span>01</span>Agreement and scope</h2>
+    <p class="terms-clause"><span class="terms-num">1.1</span><span>These terms apply to business clients acting in the course of their trade or profession (the Client). Yeh Media will provide these terms before or when the agreement is concluded. An engagement is formed by written acceptance of the proposal, including by email or electronic signature.</span></p>
+    <p class="terms-clause"><span class="terms-num">1.2</span><span>Unless the proposal states otherwise, it remains open for acceptance for 30 days. The accepted proposal prevails over these terms if there is a conflict. A signed data processing agreement prevails on matters of personal data processing. Deviations and additional commitments must be agreed in writing.</span></p>
+    <p class="terms-clause"><span class="terms-num">1.3</span><span>The proposal identifies the contracting entity, hotel or property, brands, accounts, websites, scope, deliverables, timetable, fees and authorised contacts. Work for additional properties, brands or group companies requires a separate written agreement. Client purchasing terms are expressly rejected.</span></p>
+  </div>
+  <div class="terms-block">
+    <h2 class="terms-heading"><span>02</span>Strategy and performance</h2>
+    <p class="terms-clause"><span class="terms-num">2.1</span><span>Yeh Media develops the strategy with the Client using the Client’s brand identity, objectives and information. Services may include creative direction, photography, film, editing, reels, carousels, captions, scheduling, publication, account management and reporting, as specified in the proposal.</span></p>
+    <p class="terms-clause"><span class="terms-num">2.2</span><span>Yeh Media will perform its services with reasonable professional care and skill. Followers, reach, engagement, bookings, revenue, media coverage and particular platform outcomes are not guaranteed. Strategic recommendations do not include legal advice or trademark clearance.</span></p>
+    <p class="terms-clause"><span class="terms-num">2.3</span><span>Production may be carried out by Yeh Media’s own team or by local creators selected and engaged by Yeh Media. The proposal specifies the approach. Yeh Media retains responsibility for the agreed services, creative direction, editing and final quality control, including when it appoints subcontractors.</span></p>
+  </div>
+  <div class="terms-block">
+    <h2 class="terms-heading"><span>03</span>Client cooperation and access</h2>
+    <p class="terms-clause"><span class="terms-num">3.1</span><span>The Client supplies timely, accurate information, brand assets, factual claims, access, permissions and consolidated feedback. It appoints a contact authorised to approve work and expenditure. The Client is responsible for the accuracy of supplied information, including prices, offers and statements about its facilities.</span></p>
+    <p class="terms-clause"><span class="terms-num">3.2</span><span>The Client remains owner and administrator of its social media accounts. It provides role-based access where available, supports appropriate security measures and retains recovery credentials. Yeh Media will use access only for agreed services and will not claim ownership of the Client’s accounts or audience.</span></p>
+    <p class="terms-clause"><span class="terms-num">3.3</span><span>Account management covers only the activities and service hours stated in the proposal. Direct messages, customer service, complaints, crisis communications, weekend coverage and advertising management are included only if expressly agreed. Yeh Media escalates matters outside its mandate to the designated Client contact.</span></p>
+  </div>
+  <div class="terms-block">
+    <h2 class="terms-heading"><span>04</span>Production and scheduling</h2>
+    <p class="terms-clause"><span class="terms-num">4.1</span><span>The proposal specifies shoot dates, locations, production time, deliverable quantities and technical formats. Deadlines are estimates unless expressly designated as binding. Yeh Media promptly notifies the Client of material delay and its proposed remedy.</span></p>
+    <p class="terms-clause"><span class="terms-num">4.2</span><span>The Client arranges safe access and availability of the property, rooms, products and Client-provided personnel. Yeh Media arranges permissions and releases for talent it engages; the Client arranges these for guests, staff and talent it supplies. Both parties verify that the intended recording and publication are authorised before proceeding.</span></p>
+    <p class="terms-clause"><span class="terms-num">4.3</span><span>The proposal allocates responsibility for local filming, drone, location and other permits. Neither party may instruct unlawful or unsafe work. Weather, access restrictions and travel disruption may require an agreed alternative date or approach.</span></p>
+    <p class="terms-clause"><span class="terms-num">4.4</span><span>Changes or postponements are discussed promptly. The Client pays for completed work and approved, unavoidable third-party commitments attributable to its changes, taking account of savings and refunds. Any separate cancellation charge or reserved production fee must be stated in the accepted proposal; there is no automatic percentage penalty under these terms.</span></p>
+  </div>
+  <div class="terms-block">
+    <h2 class="terms-heading"><span>05</span>Review and approval</h2>
+    <p class="terms-clause"><span class="terms-num">5.1</span><span>Unless the proposal states otherwise, two consolidated revision rounds are included per agreed batch of content. A round comprises one combined set of feedback within the original brief. New concepts, reshoots, additional formats and changes after approval are additional work. Corrections of Yeh Media’s failure to meet the agreed brief are not charged as additional revisions.</span></p>
+    <p class="terms-clause"><span class="terms-num">5.2</span><span>Unless another review timetable is agreed, the Client supplies feedback within five business days. Late feedback shifts the publication schedule. Silence is not permission to publish. Publication requires approval of the relevant content or an expressly agreed written approval workflow.</span></p>
+    <p class="terms-clause"><span class="terms-num">5.3</span><span>Approval confirms the Client’s factual review and permission to publish; it does not remove Yeh Media’s responsibility for its own breach. The Client reports defects promptly and Yeh Media is given a reasonable opportunity to correct them. No short review period automatically extinguishes claims for latent defects.</span></p>
+  </div>
+  <div class="terms-block">
+    <h2 class="terms-heading"><span>06</span>Fees and payment</h2>
+    <p class="terms-clause"><span class="terms-num">6.1</span><span>Fees are stated in euros and exclude VAT unless otherwise specified. Applicable VAT and any agreed bank or currency conversion costs are specified in the proposal. Fees do not include travel, accommodation, talent, music, stock, advertising spend or other external costs unless expressly listed.</span></p>
+    <p class="terms-clause"><span class="terms-num">6.2</span><span>For standalone productions, 50% of the agreed fee is invoiced upon acceptance and 50% after approval of previews and before release of final files. Recurring services are invoiced monthly in advance. Invoices are payable within 14 calendar days; required advance payments must be received before the relevant work or booking begins.</span></p>
+    <p class="terms-clause"><span class="terms-num">6.3</span><span>Travel, accommodation and other external production costs require written approval and advance payment before Yeh Media makes the commitment. Additional work requires agreement on scope and price before it begins. Silence is not approval of additional expenditure.</span></p>
+    <p class="terms-clause"><span class="terms-num">6.4</span><span>For overdue undisputed sums, statutory commercial interest and legally recoverable collection costs may apply. Yeh Media may suspend affected work after written notice and a further 14-day opportunity to pay. A good-faith invoice dispute is raised promptly, with reasons, and does not excuse payment of undisputed sums.</span></p>
+  </div>
+  <div class="terms-block">
+    <h2 class="terms-heading"><span>07</span>Pilot and annual engagement</h2>
+    <p class="terms-clause"><span class="terms-num">7.1</span><span>A recurring engagement begins with a paid pilot of three calendar months from the start date stated in the proposal. Its scope and monthly fee are agreed in advance. The pilot ends automatically at the end of that period, without an automatic renewal or annual commitment.</span></p>
+    <p class="terms-clause"><span class="terms-num">7.2</span><span>Following the pilot, the parties may enter a separate written agreement for twelve months. That annual agreement specifies its own start date, scope and fees. Monthly advance invoicing does not make the annual agreement cancellable each month.</span></p>
+    <p class="terms-clause"><span class="terms-num">7.3</span><span>Unless a different arrangement is expressly accepted in writing, the annual agreement ends at the end of its twelve-month term. Any extension requires written agreement. Yeh Media will seek to discuss continuation before expiry; an unanswered renewal proposal does not extend the contract.</span></p>
+    <p class="terms-clause"><span class="terms-num">7.4</span><span>Neither party has an ordinary right to end a fixed term early for convenience unless agreed in the proposal. They may agree a written settlement. This does not limit termination for breach, mandatory statutory rights or the rights in sections 15 and 16. No automatic acceleration of all future monthly invoices is imposed by these terms.</span></p>
+  </div>
+  <div class="terms-block">
+    <h2 class="terms-heading"><span>08</span>Intellectual property</h2>
+    <p class="terms-clause"><span class="terms-num">8.1</span><span>Copyright and other intellectual property in original work remain with Yeh Media and/or the relevant creators or licensors, subject to applicable law. Payment purchases services and the agreed licence, not copyright ownership. Transfer of copyright requires a separate legally effective written instrument.</span></p>
+    <p class="terms-clause"><span class="terms-num">8.2</span><span>Yeh Media obtains from its subcontractors the permissions required to deliver the agreed Client licence and to edit their contributions. Existing methods, templates, tools, rejected concepts, working files and production materials are not transferred to the Client.</span></p>
+    <p class="terms-clause"><span class="terms-num">8.3</span><span>The Client retains rights in its pre-existing trademarks and supplied materials and grants Yeh Media permission to use them for the services. Each party is responsible for ensuring it has the rights needed for materials it supplies or selects. Third-party restrictions are disclosed before affected content is approved.</span></p>
+  </div>
+  <div class="terms-block">
+    <h2 class="terms-heading"><span>09</span>Client licence</h2>
+    <p class="terms-clause"><span class="terms-num">9.1</span><span>Subject to payment of the amounts due for the relevant content, Yeh Media grants the Client a worldwide, non-exclusive licence to use the approved final deliverables for twelve months from their recorded final delivery date. Each delivery has its own licence period; continued collaboration does not automatically extend earlier licences.</span></p>
+    <p class="terms-clause"><span class="terms-num">9.2</span><span>The standard licence covers organic publication on the named Client social media accounts and use on the named website for the contracted hotel, property or brand. It does not cover paid advertising, boosted posts, creator-account advertising, print, booking platforms, press distribution, resale or use by other properties or entities unless specified in the proposal.</span></p>
+    <p class="terms-clause"><span class="terms-num">9.3</span><span>The Client may resize, crop and make technical adjustments needed for approved channels without distorting the work or exceeding third-party permissions. Substantive re-editing, new compilations, replacement music and materially different uses require prior written agreement. Client service providers may handle the content solely on its behalf for authorised uses, without independent use rights.</span></p>
+    <p class="terms-clause"><span class="terms-num">9.4</span><span>Termination or expiry of the service agreement does not shorten an already paid licence period. Additional channels, duration, exclusivity or rights may be purchased by written agreement. Raw-file delivery does not itself grant broader rights.</span></p>
+  </div>
+  <div class="terms-block">
+    <h2 class="terms-heading"><span>10</span>Licence expiry and renewals</h2>
+    <p class="terms-clause"><span class="terms-num">10.1</span><span>At licence expiry, new publications, reposting, pinning, promotion and other active reuse must stop unless renewed. Organic social posts first published within the licence period may remain in their original historical position without further payment, provided continued display is permitted by all relevant third-party rights. They may not be reactivated as campaigns.</span></p>
+    <p class="terms-clause"><span class="terms-num">10.2</span><span>Website display and any separately licensed paid or other time-limited use must cease at expiry unless renewed in writing. The Client may retain private backup copies for records, without further publication rights. Yeh Media cannot promise perpetual historical display where talent, music or other permissions are shorter; these exceptions must be identified before approval.</span></p>
+    <p class="terms-clause"><span class="terms-num">10.3</span><span>Renewal duration and fees are agreed in writing before further use. No renewal fee or new licence period arises automatically. The parties maintain delivery records to make the relevant expiry dates clear.</span></p>
+  </div>
+  <div class="terms-block">
+    <h2 class="terms-heading"><span>11</span>Final files and raw material</h2>
+    <p class="terms-clause"><span class="terms-num">11.1</span><span>Standard delivery includes only the agreed final exported files. Raw footage, unedited photographs, project files and rejected content are excluded. Their availability, price, permitted editing and use, delivery format and third-party limitations require a separate written agreement.</span></p>
+    <p class="terms-clause"><span class="terms-num">11.2</span><span>The Client downloads and backs up final deliverables. Unless longer storage is agreed, Yeh Media keeps final exports for six months and raw production files for three months after final delivery, subject to applicable privacy obligations. Yeh Media will confirm the scheduled raw-file deletion date on delivery and cannot guarantee recovery afterwards.</span></p>
+  </div>
+  <div class="terms-block">
+    <h2 class="terms-heading"><span>12</span>Music and influencer content</h2>
+    <p class="terms-clause"><span class="terms-num">12.1</span><span>Music, stock assets, fonts and talent permissions must cover the agreed channels and purpose. Permission for a social platform does not automatically cover websites or advertisements. Yeh Media identifies relevant restrictions and obtains permissions for assets it selects; the Client does the same for assets it supplies.</span></p>
+    <p class="terms-clause"><span class="terms-num">12.2</span><span>A local creator engagement does not include publication to that creator’s own audience unless separately agreed. Influencer posts, publication duration, disclosure, usage rights, advertising access and reporting are specified in the proposal. Yeh Media requires its engaged creators to follow applicable advertising disclosure rules and agrees the Client’s responsibilities for factual claims and campaign approvals.</span></p>
+  </div>
+  <div class="terms-block">
+    <h2 class="terms-heading"><span>13</span>Portfolio and confidentiality</h2>
+    <p class="terms-clause"><span class="terms-num">13.1</span><span>Each party protects confidential information and discloses it only to persons who need it to perform the agreement and are bound by suitable confidentiality obligations, or where required by law. Public information and independently developed information are excluded.</span></p>
+    <p class="terms-clause"><span class="terms-num">13.2</span><span>Yeh Media may request permission to show published work and identify the Client in its portfolio, website or case studies. Portfolio use requires prior written Client approval and adequate permissions from creators and identifiable persons. Confidential information, unpublished campaigns and private analytics are not disclosed without separate approval.</span></p>
+    <p class="terms-clause"><span class="terms-num">13.3</span><span>Visitors to Yeh Media’s own website receive no licence to reproduce its original content. Rights in website material remain with the relevant rights holders. The Client’s agreed licence is governed by sections 9 and 10.</span></p>
+  </div>
+  <div class="terms-block">
+    <h2 class="terms-heading"><span>14</span>Personal data and account security</h2>
+    <p class="terms-clause"><span class="terms-num">14.1</span><span>Each party complies with applicable privacy law for the processing it carries out. Roles and lawful bases are assessed for the actual services. Where Yeh Media processes personal data on the Client’s behalf, the parties sign an appropriate data processing agreement before that processing starts.</span></p>
+    <p class="terms-clause"><span class="terms-num">14.2</span><span>That agreement addresses instructions, confidentiality, security, subprocessors, international transfers, assistance, incidents, retention and return or deletion of data. These general terms do not replace it. Access to messages or guest information is limited to what is needed for the agreed work.</span></p>
+    <p class="terms-clause"><span class="terms-num">14.3</span><span>Yeh Media promptly informs the Client of security incidents affecting Client accounts or data and cooperates in response. The Client retains platform ownership. At the end of services, Yeh Media returns account control and agreed records and relinquishes access; a payment dispute does not entitle it to retain the Client’s account credentials.</span></p>
+  </div>
+  <div class="terms-block">
+    <h2 class="terms-heading"><span>15</span>Breach and ending services</h2>
+    <p class="terms-clause"><span class="terms-num">15.1</span><span>For a remediable material breach, the affected party gives written notice identifying the breach and a reasonable remedy period, normally 14 days. It may terminate the affected agreement if the breach is not remedied. Immediate termination remains available where legally justified and remedy is impossible.</span></p>
+    <p class="terms-clause"><span class="terms-num">15.2</span><span>On lawful termination, the Client pays for properly performed work and approved unavoidable commitments, less savings and refunds. Further damages or refund rights depend on the reason for termination and applicable law. Yeh Media refunds prepaid sums for services it will not perform, subject to any lawful agreed settlement.</span></p>
+    <p class="terms-clause"><span class="terms-num">15.3</span><span>Both parties cooperate in an orderly handover of approved deliverables, Client materials, scheduled content and account access. Additional transition services may be separately quoted; returning the Client’s own access and materials is not conditional on purchasing them. Confidentiality, accrued payment obligations and applicable licences survive termination.</span></p>
+  </div>
+  <div class="terms-block">
+    <h2 class="terms-heading"><span>16</span>Force majeure and platforms</h2>
+    <p class="terms-clause"><span class="terms-num">16.1</span><span>Neither party is responsible for a failure caused by circumstances beyond its reasonable control that legally constitute force majeure. The affected party promptly notifies the other, mitigates the impact and proposes alternatives. Ordinary staffing or budgeting difficulties do not automatically qualify.</span></p>
+    <p class="terms-clause"><span class="terms-num">16.2</span><span>If material performance remains prevented for more than 30 consecutive days, either party may end the affected part in writing. Properly completed services remain payable and unearned advances are refunded, accounting for approved unavoidable commitments where legally recoverable.</span></p>
+    <p class="terms-clause"><span class="terms-num">16.3</span><span>Platform outages, algorithm changes and restrictions may affect results. Yeh Media is not responsible for platform actions beyond its control, but remains responsible for its own attributable breaches, including failure to follow agreed account instructions.</span></p>
+  </div>
+  <div class="terms-block">
+    <h2 class="terms-heading"><span>17</span>Liability</h2>
+    <p class="terms-clause"><span class="terms-num">17.1</span><span>A party alleging breach gives the other a reasonable opportunity to remedy it where legally required and practicable. Both parties take reasonable steps to limit loss.</span></p>
+    <p class="terms-clause"><span class="terms-num">17.2</span><span>To the extent legally permitted, Yeh Media’s liability for attributable direct loss is limited, per engagement and contract year, to the fees paid or payable for the affected engagement during that contract year, excluding VAT and third-party pass-through costs. For a standalone project or pilot, the cap is the agreed service fee for that project or pilot.</span></p>
+    <p class="terms-clause"><span class="terms-num">17.3</span><span>To the extent legally permitted, liability for indirect or consequential loss, including lost profit, missed bookings and lost business opportunities, is excluded. These exclusions and limits do not apply to intent or deliberate recklessness of Yeh Media’s proprietor or to liability that cannot lawfully be excluded or limited.</span></p>
+    <p class="terms-clause"><span class="terms-num">17.4</span><span>Each party remains responsible for rights clearance, factual information and permissions allocated to it. No general indemnity shifts Yeh Media’s own attributable errors to the Client. Third-party claims are promptly notified and handled cooperatively without admissions or settlements binding the other party without consent.</span></p>
+  </div>
+  <div class="terms-block">
+    <h2 class="terms-heading"><span>18</span>Law and other provisions</h2>
+    <p class="terms-clause"><span class="terms-num">18.1</span><span>Dutch law governs the agreement, subject to any mandatory applicable rules. The parties first seek to resolve disputes through consultation. Unless mandatory law requires otherwise, disputes are submitted to the competent court in the district of The Hague, the Netherlands.</span></p>
+    <p class="terms-clause"><span class="terms-num">18.2</span><span>Neither party may transfer the agreement without the other’s written consent, except as permitted by mandatory law. If a provision is invalid, the remainder continues where legally possible; the parties seek a valid replacement consistent with its purpose.</span></p>
+    <p class="terms-clause"><span class="terms-num">18.3</span><span>Changes to these terms do not affect an existing engagement without written agreement. Formal notices are sent to the contractual email contacts; each party promptly notifies the other of changes. English is the agreed contract language. These are Yeh Media’s own adapted terms; they are not represented as the official BNO terms.</span></p>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="site-footer-left">
+      <p class="site-footer-name">Yeh Media</p>
+      <p>Trading name of Yeh Design<br>KvK 34167235<br>Schouwweg 23, 2243 BB Wassenaar, the Netherlands</p>
+    </div>
+    <div class="site-footer-right">
+      <a href="mailto:yehmedia@yeh.nl">yehmedia@yeh.nl</a>
+      <a href="#terms" class="site-footer-terms" onclick="leaveDeckTo('terms'); return false;">Terms &amp; Conditions</a>
+      <p class="site-footer-copy">© 2026 Yeh Media</p>
+    </div>
+  </div>
+</footer>
 
 <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
   <p class="lightbox-title" id="lightboxTitle"></p>

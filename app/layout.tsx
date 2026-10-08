@@ -5,6 +5,7 @@ import { SiteProvider } from "@/lib/site-context";
 import Grain from "@/components/Grain";
 import Menu from "@/components/Menu";
 import WorkWithUsButton from "@/components/WorkWithUsButton";
+import Footer from "@/components/Footer";
 
 // Cormorant — a refined, high-contrast display serif (garamond-adjacent)
 // for an elevated, editorial-fashion voice: the headline typeface.
@@ -54,6 +55,7 @@ export default function RootLayout({
           <Menu />
           <WorkWithUsButton />
           {children}
+          <Footer />
         </SiteProvider>
       </body>
     </html>
