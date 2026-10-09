@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Archivo, Cormorant, Onest } from "next/font/google";
 import "./globals.css";
 import { SiteProvider } from "@/lib/site-context";
@@ -39,6 +39,12 @@ export const metadata: Metadata = {
     "Yeh Media: concept, direction and content strategy for the hospitality industry.",
 };
 
+// White browser chrome on phones, to match the page — otherwise Safari
+// tints the status-bar area with whatever content is behind it.
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -52,6 +58,18 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col relative">
         <SiteProvider>
           <Grain />
+          {/* Phones: a solid white strip across the very top (with a short
+              fade below it), always there, so scrolling content never
+              shows through behind the logo, the Menu, or the browser's
+              own status bar. */}
+          <div
+            aria-hidden="true"
+            className="md:hidden fixed top-0 inset-x-0 z-30 h-24 pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(to bottom, #fff 0, #fff 72px, rgba(255,255,255,0) 96px)",
+            }}
+          />
           <Menu />
           <WorkWithUsButton />
           {children}

@@ -855,11 +855,12 @@
 
   .phone-logo { position: fixed; top: 24px; left: 24px; z-index: 40; padding: 0; background: none; border: 0; font-family: "Archivo", sans-serif; font-weight: 600; font-size: 17px; letter-spacing: -0.01em; text-transform: uppercase; color: #000; cursor: pointer; opacity: 0; transform: translateY(-6px); pointer-events: none; transition: opacity 0.4s ease, transform 0.4s ease; }
   .phone-logo.is-shown { opacity: 1; transform: none; pointer-events: auto; }
-  /* Soft fade behind the logo + Menu once the hero has scrolled away, so
-     text passing underneath never collides with them. */
-  .phone-bar { display: none; position: fixed; top: 0; left: 0; right: 0; height: 76px; z-index: 35; pointer-events: none; background: linear-gradient(to bottom, #fff 55%, rgba(255,255,255,0)); opacity: 0; transition: opacity 0.4s ease; }
+  /* Solid white strip across the very top (with a short fade below it),
+     always there on phones, so scrolling content never shows through
+     behind the logo, the Menu, or the browser's own status bar. Mirrors
+     the strip in app/layout.tsx. */
+  .phone-bar { display: none; position: fixed; top: 0; left: 0; right: 0; height: 96px; z-index: 35; pointer-events: none; background: linear-gradient(to bottom, #fff 0, #fff 72px, rgba(255,255,255,0) 96px); }
   html.is-phone .phone-bar { display: block; }
-  .phone-bar.is-shown { opacity: 1; }
 
   .ph-hero { position: relative; min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 0 24px; text-align: center; }
   .ph-hero-title { font-family: "Archivo", sans-serif !important; font-weight: 600 !important; font-size: clamp(34px, 11vw, 52px) !important; letter-spacing: -0.01em !important; }
@@ -873,6 +874,7 @@
   .ph-reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1); transition-delay: var(--d, 0ms); }
   .ph-reveal.is-in { opacity: 1; transform: none; }
 
+  html.is-phone .hotel-piece > img { filter: none; }
   .ph-hotel { position: relative; isolation: isolate; height: 82vh; height: 82svh; margin-top: 16px; }
 
   .ph-section { padding: 96px 24px 8px; }
@@ -886,8 +888,11 @@
   html.is-phone .deck-list { gap: 28px; }
 
   .ph-project { margin: 0 0 72px; }
-  .ph-media { position: relative; width: 100%; aspect-ratio: 4 / 5; overflow: hidden; background: #f2f2f2; clip-path: inset(0 0 100% 0); transition: clip-path 1.2s cubic-bezier(0.16, 1, 0.3, 1); }
-  .ph-project.is-in .ph-media { clip-path: inset(0 0 0 0); }
+  .ph-media { position: relative; width: 100%; aspect-ratio: 4 / 5; overflow: hidden; background: #f2f2f2; }
+  /* A white curtain slides away to reveal the picture/clip (rather than a
+     clip-path, which is flaky around video on iOS). */
+  .ph-curtain { position: absolute; inset: 0; z-index: 2; background: #fff; transform-origin: bottom; transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1); }
+  .ph-project.is-in .ph-curtain { transform: scaleY(0); }
   .ph-media video, .ph-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
   .ph-media img.bts-cycle-img { opacity: 0; transition: opacity 0.7s ease; }
   .ph-media img.bts-cycle-img.active { opacity: 1; }
@@ -929,6 +934,7 @@
     .hotel-win.lift.is-current { animation: none; transform: none; }
   }
 </style>
+<meta name="theme-color" content="#ffffff">
 <script>if (window.matchMedia("(max-width: 767px)").matches) document.documentElement.classList.add("is-phone");</script>
 </head>
 <body>
@@ -1059,11 +1065,11 @@
   <div class="hotel-row" id="hotelRow" aria-hidden="true">
     <div class="hotel-row-track">
       <div class="hotel-piece hotel-left">
-        <img src="public/images/hotel-illustration/left.png" alt="" />
+        <img src="public/images/hotel-illustration/left.webp" alt="" />
         <!-- room service: a real clip now — the butler walking closer
              through the peephole view — rather than a still. -->
         <span class="hotel-win" data-win="room-service" style="--wx:18%;--wy:15%;--ww:19%;--wh:32%">
-          <video id="hotelRoomServiceVideo" src="public/video/hotel-illustration/room-service.mp4?v=2" poster="public/images/hotel-illustration/windows/room-service.jpg" muted playsinline preload="metadata"></video>
+          <video id="hotelRoomServiceVideo" src="public/video/hotel-illustration/room-service.mp4?v=6" poster="public/images/hotel-illustration/windows/room-service.jpg" muted playsinline preload="auto"></video>
         </span>
         <!-- keyhole: one of the ground-arcade arches. Cross-fades through
              a few room interiors on its own rather than showing one. -->
@@ -1076,21 +1082,21 @@
         </span>
       </div>
       <div class="hotel-piece hotel-center">
-        <img src="public/images/hotel-illustration/center.png" alt="" />
+        <img src="public/images/hotel-illustration/center.webp" alt="" />
         <!-- elevator: first window to reveal, fading in as it starts its ride
              up. A real clip (doors opening on a locked camera), not a
              still — only plays during its own turn, see setCurrentHotelWindow. -->
         <span class="hotel-win lift" data-win="elevator" style="--wx:40%;--wy:27%;--ww:20%;--wh:31%">
-          <video id="hotelElevatorVideo" src="public/video/hotel-illustration/elevator.mp4?v=2" poster="public/images/hotel-illustration/windows/elevator.jpg" muted playsinline preload="metadata"></video>
+          <video id="hotelElevatorVideo" src="public/video/hotel-illustration/elevator.mp4?v=6" poster="public/images/hotel-illustration/windows/elevator.jpg" muted playsinline preload="auto"></video>
         </span>
       </div>
       <div class="hotel-piece hotel-right">
-        <img src="public/images/hotel-illustration/right.png" alt="" />
+        <img src="public/images/hotel-illustration/right.webp" alt="" />
         <!-- breakfast: an in-room tray, a hand lifting the silver dome
              cover away to reveal french toast underneath — only plays
              during its own turn, see setCurrentHotelWindow. -->
         <span class="hotel-win" data-win="breakfast" style="--wx:11%;--wy:19%;--ww:17%;--wh:27%">
-          <video id="hotelBreakfastVideo" src="public/video/hotel-illustration/breakfast.mp4?v=3" poster="public/images/hotel-illustration/windows/breakfast.jpg" muted playsinline preload="metadata"></video>
+          <video id="hotelBreakfastVideo" src="public/video/hotel-illustration/breakfast.mp4?v=6" poster="public/images/hotel-illustration/windows/breakfast.jpg" muted playsinline preload="auto"></video>
         </span>
       </div>
     </div>
@@ -2384,7 +2390,7 @@
     listEl.innerHTML = featured.map(function (p, idx) {
       var media;
       if (p.video) {
-        media = '<video src="' + p.video + '" poster="' + p.src + '" muted loop playsinline preload="metadata"></video>';
+        media = '<video src="' + p.video + '" poster="' + p.src + '" autoplay muted loop playsinline preload="metadata"></video>';
       } else if (p.media && p.media.length > 1) {
         media = p.media.map(function (m, j) {
           return '<img class="bts-cycle-img' + (j === 0 ? " active" : "") + '" src="' + m.src + '" alt="" />';
@@ -2396,7 +2402,7 @@
         ? '<p style="margin:24px 0 0"><a class="split-cta ph-more" href="#work" onclick="leaveDeckTo(\'work\'); return false;">See more selected projects →</a></p>'
         : "";
       return '<article class="ph-project">' +
-        '<div class="ph-media">' + media + "</div>" +
+        '<div class="ph-media">' + media + '<div class="ph-curtain"></div></div>' +
         '<div class="ph-project-meta ph-reveal" style="--d:250ms">' +
           '<p class="ph-pager">0' + (idx + 1) + " / 0" + featured.length + "</p>" +
           '<p class="ph-project-name">' + p.tag + " · " + p.format + "</p>" +
@@ -2416,13 +2422,37 @@
         imgs[(at + 1) % imgs.length].classList.add("active");
       });
     }, 2200);
+    // iOS only lets a clip start without a tap when it's muted AND inline,
+    // and it reads those from the element's attributes — write them
+    // explicitly before any play() call. Mirrors lib/use-video-retry.ts.
+    function makeIosSafe(v) {
+      v.muted = true;
+      v.defaultMuted = true;
+      v.setAttribute("muted", "");
+      v.setAttribute("playsinline", "");
+      v.setAttribute("webkit-playsinline", "");
+    }
+    Array.prototype.forEach.call(document.querySelectorAll("video"), makeIosSafe);
+    var visibleClips = [];
     var playIO = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
-        if (e.isIntersecting) e.target.play().catch(function () {});
-        else e.target.pause();
+        var v = e.target.querySelector("video");
+        if (!v) return;
+        if (e.isIntersecting) {
+          if (visibleClips.indexOf(v) === -1) visibleClips.push(v);
+          v.play().catch(function () {});
+        } else {
+          visibleClips = visibleClips.filter(function (x) { return x !== v; });
+          v.pause();
+        }
       });
-    }, { threshold: 0.5 });
-    Array.prototype.forEach.call(listEl.querySelectorAll("video"), function (v) { playIO.observe(v); });
+    }, { threshold: 0.35 });
+    Array.prototype.forEach.call(listEl.querySelectorAll(".ph-media"), function (box) { playIO.observe(box); });
+    // Low Power Mode refuses autoplay until the first touch — pick the clips
+    // back up the moment there is one.
+    window.addEventListener("touchend", function () {
+      visibleClips.forEach(function (v) { if (v.paused) v.play().catch(function () {}); });
+    }, { passive: true });
 
     // --- Scroll-triggered reveals (one-way: once in, stays in).
     var revealIO = new IntersectionObserver(function (entries) {
@@ -2437,7 +2467,6 @@
     // --- Small corner logo appears once the hero has scrolled away.
     new IntersectionObserver(function (entries) {
       logoEl.classList.toggle("is-shown", !entries[0].isIntersecting);
-      document.getElementById("phoneBar").classList.toggle("is-shown", !entries[0].isIntersecting);
     }, { threshold: 0.15 }).observe(document.getElementById("phoneHero"));
 
     // --- Hotel diorama: assembles when scrolled into view, replays on re-entry.

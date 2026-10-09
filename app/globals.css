@@ -686,6 +686,12 @@ body {
 }
 
 @media (max-width: 767px) {
+  /* The soft drop-shadow filter on three large, animating images is costly
+     for a phone to redraw, and at 13% opacity on white it's barely there. */
+  .hotel-piece > img {
+    filter: none;
+  }
+
   .hotel-row-track {
     --hotel-h: 56vh;
     --hotel-overlap-left: 14vw;

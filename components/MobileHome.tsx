@@ -231,9 +231,13 @@ function Services() {
 }
 
 // Big picture/clip first, text right under it. Clips play only while on
-// screen; photo series cross-fade on their own.
+// screen; photo series cross-fade on their own. The reveal is a white
+// curtain sliding away rather than a clip-path — clip-path on a container
+// holding a video is flaky on iOS, and a curtain leaves the video itself
+// untouched so it can start playing underneath.
 function ProjectMedia({ project, reveal }: { project: Project; reveal: boolean }) {
   const reducedMotion = useReducedMotion();
+  const boxRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const images =
     project.media && project.media.length > 1
@@ -241,20 +245,34 @@ function ProjectMedia({ project, reveal }: { project: Project; reveal: boolean }
       : null;
   const [cycle, setCycle] = useState(0);
 
+  // Also makes the clip iOS-autoplay-safe (muted/inline attributes) — must
+  // be declared before the effect below that calls play().
   useVideoErrorRetry(videoRef);
 
   useEffect(() => {
+    const box = boxRef.current;
     const v = videoRef.current;
-    if (!v || reducedMotion) return;
+    if (!box || !v || reducedMotion) return;
+    let onScreen = false;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) v.play().catch(() => {});
+        onScreen = entry.isIntersecting;
+        if (onScreen) v.play().catch(() => {});
         else v.pause();
       },
-      { threshold: 0.5 },
+      { threshold: 0.35 },
     );
-    observer.observe(v);
-    return () => observer.disconnect();
+    observer.observe(box);
+    // Low Power Mode (and some data-saver settings) refuse autoplay until
+    // the first touch — pick the clip back up the moment there is one.
+    const resume = () => {
+      if (onScreen && v.paused) v.play().catch(() => {});
+    };
+    window.addEventListener("touchend", resume, { passive: true });
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("touchend", resume);
+    };
   }, [reducedMotion]);
 
   useEffect(() => {
@@ -265,17 +283,15 @@ function ProjectMedia({ project, reveal }: { project: Project; reveal: boolean }
 
   return (
     <div
+      ref={boxRef}
       className="relative w-full aspect-[4/5] overflow-hidden bg-black/[0.04]"
-      style={{
-        clipPath: reveal ? "inset(0 0 0 0)" : "inset(0 0 100% 0)",
-        transition: "clip-path 1.2s cubic-bezier(0.16, 1, 0.3, 1)",
-      }}
     >
       {project.video ? (
         <video
           ref={videoRef}
           src={project.video}
           poster={project.src ?? undefined}
+          autoPlay
           muted
           loop
           playsInline
@@ -298,6 +314,14 @@ function ProjectMedia({ project, reveal }: { project: Project; reveal: boolean }
       ) : project.src ? (
         <Image src={project.src} alt="" fill sizes="100vw" className="object-cover" />
       ) : null}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 z-10 bg-white origin-bottom"
+        style={{
+          transform: reveal ? "scaleY(0)" : "scaleY(1)",
+          transition: "transform 1.2s cubic-bezier(0.16, 1, 0.3, 1)",
+        }}
+      />
     </div>
   );
 }
@@ -418,14 +442,8 @@ export default function MobileHome() {
 
   return (
     <div className="bg-white text-black">
-      {/* Soft fade + small logo once the hero has scrolled away, so text
-          passing underneath never collides with them or the Menu. */}
-      <div
-        aria-hidden="true"
-        className={`fixed top-0 inset-x-0 h-[76px] z-30 pointer-events-none bg-gradient-to-b from-white from-55% to-transparent transition-opacity duration-500 ${
-          scrolled ? "opacity-100" : "opacity-0"
-        }`}
-      />
+      {/* Small logo once the hero has scrolled away — the solid white
+          header strip behind it lives in the root layout. */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         className={`fixed top-6 left-6 z-40 p-0 font-sans font-semibold text-[17px] tracking-tight uppercase transition-all duration-500 ${

@@ -99,12 +99,12 @@ const WINDOW_FOCUS: Record<
 // window — the elevator — starts its turn.
 const FIRST_WINDOW_DELAY_MS = 1300;
 
-// preload="metadata" (not "none") on every clip below is deliberate —
-// these autoplay on a fixed timer with no user click, so the browser
-// needs a head start buffering before a window's brief turn comes up.
-// preload="none" is fine for something the user clicks and waits on
-// (the /work grid's videos), but starved these of the runway they need,
-// which read as "the video doesn't work" even though the file was fine.
+// preload="auto" on every clip below is deliberate — these autoplay on a
+// fixed timer with no user click, so each needs to already be on hand when
+// its brief turn in the spotlight comes up. That's cheap now: the clips are
+// ~300KB each (360x480, which is plenty for windows this small), not the
+// ~3MB they started as. preload="none" is fine for something the user
+// clicks and waits on (the /work grid's videos), but starved these.
 
 // A window's clip only plays during its own turn in the spotlight —
 // pausing (and rewinding) it the rest of the time, same reasoning as the
@@ -268,7 +268,7 @@ export default function HotelRow({
     >
       <div className="hotel-row-track" ref={trackRef}>
         <div className="hotel-piece hotel-left" ref={leftRef}>
-          <img src="/images/hotel-illustration/left.png" alt="" />
+          <img src="/images/hotel-illustration/left.webp" alt="" decoding="async" />
           {/* room service: a real clip now — the butler walking closer
               through the peephole view — rather than a still. */}
           <span
@@ -283,7 +283,7 @@ export default function HotelRow({
               poster={`${W}/room-service.jpg`}
               muted
               playsInline
-              preload="metadata"
+              preload="auto"
             />
           </span>
           {/* keyhole: one of the ground-arcade arches. Cross-fades through
@@ -306,7 +306,7 @@ export default function HotelRow({
         </div>
 
         <div className="hotel-piece hotel-center" ref={centerRef}>
-          <img src="/images/hotel-illustration/center.png" alt="" />
+          <img src="/images/hotel-illustration/center.webp" alt="" decoding="async" />
           {/* the elevator: first in the rotation, fading in as it rides up.
               A real clip now — closed doors opening on a locked camera —
               rather than a still; only plays during its own turn. */}
@@ -322,13 +322,13 @@ export default function HotelRow({
               poster={`${W}/elevator.jpg`}
               muted
               playsInline
-              preload="metadata"
+              preload="auto"
             />
           </span>
         </div>
 
         <div className="hotel-piece hotel-right" ref={rightRef}>
-          <img src="/images/hotel-illustration/right.png" alt="" />
+          <img src="/images/hotel-illustration/right.webp" alt="" decoding="async" />
           {/* breakfast: an in-room tray, a hand lifting the silver dome
               cover away to reveal french toast underneath — a real clip,
               only plays during its own turn. */}
@@ -344,7 +344,7 @@ export default function HotelRow({
               poster={`${W}/breakfast.jpg`}
               muted
               playsInline
-              preload="metadata"
+              preload="auto"
             />
           </span>
         </div>
