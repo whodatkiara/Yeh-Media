@@ -1,7 +1,7 @@
 import siteData from "@/data/site.json";
 
-const NEURO_LINE = "Neuroaesthetics.";
-const [pillarsRevealBefore, pillarsRevealAfter] = siteData.copy.pillarsReveal
+export const NEURO_LINE = "Neuroaesthetics.";
+export const [pillarsRevealBefore, pillarsRevealAfter] = siteData.copy.pillarsReveal
   .split(NEURO_LINE)
   .map((part, i) => (i === 1 ? part.trimStart() : part));
 

@@ -3,12 +3,14 @@
 import { useState } from "react";
 import type { MouseEvent } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useSite } from "@/lib/site-context";
 import siteData from "@/data/site.json";
 
 export default function Menu() {
   const [open, setOpen] = useState(false);
   const { deckIndex, setDeckIndex } = useSite();
+  const pathname = usePathname();
 
   function handleHomeClick(e: MouseEvent<HTMLAnchorElement>) {
     setOpen(false);
@@ -17,6 +19,11 @@ export default function Menu() {
     if (deckIndex !== null) {
       e.preventDefault();
       setDeckIndex(0);
+    } else if (pathname === "/") {
+      // The phone homepage is a scrolling page with no deck to jump —
+      // Link's same-URL navigation does nothing, so scroll up ourselves.
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }
 

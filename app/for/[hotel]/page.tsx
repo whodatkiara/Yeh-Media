@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import HomeDeck from "@/components/HomeDeck";
+import HomeSwitch from "@/components/HomeSwitch";
 import hotelsRaw from "@/data/hotels.json";
 
 const hotelsData = hotelsRaw as Record<
@@ -15,7 +15,7 @@ export default function HotelPage() {
   // See app/page.tsx for why this needs a Suspense boundary.
   return (
     <Suspense fallback={null}>
-      <HomeDeck />
+      <HomeSwitch />
     </Suspense>
   );
 }

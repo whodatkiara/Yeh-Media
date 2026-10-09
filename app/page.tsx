@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import HomeDeck from "@/components/HomeDeck";
+import HomeSwitch from "@/components/HomeSwitch";
 
 export default function Home() {
   // HomeDeck reads a "?slide=N" param (via useSearchParams) to decide
@@ -9,7 +9,7 @@ export default function Home() {
   // gap this would cover is imperceptibly small client-side.
   return (
     <Suspense fallback={null}>
-      <HomeDeck />
+      <HomeSwitch />
     </Suspense>
   );
 }

@@ -1,4 +1,4 @@
-const services = [
+export const services = [
   {
     title: "Creative Direction",
     description:

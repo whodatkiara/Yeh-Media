@@ -22,7 +22,7 @@ import { STUDIO_SLIDE_INDEX } from "@/components/HomeDeck";
 export default function WorkWithUsButton() {
   const pathname = usePathname();
   const reducedMotion = useReducedMotion();
-  const { deckIndex } = useSite();
+  const { deckIndex, ctaHidden } = useSite();
   const [shown, setShown] = useState(false);
 
   useEffect(() => {
@@ -47,6 +47,7 @@ export default function WorkWithUsButton() {
 
   if (pathname === "/contact") return null;
   if (pathname === "/" && deckIndex === STUDIO_SLIDE_INDEX) return null;
+  if (ctaHidden) return null;
 
   return (
     <Link

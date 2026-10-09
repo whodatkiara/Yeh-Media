@@ -814,8 +814,8 @@
   @media (min-width: 640px) { .deck-footer-copy { display: inline; } }
   .deck.free ~ .deck-footer-line { display: none; }
 
-  .terms-section { max-width: 720px; margin: 0 auto; padding: 112px 24px 128px; }
-  @media (min-width: 768px) { .terms-section { padding-bottom: 160px; } }
+  .terms-section { max-width: 720px; margin: 0 auto; padding: 112px 24px 224px; }
+  @media (min-width: 768px) { .terms-section { padding-bottom: 288px; } }
   .terms-back { display: inline-block; margin-bottom: 48px; }
   .terms-title { font-family: "Archivo", sans-serif; font-weight: 600; font-size: 36px; letter-spacing: -0.01em; text-transform: uppercase; margin: 0 0 16px; }
   .terms-meta { font-family: "Onest", sans-serif; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(0,0,0,0.4); margin: 0 0 48px; }
@@ -841,6 +841,64 @@
     .site-footer-right { align-items: flex-end; }
   }
 
+  /* ===== Phone: a normal scrolling page =====================================
+     Below 768px the swipe-driven slide deck is replaced by one continuous
+     scrolling page: each section animates in as it arrives (.ph-reveal →
+     .is-in, via IntersectionObserver), the hotel diorama assembles when it
+     scrolls into view, and each project gets a big picture/clip with its
+     text right under it. Desktop/tablet keep the deck untouched. Mirrors
+     components/MobileHome.tsx. */
+  .phone-home, .phone-logo { display: none; }
+  html.is-phone .deck, html.is-phone .deck-footer-line, html.is-phone .corner-logo { display: none !important; }
+  html.is-phone .phone-home { display: block; }
+  html.is-phone .phone-logo { display: block; }
+
+  .phone-logo { position: fixed; top: 24px; left: 24px; z-index: 40; padding: 0; background: none; border: 0; font-family: "Archivo", sans-serif; font-weight: 600; font-size: 17px; letter-spacing: -0.01em; text-transform: uppercase; color: #000; cursor: pointer; opacity: 0; transform: translateY(-6px); pointer-events: none; transition: opacity 0.4s ease, transform 0.4s ease; }
+  .phone-logo.is-shown { opacity: 1; transform: none; pointer-events: auto; }
+  /* Soft fade behind the logo + Menu once the hero has scrolled away, so
+     text passing underneath never collides with them. */
+  .phone-bar { display: none; position: fixed; top: 0; left: 0; right: 0; height: 76px; z-index: 35; pointer-events: none; background: linear-gradient(to bottom, #fff 55%, rgba(255,255,255,0)); opacity: 0; transition: opacity 0.4s ease; }
+  html.is-phone .phone-bar { display: block; }
+  .phone-bar.is-shown { opacity: 1; }
+
+  .ph-hero { position: relative; min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 0 24px; text-align: center; }
+  .ph-hero-title { font-family: "Archivo", sans-serif !important; font-weight: 600 !important; font-size: clamp(34px, 11vw, 52px) !important; letter-spacing: -0.01em !important; }
+  .ph-hero-phrase { font-size: 15px !important; color: rgba(0,0,0,0.7); opacity: 0; transition: opacity 0.9s ease; }
+  .ph-hero-phrase.is-in { opacity: 1; }
+  .ph-cue { position: absolute; bottom: 32px; left: calc(50% - 0.5px); width: 1px; height: 48px; background: rgba(0,0,0,0.12); overflow: hidden; opacity: 0; transition: opacity 0.9s ease; }
+  .ph-cue.is-in { opacity: 1; }
+  .ph-cue::after { content: ""; position: absolute; left: 0; top: -100%; width: 100%; height: 100%; background: #000; animation: phCue 1.9s ease-in-out infinite; }
+  @keyframes phCue { 0% { transform: translateY(0); } 100% { transform: translateY(200%); } }
+
+  .ph-reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1); transition-delay: var(--d, 0ms); }
+  .ph-reveal.is-in { opacity: 1; transform: none; }
+
+  .ph-hotel { position: relative; isolation: isolate; height: 82vh; height: 82svh; margin-top: 16px; }
+
+  .ph-section { padding: 96px 24px 8px; }
+  .ph-title { font-family: "Archivo", sans-serif; font-weight: 600; font-size: clamp(28px, 9vw, 40px); letter-spacing: -0.01em; text-transform: uppercase; line-height: 1.1; margin: 0 0 28px; }
+  .ph-body { font-family: "Onest", sans-serif; font-weight: 400; font-size: 16px; line-height: 1.65; margin: 0 0 20px; }
+  .ph-body.grey { color: rgba(0,0,0,0.6); }
+  .ph-reveal.is-in .neuro-emphasis { opacity: 1; transform: scale(1); transition-delay: 350ms; }
+  html.is-phone .ph-body .neuro-emphasis { font-size: 1.7em; margin: 12px 0; transform-origin: left center; }
+  html.is-phone .service-index { color: rgba(0,0,0,0.35); opacity: 1; transform: none; }
+  html.is-phone .service-block p { font-size: 15px; }
+  html.is-phone .deck-list { gap: 28px; }
+
+  .ph-project { margin: 0 0 72px; }
+  .ph-media { position: relative; width: 100%; aspect-ratio: 4 / 5; overflow: hidden; background: #f2f2f2; clip-path: inset(0 0 100% 0); transition: clip-path 1.2s cubic-bezier(0.16, 1, 0.3, 1); }
+  .ph-project.is-in .ph-media { clip-path: inset(0 0 0 0); }
+  .ph-media video, .ph-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ph-media img.bts-cycle-img { opacity: 0; transition: opacity 0.7s ease; }
+  .ph-media img.bts-cycle-img.active { opacity: 1; }
+  .ph-project-meta { padding-top: 16px; }
+  .ph-pager { font-family: "Onest", sans-serif; font-size: 10px; letter-spacing: 0.2em; color: rgba(0,0,0,0.35); margin: 0 0 8px; }
+  .ph-project-name { font-family: "Onest", sans-serif; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(0,0,0,0.5); margin: 0 0 4px; }
+  .ph-project-title { font-family: "Archivo", sans-serif; font-weight: 600; font-size: 26px; letter-spacing: -0.01em; line-height: 1.15; margin: 0 0 12px; }
+  .ph-project-desc { font-family: "Onest", sans-serif; font-size: 15px; line-height: 1.6; color: rgba(0,0,0,0.6); margin: 0; }
+  .ph-more { display: inline-block; font-size: 12px; margin-top: 4px; }
+  .ph-studio-cta { display: inline-block; margin-top: 8px; }
+
   /* Lightbox — opened from a multi-item /work card (a photo series, or more
      than one clip). Left/right arrows and arrow keys page through it. */
   .lightbox { display: none; position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,0.95); align-items: center; justify-content: center; padding: 40px 16px; }
@@ -857,7 +915,7 @@
   .lightbox-stage img, .lightbox-stage video { max-height: 85vh; max-width: 100%; object-fit: contain; }
 
   @media (prefers-reduced-motion: reduce) {
-    .roll-out, .roll-in, .deck-fade-out, .deck-fade-in, .deck-stack, .reveal, .pillars-intro-group, .neuro-emphasis, .envelope-flying,
+    .roll-out, .roll-in, .deck-fade-out, .deck-fade-in, .deck-stack, .reveal, .pillars-intro-group, .neuro-emphasis, .envelope-flying, .ph-reveal, .ph-media, .ph-hero-phrase,
     .portfolio-filmstrip-track, .portfolio-filmstrip-row, .portfolio-thumb, .portfolio-thumb img,
     .hotel-piece {
       animation-duration: 250ms !important;
@@ -871,6 +929,7 @@
     .hotel-win.lift.is-current { animation: none; transform: none; }
   }
 </style>
+<script>if (window.matchMedia("(max-width: 767px)").matches) document.documentElement.classList.add("is-phone");</script>
 </head>
 <body>
 
@@ -1037,6 +1096,54 @@
     </div>
   </div>
 </div>
+
+<div class="phone-bar" id="phoneBar" aria-hidden="true"></div>
+<button class="phone-logo" id="phoneLogo" onclick="goHome()">Yeh Media</button>
+<main class="phone-home" id="phoneHome">
+  <section class="ph-hero" id="phoneHero">
+    <div class="roll-window ph-hero-title" id="phoneHeroTitle"></div>
+    <div class="roll-window ph-hero-phrase" id="phoneHeroPhrase"></div>
+    <span class="ph-cue" id="phoneCue" aria-hidden="true"></span>
+  </section>
+
+  <section class="ph-hotel" id="phoneHotel"></section>
+
+  <section class="ph-section" id="phoneWho">
+    <h2 class="ph-title ph-reveal">Who We Are.</h2>
+    <p class="ph-body grey ph-reveal" style="--d:100ms">We are not a social media agency. We are an independent studio that treats a property's space as its most valuable asset, building a point of view rooted in your brand DNA first and everything else around it. We do not create content faster. We create it smarter.</p>
+    <p class="ph-body ph-reveal" style="--d:100ms">Founded by Hsiu-Li Yeh, a scientist by training, turned interior designer, with 25+ years designing hotels, restaurants, resorts, wellness spaces and luxury residences.</p>
+    <p class="ph-body ph-reveal" style="margin-top:40px">Her extensive interior design background, including work with OMA/Rem Koolhaas and Jan des Bouvrie, and, before that, a childhood spent in her parents' restaurant, is what Yeh Media brings to every project. The science of how design shapes the energy of a space and the people within it: <span class="neuro-emphasis">Neuroaesthetics.</span> This is the thread running through everything below.</p>
+  </section>
+
+  <section class="ph-section" id="phoneServices">
+    <h2 class="ph-title ph-reveal">Our Services.</h2>
+    <div class="deck-list">
+      <div class="service-block ph-reveal">
+        <h3><span class="service-index">01</span><span class="service-title">Creative Direction</span></h3>
+        <p>The strategic layer, positioning, voice and storytelling rooted in your brand DNA, built the way an architectural designer builds a room: shaping the experience first, not just how it looks.</p>
+      </div>
+      <div class="service-block ph-reveal" style="--d:80ms">
+        <h3><span class="service-index">02</span><span class="service-title">Content Creation</span></h3>
+        <p>Photography, film and social content, shot on-site, that translate a space's atmosphere, its materials, light and mood, into imagery guests respond to on instinct.</p>
+      </div>
+      <div class="service-block ph-reveal" style="--d:160ms">
+        <h3><span class="service-index">03</span><span class="service-title">Strategy</span></h3>
+        <p>Content and channel strategy, grounded in neuroaesthetics: the psychology of why an image or video makes a guest stop scrolling, save, or book, instantly.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="ph-section" id="phoneProjects">
+    <h2 class="ph-title ph-reveal">Content We've Shaped.</h2>
+    <div id="phoneProjectList"></div>
+  </section>
+
+  <section class="ph-section" id="phoneStudio" style="padding-bottom: 72px;">
+    <h2 class="ph-title ph-reveal">The Studio.</h2>
+    <p class="ph-body ph-reveal" style="--d:100ms">Yeh Media is a focused team of concept strategists, art directors and content producers working across the hospitality industry. Our international network of photographers, filmmakers and stylists is curated project by project, matched to each property's own story.</p>
+    <a href="#contact" class="contact-cta-bw ph-studio-cta ph-reveal" style="--d:200ms" onclick="leaveDeckTo('contact'); return false;">Work With Us!</a>
+  </section>
+</main>
 
 <p class="deck-footer-line"><span class="deck-footer-copy">© 2026 Yeh Media · </span><a href="#terms" onclick="leaveDeckTo('terms'); return false;">Terms &amp; Conditions</a></p>
 
@@ -1359,6 +1466,7 @@
   // HomeDeck — the homepage as a single static screen. Scrolling/swiping/
   // arrow keys advance through slides in place (left title rolls, right
   // content cross-fades) rather than the page physically scrolling.
+  var isPhone = window.matchMedia("(max-width: 767px)").matches;
   var HOME_TITLE = "Yeh Media";
   // Slide 0 has no title of its own here — "Yeh Media" is rendered by the
   // separate #cornerLogo element instead, which travels between this
@@ -2208,6 +2316,153 @@
     deckGoTo(deckCurrent + direction);
   }
 
+
+  // ===== Phone: a normal scrolling page =====================================
+  // Below 768px the deck's swipe slides give way to one continuous scrolling
+  // page (see the "Phone" CSS block). Everything here only runs when
+  // isPhone; the deck stays untouched for tablets/desktop. Mirrors
+  // components/MobileHome.tsx.
+  function initPhoneHome() {
+    var titleEl = document.getElementById("phoneHeroTitle");
+    var phraseEl = document.getElementById("phoneHeroPhrase");
+    var cueEl = document.getElementById("phoneCue");
+    var logoEl = document.getElementById("phoneLogo");
+
+    // The hotel diorama lives inside the (now hidden) deck — move it into
+    // its own scrolling section so it assembles when scrolled to.
+    var hotelSection = document.getElementById("phoneHotel");
+    if (hotelRowEl && hotelSection) hotelSection.appendChild(hotelRowEl);
+
+    // --- Hero: the same "Shaping. Directing. Creating." roll, then the
+    // phrase fades in and starts cycling, and a scroll cue appears.
+    function startPhrase() {
+      phraseEl.classList.add("is-in");
+      cueEl.classList.add("is-in");
+      phraseEl.innerHTML = '<span class="roll-face">' + HERO_PHRASES[0] + "</span>";
+      if (prefersReducedMotion) return;
+      var cur = 0;
+      (function schedule() {
+        setTimeout(function () {
+          var next = (cur + 1) % HERO_PHRASES.length;
+          phraseEl.innerHTML =
+            '<span class="roll-face roll-out">' + HERO_PHRASES[cur] + "</span>" +
+            '<span class="roll-face roll-in">' + HERO_PHRASES[next] + "</span>";
+          setTimeout(function () {
+            cur = next;
+            phraseEl.innerHTML = '<span class="roll-face">' + HERO_PHRASES[cur] + "</span>";
+            schedule();
+          }, LOAD_ROLL_MS);
+        }, 1800);
+      })();
+    }
+    var seq = LOAD_SEQUENCE;
+    if (prefersReducedMotion) {
+      titleEl.innerHTML = '<span class="roll-face">' + seq[seq.length - 1] + "</span>";
+      startPhrase();
+    } else {
+      titleEl.innerHTML = '<span class="roll-face">' + seq[0] + "</span>";
+      var i = 0;
+      (function step() {
+        setTimeout(function () {
+          var next = i + 1;
+          titleEl.innerHTML =
+            '<span class="roll-face roll-out">' + seq[i] + "</span>" +
+            '<span class="roll-face roll-in">' + seq[next] + "</span>";
+          setTimeout(function () {
+            i = next;
+            titleEl.innerHTML = '<span class="roll-face">' + seq[i] + "</span>";
+            if (i < seq.length - 1) step();
+            else setTimeout(startPhrase, LOAD_HOLD_MS);
+          }, LOAD_ROLL_MS);
+        }, LOAD_HOLD_MS);
+      })();
+    }
+
+    // --- Projects: big picture/clip first, text right under it.
+    var listEl = document.getElementById("phoneProjectList");
+    var featured = WORK_PROJECTS.slice(0, 4);
+    listEl.innerHTML = featured.map(function (p, idx) {
+      var media;
+      if (p.video) {
+        media = '<video src="' + p.video + '" poster="' + p.src + '" muted loop playsinline preload="metadata"></video>';
+      } else if (p.media && p.media.length > 1) {
+        media = p.media.map(function (m, j) {
+          return '<img class="bts-cycle-img' + (j === 0 ? " active" : "") + '" src="' + m.src + '" alt="" />';
+        }).join("");
+      } else {
+        media = '<img src="' + p.src + '" alt="" />';
+      }
+      var more = idx === featured.length - 1
+        ? '<p style="margin:24px 0 0"><a class="split-cta ph-more" href="#work" onclick="leaveDeckTo(\'work\'); return false;">See more selected projects →</a></p>'
+        : "";
+      return '<article class="ph-project">' +
+        '<div class="ph-media">' + media + "</div>" +
+        '<div class="ph-project-meta ph-reveal" style="--d:250ms">' +
+          '<p class="ph-pager">0' + (idx + 1) + " / 0" + featured.length + "</p>" +
+          '<p class="ph-project-name">' + p.tag + " · " + p.format + "</p>" +
+          '<h3 class="ph-project-title">' + p.project + "</h3>" +
+          '<p class="ph-project-desc">' + p.description + "</p>" + more +
+        "</div></article>";
+    }).join("");
+
+    // Photo series cross-fade on their own; clips play only while on screen.
+    setInterval(function () {
+      Array.prototype.forEach.call(listEl.querySelectorAll(".ph-media"), function (m) {
+        var imgs = m.querySelectorAll("img.bts-cycle-img");
+        if (imgs.length < 2) return;
+        var at = 0;
+        Array.prototype.forEach.call(imgs, function (im, k) { if (im.classList.contains("active")) at = k; });
+        imgs[at].classList.remove("active");
+        imgs[(at + 1) % imgs.length].classList.add("active");
+      });
+    }, 2200);
+    var playIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) e.target.play().catch(function () {});
+        else e.target.pause();
+      });
+    }, { threshold: 0.5 });
+    Array.prototype.forEach.call(listEl.querySelectorAll("video"), function (v) { playIO.observe(v); });
+
+    // --- Scroll-triggered reveals (one-way: once in, stays in).
+    var revealIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.add("is-in");
+        revealIO.unobserve(e.target);
+      });
+    }, { threshold: 0.18, rootMargin: "0px 0px -8% 0px" });
+    Array.prototype.forEach.call(document.querySelectorAll(".ph-reveal, .ph-project"), function (el) { revealIO.observe(el); });
+
+    // --- Small corner logo appears once the hero has scrolled away.
+    new IntersectionObserver(function (entries) {
+      logoEl.classList.toggle("is-shown", !entries[0].isIntersecting);
+      document.getElementById("phoneBar").classList.toggle("is-shown", !entries[0].isIntersecting);
+    }, { threshold: 0.15 }).observe(document.getElementById("phoneHero"));
+
+    // --- Hotel diorama: assembles when scrolled into view, replays on re-entry.
+    var hotelInView = false;
+    new IntersectionObserver(function (entries) {
+      hotelInView = entries[0].isIntersecting;
+      if (hotelInView) {
+        hotelRowEnter();
+        setTimeout(function () {
+          if (!hotelInView || !hotelRowEl) return;
+          hotelRowEl.classList.add("is-in");
+          startHotelSpotlight();
+        }, 350);
+      } else {
+        hotelRowLeave();
+      }
+    }, { threshold: 0.35 }).observe(hotelSection);
+
+    // --- The Studio carries its own "Work With Us!" — hide the floating one.
+    var floatBtn = document.getElementById("workWithUsBtn");
+    new IntersectionObserver(function (entries) {
+      if (floatBtn) floatBtn.classList.toggle("is-hidden-studio", entries[0].isIntersecting);
+    }, { threshold: 0.3 }).observe(document.getElementById("phoneStudio"));
+  }
+
   function lockDeck() {
     deckFreeScroll = false;
     deckEl.classList.remove("free");
@@ -2215,6 +2470,10 @@
   }
 
   function goHome() {
+    if (isPhone) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     if (deckFreeScroll) {
       window.scrollTo(0, 0);
       lockDeck();
@@ -2223,6 +2482,11 @@
   }
 
   function goToDeckSlide(index) {
+    if (isPhone) {
+      var section = document.getElementById(index === PORTFOLIO_SLIDE_INDEX ? "phoneProjects" : "phoneHero");
+      if (section) section.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
     if (deckFreeScroll) {
       window.scrollTo(0, 0);
       lockDeck();
@@ -2231,6 +2495,11 @@
   }
 
   function leaveDeckTo(anchorId) {
+    if (isPhone) {
+      var dest = document.getElementById(anchorId);
+      if (dest) dest.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
     deckFreeScroll = true;
     deckEl.classList.add("free");
     document.body.style.overflow = "";
@@ -2301,15 +2570,18 @@
     deckAdvance(delta > 0 ? 1 : -1);
   }
 
-  window.addEventListener("wheel", onDeckWheel, { passive: false });
-  window.addEventListener("keydown", onDeckKeyDown);
-  window.addEventListener("touchstart", onDeckTouchStart, { passive: true });
-  window.addEventListener("touchend", onDeckTouchEnd, { passive: true });
+  if (!isPhone) {
+    window.addEventListener("wheel", onDeckWheel, { passive: false });
+    window.addEventListener("keydown", onDeckKeyDown);
+    window.addEventListener("touchstart", onDeckTouchStart, { passive: true });
+    window.addEventListener("touchend", onDeckTouchEnd, { passive: true });
+  }
 
-  runIntroSequence();
+  if (isPhone) initPhoneHome();
+  else runIntroSequence();
 
-  // The deck owns the viewport.
-  document.body.style.overflow = "hidden";
+  // The deck owns the viewport — except on phones, which scroll normally.
+  if (!isPhone) document.body.style.overflow = "hidden";
 
   var CONTACT_EMAIL = "hello@yehmedia.placeholder"; // swap for the real inbox once there is one
 

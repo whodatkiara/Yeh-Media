@@ -371,6 +371,38 @@ body {
   animation: envelope-fly 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
+/* The phone homepage's scroll cue (MobileHome): a hairline with a dark
+   segment sliding down it. */
+.ph-cue {
+  position: absolute;
+  bottom: 32px;
+  left: calc(50% - 0.5px);
+  width: 1px;
+  height: 48px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.ph-cue::after {
+  content: "";
+  position: absolute;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  animation: ph-cue 1.9s ease-in-out infinite;
+}
+
+@keyframes ph-cue {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(200%);
+  }
+}
+
 /* Portfolio filmstrip on phones — see the note on Portfolio in
    components/Portfolio.tsx. */
 :root {

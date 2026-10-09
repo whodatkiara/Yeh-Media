@@ -22,6 +22,12 @@ type SiteContextValue = {
   // fixed, non-scrolling viewport.
   deckIndex: number | null;
   setDeckIndex: (index: number | null) => void;
+  // The phone homepage (MobileHome) is a scrolling page, not a deck, so it
+  // can't announce a slide index. Its Studio section carries its own "Work
+  // With Us" and sets this while it's on screen, so the floating one hides
+  // rather than showing the same CTA twice.
+  ctaHidden: boolean;
+  setCtaHidden: (hidden: boolean) => void;
 };
 
 const SiteContext = createContext<SiteContextValue | null>(null);
@@ -31,6 +37,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
     null,
   );
   const [deckIndex, setDeckIndex] = useState<number | null>(null);
+  const [ctaHidden, setCtaHidden] = useState(false);
 
   const params = useParams<{ hotel?: string }>();
   const rawSlug = params?.hotel;
@@ -54,6 +61,8 @@ export function SiteProvider({ children }: { children: ReactNode }) {
         isRevealed,
         deckIndex,
         setDeckIndex,
+        ctaHidden,
+        setCtaHidden,
       }}
     >
       {children}

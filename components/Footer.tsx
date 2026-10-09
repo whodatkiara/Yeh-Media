@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import terms from "@/data/terms.json";
+import { useIsPhone } from "@/lib/use-is-phone";
 
 /**
  * The site footer, in the same quiet black-and-white register as the
@@ -18,7 +19,10 @@ import terms from "@/data/terms.json";
  */
 export default function Footer() {
   const pathname = usePathname();
-  const onDeck = pathname === "/" || pathname.startsWith("/for/");
+  const isPhone = useIsPhone();
+  // Phones get a normal scrolling homepage (MobileHome), so the full footer
+  // at the end of the page, not the deck's pinned line.
+  const onDeck = (pathname === "/" || pathname.startsWith("/for/")) && !isPhone;
   const { business } = terms;
 
   if (onDeck) {
