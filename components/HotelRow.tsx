@@ -78,6 +78,22 @@ const WINDOW_HOLD_MS: Record<WindowKey, number> = {
   breakfast: 4400,
 };
 
+// On phones the three buildings together are ~1200px wide — several times
+// the screen — so only the middle one is ever in view, and three of the four
+// windows would never be seen. Instead the whole row pans to bring the
+// window whose turn it is to the centre of the screen. Where each window
+// sits: which building, and how far across it (0-1, the centre of the
+// window's --wx/--ww box below).
+const WINDOW_FOCUS: Record<
+  WindowKey,
+  { piece: "left" | "center" | "right"; x: number }
+> = {
+  elevator: { piece: "center", x: 0.5 },
+  "room-service": { piece: "left", x: 0.275 },
+  keyhole: { piece: "left", x: 0.5 },
+  breakfast: { piece: "right", x: 0.195 },
+};
+
 // Once the buildings have visually finished assembling (see the
 // slide/gap timing on .hotel-row-track in globals.css) before the first
 // window — the elevator — starts its turn.
@@ -123,6 +139,10 @@ export default function HotelRow({
   const elevatorVideoRef = useRef<HTMLVideoElement>(null);
   const roomServiceVideoRef = useRef<HTMLVideoElement>(null);
   const breakfastVideoRef = useRef<HTMLVideoElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const leftRef = useRef<HTMLDivElement>(null);
+  const centerRef = useRef<HTMLDivElement>(null);
+  const rightRef = useRef<HTMLDivElement>(null);
   const [keyholeIndex, setKeyholeIndex] = useState(0);
 
   useEffect(() => {
@@ -183,6 +203,52 @@ export default function HotelRow({
   useVideoErrorRetry(roomServiceVideoRef);
   useVideoErrorRetry(breakfastVideoRef);
 
+  // Phones only (see WINDOW_FOCUS): slide the track so the lit window sits
+  // at the centre of the screen. Works from the pieces' layout sizes (not
+  // their on-screen rects), since those are mid-transform during assembly.
+  // Re-run as the images load, since their widths aren't known until then.
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    function apply() {
+      const t = trackRef.current;
+      const l = leftRef.current;
+      const c = centerRef.current;
+      const r = rightRef.current;
+      if (!t || !l || !c || !r) return;
+      const phone = window.matchMedia("(max-width: 767px)").matches;
+      const focus =
+        phone && !reducedMotion && current && current !== "all"
+          ? WINDOW_FOCUS[current]
+          : null;
+      if (!focus) {
+        t.style.setProperty("--hotel-pan", "0px");
+        return;
+      }
+      const gapL = parseFloat(getComputedStyle(l).marginRight) || 0;
+      const gapR = parseFloat(getComputedStyle(r).marginLeft) || 0;
+      const wL = l.offsetWidth;
+      const wC = c.offsetWidth;
+      const wR = r.offsetWidth;
+      const total = wL + gapL + wC + gapR + wR;
+      if (!total) return;
+      const left = { left: 0, center: wL + gapL, right: wL + gapL + wC + gapR };
+      const width = { left: wL, center: wC, right: wR };
+      const x = left[focus.piece] + width[focus.piece] * focus.x;
+      t.style.setProperty("--hotel-pan", `${total / 2 - x}px`);
+    }
+
+    apply();
+    window.addEventListener("resize", apply);
+    const imgs = track.querySelectorAll("img");
+    imgs.forEach((img) => img.addEventListener("load", apply));
+    return () => {
+      window.removeEventListener("resize", apply);
+      imgs.forEach((img) => img.removeEventListener("load", apply));
+    };
+  }, [current, reducedMotion]);
+
   // The keyhole window cycles through its room interiors only during its
   // own turn — under reduced motion (current === "all") it just holds on
   // the first one, same spirit as the videos staying on their poster.
@@ -200,8 +266,8 @@ export default function HotelRow({
       className={`hotel-row${visible ? " is-visible" : ""}${played ? " is-in" : ""}`}
       aria-hidden={!visible}
     >
-      <div className="hotel-row-track">
-        <div className="hotel-piece hotel-left">
+      <div className="hotel-row-track" ref={trackRef}>
+        <div className="hotel-piece hotel-left" ref={leftRef}>
           <img src="/images/hotel-illustration/left.png" alt="" />
           {/* room service: a real clip now — the butler walking closer
               through the peephole view — rather than a still. */}
@@ -239,7 +305,7 @@ export default function HotelRow({
           </span>
         </div>
 
-        <div className="hotel-piece hotel-center">
+        <div className="hotel-piece hotel-center" ref={centerRef}>
           <img src="/images/hotel-illustration/center.png" alt="" />
           {/* the elevator: first in the rotation, fading in as it rides up.
               A real clip now — closed doors opening on a locked camera —
@@ -261,7 +327,7 @@ export default function HotelRow({
           </span>
         </div>
 
-        <div className="hotel-piece hotel-right">
+        <div className="hotel-piece hotel-right" ref={rightRef}>
           <img src="/images/hotel-illustration/right.png" alt="" />
           {/* breakfast: an in-room tray, a hand lifting the silver dome
               cover away to reveal french toast underneath — a real clip,

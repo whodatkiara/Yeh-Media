@@ -24,7 +24,7 @@ export default function Menu() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed top-6 right-6 z-40 font-mono text-[11px] tracking-[0.25em] uppercase text-black/50 hover:text-black transition-colors cursor-pointer"
+        className="fixed top-6 right-6 z-40 p-3 -m-3 font-mono text-[11px] tracking-[0.25em] uppercase text-black/50 hover:text-black transition-colors cursor-pointer"
       >
         Menu
       </button>

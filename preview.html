@@ -61,6 +61,9 @@
     text-transform: uppercase;
     color: rgba(0,0,0,0.5);
     transition: color 0.2s ease;
+    /* Bigger tap target, same visual position (see Menu.tsx). */
+    padding: 12px;
+    margin: -12px;
   }
   .menu-btn:hover { color: #000; }
 
@@ -99,6 +102,9 @@
     pointer-events: none;
   }
   .work-with-us-btn:hover { background: #fff; color: #000; }
+  @media (max-width: 639px) {
+    .work-with-us-btn { bottom: 16px; right: 16px; padding: 12px 16px; font-size: 10px; }
+  }
 
   /* The "Yeh Media" wordmark — one persistent element that travels: big
      and centered on slide 0 (standing in for what used to be the left
@@ -242,6 +248,19 @@
     .deck { flex-direction: row; }
     .deck-left, .deck-right { width: 50%; height: 100%; padding: 0 64px; }
   }
+  /* Phones: the two panels stack. Hero/hotel slides keep the even 50/50
+     split, but every content slide (.deck.compact, set from deckGoTo) gives
+     the title a short band and the content most of the screen — half a
+     phone is too little for Services/Portfolio, which the deck can't
+     scroll, so they were clipped. The content panel's bottom padding
+     keeps it clear of the footer link and floating Work With Us button.
+     Mirrors compactTitle in HomeDeck.tsx. */
+  @media (max-width: 767px) {
+    .deck-left, .deck-right { transition: height 0.7s ease-out; }
+    .deck-right { padding: 32px 24px; }
+    .deck.compact .deck-left { height: 26%; }
+    .deck.compact .deck-right { height: 74%; padding: 24px 24px 96px; align-items: flex-start; }
+  }
 
   /* Both the outgoing and incoming slide's content occupy the same CSS
      Grid cell (stacking without needing an explicit shared height or
@@ -367,7 +386,10 @@
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    transform: translateX(calc(var(--hotel-shift-x) * -1));
+    /* --hotel-pan is set by panHotelTo() on phones only, to bring the lit
+       window to the middle of the screen — always 0px elsewhere. */
+    transform: translateX(calc(var(--hotel-shift-x) * -1 + var(--hotel-pan, 0px)));
+    transition: transform 1.1s cubic-bezier(0.45, 0, 0.2, 1);
   }
 
   /* the animated element: the wrapper, not the <img>, so the window screens
@@ -559,14 +581,24 @@
      transform/opacity/detail text; CSS transitions do the actual motion. */
   .portfolio-carousel { display: flex; align-items: center; gap: 24px; width: 100%; max-width: 512px; }
   .portfolio-filmstrip-col { display: flex; flex-direction: column; gap: 16px; flex-shrink: 0; }
-  .portfolio-filmstrip { position: relative; width: 128px; height: 480px; overflow: hidden; flex-shrink: 0; }
+  .portfolio-filmstrip { position: relative; width: 128px; height: 480px; overflow: hidden; flex-shrink: 0; zoom: var(--filmstrip-zoom, 1); }
+  /* Phones: the 3-row (480px) strip is taller than the content area, so
+     it's shrunk with CSS zoom — the row/translate math stays in one set of
+     pixel units. Intro line hidden to save height; tighter gap for the
+     text column. Mirrors Portfolio.tsx / --filmstrip-zoom in globals.css. */
+  :root { --filmstrip-zoom: 1; }
+  @media (max-width: 639px) {
+    :root { --filmstrip-zoom: 0.6; }
+    .portfolio-carousel { gap: 16px; }
+    .portfolio-intro { display: none; }
+  }
   /* Bigger than the other .split-cta links on the page — this one's the
      main call-to-action out of the filmstrip, not a quiet back-link. */
   /* Pulled up with a negative margin — the filmstrip box is a fixed
      3-row-tall window (for the neighbour-preview effect) and the last
      item has no next row to fill its bottom third, which would
      otherwise leave a whole empty band before the link. */
-  .portfolio-more-link { font-size: 14px; letter-spacing: 0.15em; margin-top: -124px; }
+  .portfolio-more-link { font-size: 14px; letter-spacing: 0.15em; margin-top: calc(-124px * var(--filmstrip-zoom, 1)); }
   .portfolio-filmstrip-track { position: absolute; inset: 0 0 auto 0; transition: transform 0.5s ease-out; will-change: transform; }
   .portfolio-filmstrip-row { height: 160px; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s ease; }
   /* Fixed footprint (the focused size) at all times — the size difference
@@ -698,6 +730,12 @@
   }
   .contact-toggle:hover { border-color: #000; color: #000; }
   .contact-toggle.selected { background: #000; border-color: #000; color: #fff; }
+  /* Phones: 16px inputs (iOS Safari zooms the page on focus below that),
+     taller toggle buttons for easier tapping. Mirrors contact/page.tsx. */
+  @media (max-width: 639px) {
+    .contact-input, .contact-textarea { font-size: 16px; }
+    .contact-toggle { padding-top: 12px; padding-bottom: 12px; }
+  }
   .contact-submit-row { display: flex; flex-wrap: wrap; align-items: center; gap: 24px; padding-top: 8px; }
   .contact-email-link { font-family: "Onest", sans-serif; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(0,0,0,0.5); text-decoration: underline; text-underline-offset: 4px; transition: color 0.15s ease; }
   .contact-email-link:hover { color: #000; }
@@ -776,7 +814,8 @@
   @media (min-width: 640px) { .deck-footer-copy { display: inline; } }
   .deck.free ~ .deck-footer-line { display: none; }
 
-  .terms-section { max-width: 720px; margin: 0 auto; padding: 112px 24px 64px; }
+  .terms-section { max-width: 720px; margin: 0 auto; padding: 112px 24px 128px; }
+  @media (min-width: 768px) { .terms-section { padding-bottom: 160px; } }
   .terms-back { display: inline-block; margin-bottom: 48px; }
   .terms-title { font-family: "Archivo", sans-serif; font-weight: 600; font-size: 36px; letter-spacing: -0.01em; text-transform: uppercase; margin: 0 0 16px; }
   .terms-meta { font-family: "Onest", sans-serif; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(0,0,0,0.4); margin: 0 0 48px; }
@@ -897,7 +936,7 @@
       </div>
 
       <div class="deck-slide" data-slide="4" hidden>
-        <p class="deck-body" style="font-size: 14px; color: rgba(0,0,0,0.6); margin-bottom: 16px;">From concept to campaign, we turn an eye for interiors into content that performs, whatever the property.</p>
+        <p class="deck-body portfolio-intro" style="font-size: 14px; color: rgba(0,0,0,0.6); margin-bottom: 16px;">From concept to campaign, we turn an eye for interiors into content that performs, whatever the property.</p>
         <div class="portfolio-carousel">
           <div class="portfolio-filmstrip-col">
           <div class="portfolio-filmstrip">
@@ -1842,6 +1881,47 @@
     clearInterval(hotelKeyholeCycleTimer);
   }
 
+  // On phones the three buildings together are ~1200px wide — several times
+  // the screen — so only the middle one is ever in view, and three of the
+  // four windows would never be seen. Instead the whole row pans to bring
+  // the window whose turn it is to the centre of the screen. Where each
+  // window sits: which building, and how far across it (0-1). Mirrors
+  // WINDOW_FOCUS in HotelRow.tsx.
+  var HOTEL_WINDOW_FOCUS = {
+    elevator: ["center", 0.5],
+    "room-service": ["left", 0.275],
+    keyhole: ["left", 0.5],
+    breakfast: ["right", 0.195]
+  };
+  var hotelPanKey = null;
+  function panHotelTo(key) {
+    hotelPanKey = key;
+    var track = hotelRowEl && hotelRowEl.querySelector(".hotel-row-track");
+    var l = hotelRowEl && hotelRowEl.querySelector(".hotel-left");
+    var c = hotelRowEl && hotelRowEl.querySelector(".hotel-center");
+    var r = hotelRowEl && hotelRowEl.querySelector(".hotel-right");
+    if (!track || !l || !c || !r) return;
+    var focus = HOTEL_WINDOW_FOCUS[key];
+    if (!focus || prefersReducedMotion || !window.matchMedia("(max-width: 767px)").matches) {
+      track.style.setProperty("--hotel-pan", "0px");
+      return;
+    }
+    var gapL = parseFloat(getComputedStyle(l).marginRight) || 0;
+    var gapR = parseFloat(getComputedStyle(r).marginLeft) || 0;
+    var wL = l.offsetWidth, wC = c.offsetWidth, wR = r.offsetWidth;
+    var total = wL + gapL + wC + gapR + wR;
+    if (!total) return;
+    var start = { left: 0, center: wL + gapL, right: wL + gapL + wC + gapR };
+    var width = { left: wL, center: wC, right: wR };
+    var x = start[focus[0]] + width[focus[0]] * focus[1];
+    track.style.setProperty("--hotel-pan", (total / 2 - x) + "px");
+  }
+  // Widths aren't known until the images load, and change on rotate/resize.
+  window.addEventListener("resize", function () { panHotelTo(hotelPanKey); });
+  Array.prototype.forEach.call(document.querySelectorAll(".hotel-row-track img"), function (img) {
+    img.addEventListener("load", function () { panHotelTo(hotelPanKey); });
+  });
+
   function getHotelWinEls() {
     if (!hotelWinEls && hotelRowEl) {
       hotelWinEls = {};
@@ -1871,6 +1951,7 @@
     // Same idea for the keyhole's cross-fade: only cycles during its turn.
     if (key === "keyhole") startHotelKeyholeCycle();
     else stopHotelKeyholeCycle();
+    panHotelTo(key);
   }
   function runHotelSpotlight(i, delay) {
     hotelSpotlightTimer = setTimeout(function () {
@@ -1898,6 +1979,7 @@
       if (video) video.pause();
     });
     stopHotelKeyholeCycle();
+    panHotelTo(null);
   }
 
   // Slide 1's full-bleed illustration. .is-visible fades the whole layer,
@@ -2030,6 +2112,7 @@
     hidePillarsReveal();
 
     deckStackEl.style.setProperty("--deck-dir", clamped > deckCurrent ? 1 : -1);
+    deckEl.classList.toggle("compact", clamped >= 2);
 
     // Slide 1's illustration cross-fades the moment the gesture commits,
     // ahead of (and overlapping) the deck's own roll — see hotelRow* above.
@@ -2332,7 +2415,7 @@
 
   (function () {
     var btn = workWithUsBtnEl;
-    var contactSection = document.getElementById("contact");
+    var contactSection = document.querySelector(".contact-section");
     if (!btn) return;
 
     if (prefersReducedMotion) {

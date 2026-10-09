@@ -17,7 +17,7 @@ export default function TermsPage() {
   const [subtitleLeft, subtitleRight] = terms.subtitle.split(" | ");
 
   return (
-    <div className="min-h-screen bg-white text-black px-6 md:px-16 pt-28 md:pt-32 pb-16">
+    <div className="min-h-screen bg-white text-black px-6 md:px-16 pt-28 md:pt-32 pb-32 md:pb-40">
       <div className="max-w-2xl mx-auto">
         <Link
           href="/"

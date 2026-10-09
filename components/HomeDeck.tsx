@@ -408,6 +408,14 @@ export default function HomeDeck() {
   const rolling = phase === "rolling";
   const loadRolling = loadPhase === "rolling";
 
+  // On phones the two panels stack. Hero/hotel slides keep the even 50/50
+  // split (the wordmark sits in the middle of the top half), but every
+  // content slide gives the title a short band and the content most of the
+  // screen — half a phone is too little for the Services/Portfolio content,
+  // which the deck can't scroll, so it was clipped. Follows the slide being
+  // *entered* so the panels glide to their new heights as the content swaps.
+  const compactTitle = (rolling ? pendingIndexRef.current : current) >= 2;
+
   // Slide 1's full-bleed <HotelRow>. Two signals: `visible` fades the whole
   // layer (it cross-fades in/out with the neighbouring slide the instant a
   // scroll commits), `assemble` runs the building choreography (held until
@@ -444,7 +452,11 @@ export default function HomeDeck() {
 
       {/* Left — the rolling title (or, on first load, the intro sequence
           rolling through LOAD_SEQUENCE in the same spot). */}
-      <div className="relative md:w-1/2 h-1/2 md:h-full flex flex-col items-center justify-center gap-4 px-8 md:px-16 text-center">
+      <div
+        className={`relative md:w-1/2 ${
+          compactTitle ? "h-[26%]" : "h-1/2"
+        } md:h-full transition-[height] duration-700 ease-out flex flex-col items-center justify-center gap-4 px-8 md:px-16 text-center`}
+      >
         {!loading && current === 0 && hotelName && (
           <p className="font-mono font-light text-[10px] tracking-[0.3em] uppercase text-black/45">
             {siteData.copy.preparedFor.replace("{hotelName}", hotelName)}
@@ -509,7 +521,11 @@ export default function HomeDeck() {
           preventDefaults, so an auto scrollbar here would be visible but
           unreachable — content is sized to fit one viewport instead (see
           Pillars/Services/Portfolio/Studio). */}
-      <div className="relative md:w-1/2 h-1/2 md:h-full flex items-center justify-center px-8 md:px-16 py-8 overflow-hidden">
+      <div
+        className={`relative md:w-1/2 ${
+          compactTitle ? "h-[74%] pt-6 pb-24 items-start" : "h-1/2 py-8 items-center"
+        } md:h-full md:py-8 md:items-center transition-[height] duration-700 ease-out flex justify-center px-6 md:px-16 overflow-hidden`}
+      >
         <div
           className={`deck-stack w-full transition-all duration-700 ease-out ${
             loading ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"

@@ -320,6 +320,11 @@ function Thumb({ project, focused }: { project: Project; focused: boolean }) {
  * intercepts wheel/touch/key input while this slide is current and steps
  * through projects before handing scroll back to the deck's normal
  * slide-to-slide navigation — see HomeDeck.tsx.
+ *
+ * On phones the filmstrip box is shrunk with CSS `zoom` (see
+ * --filmstrip-zoom in globals.css) rather than changing ROW_STEP: the
+ * row/translate math stays in one set of pixel units, and the whole strip
+ * (3 rows = 480px, taller than a phone's content area) just scales down.
  */
 export default function Portfolio({ index }: { index: number }) {
   const current = featuredProjects[index];
@@ -327,13 +332,13 @@ export default function Portfolio({ index }: { index: number }) {
 
   return (
     <div className="flex flex-col gap-4 w-full max-w-lg">
-      <p className="font-mono font-normal text-sm text-black/60 leading-relaxed max-w-md">
+      <p className="hidden sm:block font-mono font-normal text-sm text-black/60 leading-relaxed max-w-md">
         {siteData.copy.portfolioIntro}
       </p>
-      <div className="flex items-center gap-6 sm:gap-10 w-full">
+      <div className="flex items-center gap-4 sm:gap-10 w-full">
         <div className="flex flex-col gap-4 shrink-0">
           <div
-            className="relative w-32 sm:w-40 overflow-hidden"
+            className="portfolio-filmstrip-box relative w-32 sm:w-40 overflow-hidden"
             style={{ height: ROW_STEP * 3 }}
           >
             <div
@@ -375,7 +380,9 @@ export default function Portfolio({ index }: { index: number }) {
           {isLast && (
             <Link
               href="/work"
-              style={{ marginTop: -(ROW_STEP - 36) }}
+              style={{
+                marginTop: `calc(${-(ROW_STEP - 36)}px * var(--filmstrip-zoom))`,
+              }}
               className="inline-block font-mono text-sm tracking-[0.15em] uppercase text-black/50 hover:text-black underline underline-offset-4 decoration-black/30 transition-colors"
             >
               See more selected projects →

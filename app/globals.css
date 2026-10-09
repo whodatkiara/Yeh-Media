@@ -371,6 +371,22 @@ body {
   animation: envelope-fly 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
+/* Portfolio filmstrip on phones — see the note on Portfolio in
+   components/Portfolio.tsx. */
+:root {
+  --filmstrip-zoom: 1;
+}
+
+@media (max-width: 639px) {
+  :root {
+    --filmstrip-zoom: 0.6;
+  }
+}
+
+.portfolio-filmstrip-box {
+  zoom: var(--filmstrip-zoom);
+}
+
 /* Scroll-triggered reveal: sections rise and fade in as they enter view,
    toggled by ScrollReveal via IntersectionObserver. */
 .reveal {
@@ -485,7 +501,10 @@ body {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  transform: translateX(calc(var(--hotel-shift-x) * -1));
+  /* --hotel-pan is set by HotelRow.tsx on phones only, to bring the lit
+     window to the middle of the screen — always 0px elsewhere. */
+  transform: translateX(calc(var(--hotel-shift-x) * -1 + var(--hotel-pan, 0px)));
+  transition: transform 1.1s cubic-bezier(0.45, 0, 0.2, 1);
 }
 
 /* the animated element: the wrapper, not the <img>, so the window screens

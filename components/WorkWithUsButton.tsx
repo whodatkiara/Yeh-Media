@@ -51,7 +51,7 @@ export default function WorkWithUsButton() {
   return (
     <Link
       href="/contact"
-      className={`fixed bottom-6 right-6 z-40 bg-black text-white border border-black px-6 py-3.5 font-mono text-[11px] tracking-[0.25em] uppercase transition-all duration-500 ease-out hover:bg-white hover:text-black ${
+      className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 bg-black text-white border border-black px-4 py-3 sm:px-6 sm:py-3.5 font-mono text-[10px] sm:text-[11px] tracking-[0.25em] uppercase transition-all duration-500 ease-out hover:bg-white hover:text-black ${
         shown
           ? "opacity-100 translate-y-0"
           : "opacity-0 translate-y-3 pointer-events-none"

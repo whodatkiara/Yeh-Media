@@ -110,7 +110,7 @@ function Field({
 }
 
 const inputClass =
-  "w-full border-b border-black/20 focus:border-black bg-transparent py-2 font-mono text-sm outline-none transition-colors placeholder:text-black/25";
+  "w-full border-b border-black/20 focus:border-black bg-transparent py-2 font-mono text-base sm:text-sm outline-none transition-colors placeholder:text-black/25";
 
 function ToggleGroup({
   options,
@@ -130,7 +130,7 @@ function ToggleGroup({
             key={opt}
             type="button"
             onClick={() => onSelect(selected ? "" : opt)}
-            className={`border px-4 py-2.5 font-mono text-[11px] tracking-[0.08em] uppercase transition-colors ${
+            className={`border px-4 py-3 sm:py-2.5 font-mono text-[11px] tracking-[0.08em] uppercase transition-colors ${
               selected
                 ? "bg-black text-white border-black"
                 : "border-black/20 text-black/60 hover:border-black hover:text-black"
@@ -162,7 +162,7 @@ function ToggleGroupMulti({
             key={opt}
             type="button"
             onClick={() => onToggle(opt)}
-            className={`border px-4 py-2.5 font-mono text-[11px] tracking-[0.08em] uppercase transition-colors ${
+            className={`border px-4 py-3 sm:py-2.5 font-mono text-[11px] tracking-[0.08em] uppercase transition-colors ${
               selected
                 ? "bg-black text-white border-black"
                 : "border-black/20 text-black/60 hover:border-black hover:text-black"
