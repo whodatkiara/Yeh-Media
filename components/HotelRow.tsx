@@ -109,6 +109,13 @@ const FIRST_WINDOW_DELAY_MS = 1300;
 // A window's clip only plays during its own turn in the spotlight —
 // pausing (and rewinding) it the rest of the time, same reasoning as the
 // portfolio filmstrip's focused-only playback.
+//
+// play() can be refused on iPhone (the clip's data hasn't arrived — iOS
+// ignores preload — or the element wasn't counted as visible the instant
+// the window started fading in), and a refusal used to be swallowed for
+// good, leaving the poster frozen. So it retries a few times, and also
+// picks up the moment data becomes playable. `data-live` lets the priming
+// pass below know a clip is mid-turn and must not be paused.
 function useSpotlightVideo(
   ref: RefObject<HTMLVideoElement | null>,
   active: boolean,
@@ -116,22 +123,54 @@ function useSpotlightVideo(
   useEffect(() => {
     const v = ref.current;
     if (!v) return;
-    if (active) {
-      v.currentTime = 0;
-      v.play().catch(() => {});
-    } else {
+    v.dataset.live = active ? "1" : "0";
+    if (!active) {
       v.pause();
+      return;
     }
+
+    let cancelled = false;
+    let tries = 0;
+    let timer: ReturnType<typeof setTimeout>;
+
+    function start() {
+      if (cancelled || !v) return;
+      v.play().catch(() => {
+        if (cancelled || ++tries > 8) return;
+        timer = setTimeout(start, 300);
+      });
+    }
+    function onCanPlay() {
+      if (!cancelled && v && v.paused) v.play().catch(() => {});
+    }
+
+    try {
+      v.currentTime = 0;
+    } catch {
+      /* not seekable yet */
+    }
+    start();
+    v.addEventListener("canplay", onCanPlay);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+      v.removeEventListener("canplay", onCanPlay);
+    };
   }, [ref, active]);
 }
 
 export default function HotelRow({
   visible,
   assemble,
+  compact = false,
 }: {
   visible: boolean;
   assemble: boolean;
+  // Phones: use the much smaller clips (240x320, ~130KB each) — the windows
+  // are only ~60px wide on a phone, so the full-size ones are wasted bytes.
+  compact?: boolean;
 }) {
+  const clip = (name: string) => `${V}/${name}${compact ? "-sm" : ""}.mp4`;
   const reducedMotion = useReducedMotion();
   const [played, setPlayed] = useState(false);
   const [current, setCurrent] = useState<WindowKey | "all" | null>(null);
@@ -202,6 +241,39 @@ export default function HotelRow({
   useVideoErrorRetry(elevatorVideoRef);
   useVideoErrorRetry(roomServiceVideoRef);
   useVideoErrorRetry(breakfastVideoRef);
+
+  // Prime the clips as soon as the buildings assemble. iPhones don't fetch
+  // video data ahead of time whatever preload says, so without this each
+  // clip only starts downloading at the very moment its turn begins — which
+  // is too late for a 4-second turn. Muted playback needs no tap, so start
+  // each one and immediately pause it again (unless it has meanwhile been
+  // given its turn). Retried once, since the first attempt can land while
+  // the row is still fading in.
+  useEffect(() => {
+    if (!assemble || reducedMotion) return;
+    const videos = [
+      elevatorVideoRef.current,
+      roomServiceVideoRef.current,
+      breakfastVideoRef.current,
+    ].filter((v): v is HTMLVideoElement => !!v);
+
+    function prime(v: HTMLVideoElement) {
+      v.play()
+        .then(() => {
+          if (v.dataset.live !== "1") {
+            v.pause();
+            v.currentTime = 0;
+          }
+        })
+        .catch(() => {});
+    }
+    const first = setTimeout(() => videos.forEach(prime), 500);
+    const second = setTimeout(() => videos.forEach(prime), 1800);
+    return () => {
+      clearTimeout(first);
+      clearTimeout(second);
+    };
+  }, [assemble, reducedMotion]);
 
   // Phones only (see WINDOW_FOCUS): slide the track so the lit window sits
   // at the centre of the screen. Works from the pieces' layout sizes (not
@@ -279,7 +351,7 @@ export default function HotelRow({
           >
             <video
               ref={roomServiceVideoRef}
-              src={`${V}/room-service.mp4`}
+              src={clip("room-service")}
               poster={`${W}/room-service.jpg`}
               muted
               playsInline
@@ -318,7 +390,7 @@ export default function HotelRow({
           >
             <video
               ref={elevatorVideoRef}
-              src={`${V}/elevator.mp4`}
+              src={clip("elevator")}
               poster={`${W}/elevator.jpg`}
               muted
               playsInline
@@ -340,7 +412,7 @@ export default function HotelRow({
           >
             <video
               ref={breakfastVideoRef}
-              src={`${V}/breakfast.mp4`}
+              src={clip("breakfast")}
               poster={`${W}/breakfast.jpg`}
               muted
               playsInline

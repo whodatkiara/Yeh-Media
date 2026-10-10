@@ -19,7 +19,7 @@ import { useIsPhone } from "@/lib/use-is-phone";
  */
 export default function Footer() {
   const pathname = usePathname();
-  const isPhone = useIsPhone();
+  const isPhone = useIsPhone() === true;
   // Phones get a normal scrolling homepage (MobileHome), so the full footer
   // at the end of the page, not the deck's pinned line.
   const onDeck = (pathname === "/" || pathname.startsWith("/for/")) && !isPhone;

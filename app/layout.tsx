@@ -58,16 +58,24 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col relative">
         <SiteProvider>
           <Grain />
-          {/* Phones: a solid white strip across the very top (with a short
-              fade below it), always there, so scrolling content never
-              shows through behind the logo, the Menu, or the browser's
-              own status bar. */}
+          {/* Phones: a SOLID white bar across the very top, always there, so
+              scrolling content never shows through behind the logo, the
+              Menu, or the browser's own status bar. It has to be a plain
+              opaque background-color on a fixed element touching the top
+              edge — that's what newer Safari samples to colour its status
+              bar, and it ignores gradients (a gradient-only strip is why the
+              first attempt changed nothing). The short fade below it is a
+              separate element so it can't be mistaken for the bar. */}
           <div
             aria-hidden="true"
-            className="md:hidden fixed top-0 inset-x-0 z-30 h-24 pointer-events-none"
+            className="md:hidden fixed top-0 inset-x-0 z-30 h-16 bg-white"
+          />
+          <div
+            aria-hidden="true"
+            className="md:hidden fixed top-16 inset-x-0 z-30 h-6 pointer-events-none"
             style={{
               background:
-                "linear-gradient(to bottom, #fff 0, #fff 72px, rgba(255,255,255,0) 96px)",
+                "linear-gradient(to bottom, #fff, rgba(255,255,255,0))",
             }}
           />
           <Menu />

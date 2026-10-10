@@ -493,7 +493,7 @@
     animation: hotelLiftRise 4s cubic-bezier(0.5, 0, 0.2, 1) both;
   }
   @keyframes hotelLiftRise {
-    0%   { transform: translateY(calc(var(--hotel-h) * 0.55)); opacity: 0; }
+    0%   { transform: translateY(calc(var(--hotel-h) * 0.55)); opacity: 0.01; }
     8%   { opacity: 1; }
     100% { transform: translateY(0); opacity: 1; }
   }
@@ -855,11 +855,16 @@
 
   .phone-logo { position: fixed; top: 24px; left: 24px; z-index: 40; padding: 0; background: none; border: 0; font-family: "Archivo", sans-serif; font-weight: 600; font-size: 17px; letter-spacing: -0.01em; text-transform: uppercase; color: #000; cursor: pointer; opacity: 0; transform: translateY(-6px); pointer-events: none; transition: opacity 0.4s ease, transform 0.4s ease; }
   .phone-logo.is-shown { opacity: 1; transform: none; pointer-events: auto; }
-  /* Solid white strip across the very top (with a short fade below it),
-     always there on phones, so scrolling content never shows through
-     behind the logo, the Menu, or the browser's own status bar. Mirrors
-     the strip in app/layout.tsx. */
-  .phone-bar { display: none; position: fixed; top: 0; left: 0; right: 0; height: 96px; z-index: 35; pointer-events: none; background: linear-gradient(to bottom, #fff 0, #fff 72px, rgba(255,255,255,0) 96px); }
+  /* A SOLID white bar across the very top, always there on phones, so
+     scrolling content never shows through behind the logo, the Menu, or
+     the browser's own status bar. It has to be an opaque background-color
+     on a fixed element touching the top edge — that's what newer Safari
+     samples to colour its status bar, and it ignores gradients (a
+     gradient-only strip is why the first attempt changed nothing). The
+     short fade below is its own element. Mirrors app/layout.tsx. */
+  .phone-bar { display: none; position: fixed; top: 0; left: 0; right: 0; height: 64px; z-index: 35; background-color: #fff; }
+  .phone-bar-fade { display: none; position: fixed; top: 64px; left: 0; right: 0; height: 24px; z-index: 35; pointer-events: none; background: linear-gradient(to bottom, #fff, rgba(255,255,255,0)); }
+  html.is-phone .phone-bar-fade { display: block; }
   html.is-phone .phone-bar { display: block; }
 
   .ph-hero { position: relative; min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 0 24px; text-align: center; }
@@ -875,6 +880,11 @@
   .ph-reveal.is-in { opacity: 1; transform: none; }
 
   html.is-phone .hotel-piece > img { filter: none; }
+  /* iPhone Safari won't start (or keeps pausing) a video it considers
+     invisible, and a window at opacity 0 counts. A resting window is held
+     at 1% — imperceptible, but still "visible" to the browser. */
+  html.is-phone .hotel-win { opacity: 0.01; }
+  html.is-phone .hotel-win.is-current { opacity: 1; }
   .ph-hotel { position: relative; isolation: isolate; height: 82vh; height: 82svh; margin-top: 16px; }
 
   .ph-section { padding: 96px 24px 8px; }
@@ -1104,6 +1114,7 @@
 </div>
 
 <div class="phone-bar" id="phoneBar" aria-hidden="true"></div>
+<div class="phone-bar-fade" aria-hidden="true"></div>
 <button class="phone-logo" id="phoneLogo" onclick="goHome()">Yeh Media</button>
 <main class="phone-home" id="phoneHome">
   <section class="ph-hero" id="phoneHero">
@@ -2045,6 +2056,47 @@
     }
     return hotelWinEls;
   }
+  // play() can be refused on iPhone (the clip's data hasn't arrived — iOS
+  // ignores preload — or the element wasn't counted visible the instant the
+  // window started fading in), and a refusal used to be swallowed for good,
+  // leaving the poster frozen. Retry a few times, and pick up the moment
+  // data becomes playable. Mirrors useSpotlightVideo in HotelRow.tsx.
+  function playHotelClip(video) {
+    var tries = 0;
+    try { video.currentTime = 0; } catch (e) {}
+    function attempt() {
+      if (video.dataset.live !== "1") return;
+      video.play().catch(function () {
+        if (++tries <= 8) setTimeout(attempt, 300);
+      });
+    }
+    attempt();
+    video.addEventListener("canplay", function onCanPlay() {
+      video.removeEventListener("canplay", onCanPlay);
+      if (video.dataset.live === "1" && video.paused) video.play().catch(function () {});
+    });
+  }
+
+  // iPhones don't fetch video data ahead of time whatever preload says, so
+  // without this each clip only starts downloading at the very moment its
+  // turn begins — too late for a 4-second turn. Muted playback needs no
+  // tap: start each clip and immediately pause it (unless it has meanwhile
+  // been given its turn). Mirrors the priming effect in HotelRow.tsx.
+  function primeHotelClips() {
+    function prime(id) {
+      var v = document.getElementById(id);
+      if (!v) return;
+      v.play().then(function () {
+        if (v.dataset.live !== "1") { v.pause(); v.currentTime = 0; }
+      }).catch(function () {});
+    }
+    [500, 1800].forEach(function (ms) {
+      setTimeout(function () {
+        Object.keys(HOTEL_WINDOW_VIDEO_IDS).forEach(function (k) { prime(HOTEL_WINDOW_VIDEO_IDS[k]); });
+      }, ms);
+    });
+  }
+
   function setCurrentHotelWindow(key) {
     var els = getHotelWinEls();
     HOTEL_WINDOW_ORDER.forEach(function (k) {
@@ -2055,9 +2107,9 @@
     Object.keys(HOTEL_WINDOW_VIDEO_IDS).forEach(function (k) {
       var video = document.getElementById(HOTEL_WINDOW_VIDEO_IDS[k]);
       if (!video) return;
+      video.dataset.live = k === key ? "1" : "0";
       if (k === key) {
-        video.currentTime = 0;
-        video.play().catch(function () {});
+        playHotelClip(video);
       } else {
         video.pause();
       }
@@ -2119,6 +2171,7 @@
       if (deckCurrent === 1) {
         hotelRowEl.classList.add("is-in");
         startHotelSpotlight();
+        primeHotelClips();
       }
     });
   }
@@ -2339,6 +2392,14 @@
     var hotelSection = document.getElementById("phoneHotel");
     if (hotelRowEl && hotelSection) hotelSection.appendChild(hotelRowEl);
 
+    // The windows are only ~60px wide on a phone, so use the much smaller
+    // clips (240x320, ~130KB each instead of ~330KB). Mirrors `compact` in
+    // HotelRow.tsx.
+    Object.keys(HOTEL_WINDOW_VIDEO_IDS).forEach(function (k) {
+      var v = document.getElementById(HOTEL_WINDOW_VIDEO_IDS[k]);
+      if (v) v.setAttribute("src", v.getAttribute("src").replace(/\.mp4/, "-sm.mp4"));
+    });
+
     // --- Hero: the same "Shaping. Directing. Creating." roll, then the
     // phrase fades in and starts cycling, and a scroll cue appears.
     function startPhrase() {
@@ -2479,6 +2540,7 @@
           if (!hotelInView || !hotelRowEl) return;
           hotelRowEl.classList.add("is-in");
           startHotelSpotlight();
+          primeHotelClips();
         }, 350);
       } else {
         hotelRowLeave();

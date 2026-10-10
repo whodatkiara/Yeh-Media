@@ -51,9 +51,17 @@ function Hero({ scrolledPast }: { scrolledPast: (past: boolean) => void }) {
   const ref = useRef<HTMLElement>(null);
 
   // The same "Shaping. Directing. Creating. Yeh Media" roll the deck opens
-  // with, then the phrase fades in and the scroll cue appears.
+  // with, then the phrase fades in and the scroll cue appears. Under
+  // reduced motion it skips straight to the finished state (and, if the
+  // setting flips on mid-session, jumps there rather than stranding the
+  // hero on its first word).
   useEffect(() => {
-    if (reducedMotion) return;
+    if (reducedMotion) {
+      setStep(SEQUENCE.length - 1);
+      setPending(null);
+      setReady(true);
+      return;
+    }
     let timer: ReturnType<typeof setTimeout>;
     let cancelled = false;
 
@@ -154,7 +162,7 @@ function Hotel() {
       ref={ref}
       className="relative isolate h-[82svh] mt-4"
     >
-      <HotelRow visible={inView} assemble={assemble} />
+      <HotelRow visible={inView} assemble={assemble} compact />
     </section>
   );
 }

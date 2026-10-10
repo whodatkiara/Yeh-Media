@@ -16,10 +16,14 @@ function getSnapshot() {
   return window.matchMedia(QUERY).matches;
 }
 
-function getServerSnapshot() {
-  return false;
+// null = "not known yet" (server render and the hydration pass). Callers
+// that pick a whole layout from this must not guess during that window —
+// guessing "desktop" made phones flash the slide deck (and start its
+// intro) before swapping to the phone page.
+function getServerSnapshot(): boolean | null {
+  return null;
 }
 
-export function useIsPhone() {
+export function useIsPhone(): boolean | null {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }

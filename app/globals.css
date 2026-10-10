@@ -674,7 +674,7 @@ body {
 @keyframes hotel-lift-rise {
   0% {
     transform: translateY(calc(var(--hotel-h) * 0.55));
-    opacity: 0;
+    opacity: 0.01;
   }
   8% {
     opacity: 1;
@@ -686,6 +686,14 @@ body {
 }
 
 @media (max-width: 767px) {
+  /* iPhone Safari won't start (or keeps pausing) a video it considers
+     invisible, and a window sitting at opacity 0 counts. A resting window
+     is held at 1% instead — imperceptible, but still "visible" to the
+     browser, so its clip can start the instant its turn comes. */
+  .hotel-win {
+    opacity: 0.01;
+  }
+
   /* The soft drop-shadow filter on three large, animating images is costly
      for a phone to redraw, and at 13% opacity on white it's barely there. */
   .hotel-piece > img {
