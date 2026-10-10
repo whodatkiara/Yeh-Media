@@ -547,6 +547,13 @@
     from { transform: rotateX(0deg); opacity: 1; }
     to { transform: rotateX(90deg); opacity: 0; }
   }
+  /* Reduce Motion: the intro's 3D roll becomes a plain cross-fade. */
+  @keyframes rollFadeOut { from { opacity: 1; } to { opacity: 0; } }
+  @keyframes rollFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .roll-out { animation-name: rollFadeOut; }
+    .roll-in { animation-name: rollFadeIn; }
+  }
   @keyframes rollIn {
     from { transform: rotateX(-90deg); opacity: 0; }
     to { transform: rotateX(0deg); opacity: 1; }
@@ -880,12 +887,14 @@
   .ph-reveal.is-in { opacity: 1; transform: none; }
 
   html.is-phone .hotel-piece > img { filter: none; }
+  /* No full-screen noise overlay on phones (costly, and a candidate for tinting Safari's status bar). */
+  html.is-phone .grain { display: none; }
   /* iPhone Safari won't start (or keeps pausing) a video it considers
      invisible, and a window at opacity 0 counts. A resting window is held
      at 1% — imperceptible, but still "visible" to the browser. */
   html.is-phone .hotel-win { opacity: 0.01; }
   html.is-phone .hotel-win.is-current { opacity: 1; }
-  .ph-hotel { position: relative; isolation: isolate; height: 82vh; height: 82svh; margin-top: 16px; }
+  .ph-hotel { position: relative; isolation: isolate; height: 82vh; height: 82svh; margin-top: 16px; overflow: hidden; }
 
   .ph-section { padding: 96px 24px 8px; }
   .ph-title { font-family: "Archivo", sans-serif; font-weight: 600; font-size: clamp(28px, 9vw, 40px); letter-spacing: -0.01em; text-transform: uppercase; line-height: 1.1; margin: 0 0 28px; }
@@ -2027,7 +2036,7 @@
     var r = hotelRowEl && hotelRowEl.querySelector(".hotel-right");
     if (!track || !l || !c || !r) return;
     var focus = HOTEL_WINDOW_FOCUS[key];
-    if (!focus || prefersReducedMotion || !window.matchMedia("(max-width: 767px)").matches) {
+    if (!focus || !window.matchMedia("(max-width: 767px)").matches) {
       track.style.setProperty("--hotel-pan", "0px");
       return;
     }
@@ -2129,10 +2138,6 @@
   function startHotelSpotlight() {
     clearTimeout(hotelSpotlightTimer);
     var els = getHotelWinEls();
-    if (prefersReducedMotion) {
-      HOTEL_WINDOW_ORDER.forEach(function (k) { if (els[k]) els[k].classList.add("is-current"); });
-      return;
-    }
     HOTEL_WINDOW_ORDER.forEach(function (k) { if (els[k]) els[k].classList.remove("is-current"); });
     runHotelSpotlight(0, HOTEL_FIRST_WINDOW_DELAY_MS);
   }
@@ -2406,7 +2411,6 @@
       phraseEl.classList.add("is-in");
       cueEl.classList.add("is-in");
       phraseEl.innerHTML = '<span class="roll-face">' + HERO_PHRASES[0] + "</span>";
-      if (prefersReducedMotion) return;
       var cur = 0;
       (function schedule() {
         setTimeout(function () {
@@ -2422,28 +2426,26 @@
         }, 1800);
       })();
     }
+    // The intro always plays: with Reduce Motion on, the 3D roll is swapped
+    // for a plain cross-fade (see the media query below) rather than being
+    // skipped. Mirrors Hero in MobileHome.tsx.
     var seq = LOAD_SEQUENCE;
-    if (prefersReducedMotion) {
-      titleEl.innerHTML = '<span class="roll-face">' + seq[seq.length - 1] + "</span>";
-      startPhrase();
-    } else {
-      titleEl.innerHTML = '<span class="roll-face">' + seq[0] + "</span>";
-      var i = 0;
-      (function step() {
+    titleEl.innerHTML = '<span class="roll-face">' + seq[0] + "</span>";
+    var i = 0;
+    (function step() {
+      setTimeout(function () {
+        var next = i + 1;
+        titleEl.innerHTML =
+          '<span class="roll-face roll-out">' + seq[i] + "</span>" +
+          '<span class="roll-face roll-in">' + seq[next] + "</span>";
         setTimeout(function () {
-          var next = i + 1;
-          titleEl.innerHTML =
-            '<span class="roll-face roll-out">' + seq[i] + "</span>" +
-            '<span class="roll-face roll-in">' + seq[next] + "</span>";
-          setTimeout(function () {
-            i = next;
-            titleEl.innerHTML = '<span class="roll-face">' + seq[i] + "</span>";
-            if (i < seq.length - 1) step();
-            else setTimeout(startPhrase, LOAD_HOLD_MS);
-          }, LOAD_ROLL_MS);
-        }, LOAD_HOLD_MS);
-      })();
-    }
+          i = next;
+          titleEl.innerHTML = '<span class="roll-face">' + seq[i] + "</span>";
+          if (i < seq.length - 1) step();
+          else setTimeout(startPhrase, LOAD_HOLD_MS);
+        }, LOAD_ROLL_MS);
+      }, LOAD_HOLD_MS);
+    })();
 
     // --- Projects: big picture/clip first, text right under it.
     var listEl = document.getElementById("phoneProjectList");

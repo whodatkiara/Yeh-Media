@@ -686,6 +686,14 @@ body {
 }
 
 @media (max-width: 767px) {
+  /* The full-screen noise overlay is barely visible on a phone, costs a lot
+     to keep compositing (full-screen multiply blend, animated opacity), and
+     as a fixed layer covering the top edge it's a candidate for tinting
+     Safari's status bar. */
+  .grain {
+    display: none;
+  }
+
   /* iPhone Safari won't start (or keeps pausing) a video it considers
      invisible, and a window sitting at opacity 0 counts. A resting window
      is held at 1% instead — imperceptible, but still "visible" to the
@@ -708,6 +716,36 @@ body {
   }
 }
 
+/* Reduce Motion swaps the intro's 3D roll for a plain cross-fade — same
+   timing and content, no movement. */
+@keyframes roll-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes roll-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .roll-out {
+    animation-name: roll-fade-out;
+  }
+
+  .roll-in {
+    animation-name: roll-fade-in;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -718,9 +756,9 @@ body {
     scroll-behavior: auto !important;
   }
 
-  /* No fly-in — just show the three buildings in place, and no spotlight
-     cycle — HotelRow.tsx marks every window .is-current at once instead of
-     looping through them, so reduced motion still ends up fully visible. */
+  /* No fly-in — the three buildings just appear in place. The window
+     spotlight still cycles (windows fade, clips play); only the lift's
+     rise below is dropped. */
   .hotel-row.is-in .hotel-piece {
     transform: none !important;
   }

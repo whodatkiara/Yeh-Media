@@ -7,7 +7,6 @@ import { useSearchParams } from "next/navigation";
 import siteData from "@/data/site.json";
 import { useSite } from "@/lib/site-context";
 import { useInView } from "@/lib/use-in-view";
-import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { useVideoErrorRetry } from "@/lib/use-video-retry";
 import HeroPhrase from "@/components/HeroPhrase";
 import HotelRow from "@/components/HotelRow";
@@ -44,24 +43,18 @@ const bodyClass = "font-mono font-normal text-base leading-relaxed";
 
 function Hero({ scrolledPast }: { scrolledPast: (past: boolean) => void }) {
   const { hotelName } = useSite();
-  const reducedMotion = useReducedMotion();
-  const [step, setStep] = useState(reducedMotion ? SEQUENCE.length - 1 : 0);
+  const [step, setStep] = useState(0);
   const [pending, setPending] = useState<number | null>(null);
-  const [ready, setReady] = useState(reducedMotion);
+  const [ready, setReady] = useState(false);
   const ref = useRef<HTMLElement>(null);
 
   // The same "Shaping. Directing. Creating. Yeh Media" roll the deck opens
-  // with, then the phrase fades in and the scroll cue appears. Under
-  // reduced motion it skips straight to the finished state (and, if the
-  // setting flips on mid-session, jumps there rather than stranding the
-  // hero on its first word).
+  // with, then the phrase fades in and the scroll cue appears. It always
+  // plays: with Reduce Motion on, the 3D roll is swapped for a plain
+  // cross-fade (see the media query in globals.css) rather than the intro
+  // being skipped — skipping it is why it looked "broken" on phones with
+  // that setting on.
   useEffect(() => {
-    if (reducedMotion) {
-      setStep(SEQUENCE.length - 1);
-      setPending(null);
-      setReady(true);
-      return;
-    }
     let timer: ReturnType<typeof setTimeout>;
     let cancelled = false;
 
@@ -84,7 +77,7 @@ function Hero({ scrolledPast }: { scrolledPast: (past: boolean) => void }) {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [reducedMotion]);
+  }, []);
 
   // Tell the page once the hero has scrolled away, so the small logo and
   // the soft header fade can come in.
@@ -160,7 +153,7 @@ function Hotel() {
     <section
       id="hotel"
       ref={ref}
-      className="relative isolate h-[82svh] mt-4"
+      className="relative isolate h-[82svh] mt-4 overflow-hidden"
     >
       <HotelRow visible={inView} assemble={assemble} compact />
     </section>
@@ -244,7 +237,6 @@ function Services() {
 // holding a video is flaky on iOS, and a curtain leaves the video itself
 // untouched so it can start playing underneath.
 function ProjectMedia({ project, reveal }: { project: Project; reveal: boolean }) {
-  const reducedMotion = useReducedMotion();
   const boxRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const images =
@@ -260,7 +252,7 @@ function ProjectMedia({ project, reveal }: { project: Project; reveal: boolean }
   useEffect(() => {
     const box = boxRef.current;
     const v = videoRef.current;
-    if (!box || !v || reducedMotion) return;
+    if (!box || !v) return;
     let onScreen = false;
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -281,7 +273,7 @@ function ProjectMedia({ project, reveal }: { project: Project; reveal: boolean }
       observer.disconnect();
       window.removeEventListener("touchend", resume);
     };
-  }, [reducedMotion]);
+  }, []);
 
   useEffect(() => {
     if (!images) return;

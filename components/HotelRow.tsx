@@ -7,7 +7,6 @@ import {
   type CSSProperties,
   type RefObject,
 } from "react";
-import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { useVideoErrorRetry } from "@/lib/use-video-retry";
 
 /**
@@ -171,7 +170,6 @@ export default function HotelRow({
   compact?: boolean;
 }) {
   const clip = (name: string) => `${V}/${name}${compact ? "-sm" : ""}.mp4`;
-  const reducedMotion = useReducedMotion();
   const [played, setPlayed] = useState(false);
   const [current, setCurrent] = useState<WindowKey | "all" | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -192,12 +190,6 @@ export default function HotelRow({
       return () => clearTimeout(t);
     }
 
-    if (reducedMotion) {
-      setPlayed(true);
-      setCurrent("all"); // no cycling — every window shown at once
-      return;
-    }
-
     const id = requestAnimationFrame(() => setPlayed(true));
 
     function step(i: number, delay: number) {
@@ -213,26 +205,28 @@ export default function HotelRow({
       cancelAnimationFrame(id);
       clearTimeout(timerRef.current);
     };
-  }, [assemble, reducedMotion]);
+  }, [assemble]);
 
   function winClass(key: WindowKey, extra?: string) {
     const lit = current === "all" || current === key;
     return ["hotel-win", extra, lit && "is-current"].filter(Boolean).join(" ");
   }
 
-  // Under reduced motion neither clip plays — the poster stands in as the
-  // still.
+  // Reduced motion is honoured by calming the movement (buildings appear in
+  // place, windows fade, the phone pan is quick — see the media query in
+  // globals.css), not by freezing the piece: the clips are tiny, silent and
+  // are the point of the diorama, so they keep playing.
   useSpotlightVideo(
     elevatorVideoRef,
-    !reducedMotion && (current === "elevator" || current === "all"),
+    current === "elevator" || current === "all",
   );
   useSpotlightVideo(
     roomServiceVideoRef,
-    !reducedMotion && (current === "room-service" || current === "all"),
+    current === "room-service" || current === "all",
   );
   useSpotlightVideo(
     breakfastVideoRef,
-    !reducedMotion && (current === "breakfast" || current === "all"),
+    current === "breakfast" || current === "all",
   );
 
   // See lib/use-video-retry.ts — local file loads have shown intermittent
@@ -250,7 +244,7 @@ export default function HotelRow({
   // given its turn). Retried once, since the first attempt can land while
   // the row is still fading in.
   useEffect(() => {
-    if (!assemble || reducedMotion) return;
+    if (!assemble) return;
     const videos = [
       elevatorVideoRef.current,
       roomServiceVideoRef.current,
@@ -273,7 +267,7 @@ export default function HotelRow({
       clearTimeout(first);
       clearTimeout(second);
     };
-  }, [assemble, reducedMotion]);
+  }, [assemble]);
 
   // Phones only (see WINDOW_FOCUS): slide the track so the lit window sits
   // at the centre of the screen. Works from the pieces' layout sizes (not
@@ -291,7 +285,7 @@ export default function HotelRow({
       if (!t || !l || !c || !r) return;
       const phone = window.matchMedia("(max-width: 767px)").matches;
       const focus =
-        phone && !reducedMotion && current && current !== "all"
+        phone && current && current !== "all"
           ? WINDOW_FOCUS[current]
           : null;
       if (!focus) {
@@ -319,19 +313,18 @@ export default function HotelRow({
       window.removeEventListener("resize", apply);
       imgs.forEach((img) => img.removeEventListener("load", apply));
     };
-  }, [current, reducedMotion]);
+  }, [current]);
 
   // The keyhole window cycles through its room interiors only during its
-  // own turn — under reduced motion (current === "all") it just holds on
-  // the first one, same spirit as the videos staying on their poster.
+  // own turn.
   useEffect(() => {
-    if (reducedMotion || current !== "keyhole") return;
+    if (current !== "keyhole") return;
     setKeyholeIndex(0);
     const id = setInterval(() => {
       setKeyholeIndex((i) => (i + 1) % KEYHOLE_IMAGES.length);
     }, KEYHOLE_CYCLE_MS);
     return () => clearInterval(id);
-  }, [current, reducedMotion]);
+  }, [current]);
 
   return (
     <div
