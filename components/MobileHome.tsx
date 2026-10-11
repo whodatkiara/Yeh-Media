@@ -11,6 +11,7 @@ import { useVideoErrorRetry } from "@/lib/use-video-retry";
 import HeroPhrase from "@/components/HeroPhrase";
 import HotelRow from "@/components/HotelRow";
 import ScrollReveal from "@/components/ScrollReveal";
+import { workWithUsMailto } from "@/lib/contact";
 import { services } from "@/components/Services";
 import {
   NEURO_LINE,
@@ -416,12 +417,12 @@ function Studio() {
         <p className={`${bodyClass} mb-8`}>{siteData.copy.studioText}</p>
       </ScrollReveal>
       <ScrollReveal delayMs={200}>
-        <Link
-          href="/contact"
+        <a
+          href={workWithUsMailto}
           className="inline-block border border-black px-8 py-4 font-mono text-[11px] tracking-[0.25em] uppercase transition-colors hover:bg-black hover:text-white"
         >
           {siteData.copy.workWithUsCta}
-        </Link>
+        </a>
       </ScrollReveal>
     </section>
   );

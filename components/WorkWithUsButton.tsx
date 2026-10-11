@@ -1,17 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import siteData from "@/data/site.json";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { useSite } from "@/lib/site-context";
+import { workWithUsMailto } from "@/lib/contact";
 import { STUDIO_SLIDE_INDEX } from "@/components/HomeDeck";
 
 /**
- * A persistent floating CTA, fixed bottom-right at every width, pointing
- * straight at the qualifying questionnaire (see Studio's in-content
- * "Work With Us" for the other entry point to the same page). Pops in on
+ * A persistent floating CTA, fixed bottom-right at every width, that opens
+ * an email to the studio (see Studio's in-content "Work With Us" for the
+ * other entry point). Pops in on
  * the visitor's first scroll/swipe gesture rather than on a timer — arriving
  * the moment they're actually engaging with the page, not before.
  *
@@ -50,8 +50,8 @@ export default function WorkWithUsButton() {
   if (ctaHidden) return null;
 
   return (
-    <Link
-      href="/contact"
+    <a
+      href={workWithUsMailto}
       className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 bg-black text-white border border-black px-4 py-3 sm:px-6 sm:py-3.5 font-mono text-[10px] sm:text-[11px] tracking-[0.25em] uppercase transition-all duration-500 ease-out hover:bg-white hover:text-black ${
         shown
           ? "opacity-100 translate-y-0"
@@ -59,6 +59,6 @@ export default function WorkWithUsButton() {
       }`}
     >
       {siteData.copy.workWithUsCta}
-    </Link>
+    </a>
   );
 }

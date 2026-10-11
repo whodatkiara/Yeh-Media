@@ -182,8 +182,7 @@ function ToggleGroupMulti({
  * studio actually needs (property, scope, timeline) before a reply.
  * Submits with no backend: compiles the answers into one message and hands
  * off to the visitor's own mail client via a mailto: link (see
- * buildSurveyMailtoLink) addressed to contactEmail in data/site.json —
- * swap that placeholder for the real inbox once there is one.
+ * buildSurveyMailtoLink) addressed to contactEmail in data/site.json.
  */
 export default function ContactPage() {
   const reducedMotion = useReducedMotion();

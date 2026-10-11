@@ -968,7 +968,7 @@
 
 <button class="menu-btn" onclick="openMenu()">Menu</button>
 <button class="corner-logo" id="cornerLogo" onclick="goHome()">Yeh Media</button>
-<a href="#contact" class="work-with-us-btn" id="workWithUsBtn" onclick="leaveDeckTo('contact'); return false;">Work With Us!</a>
+<a href="mailto:hello@yehmedia.nl?subject=Work%20with%20Yeh%20Media" class="work-with-us-btn" id="workWithUsBtn">Work With Us!</a>
 <div class="menu-overlay" id="menuOverlay">
   <button class="menu-close" onclick="closeMenu()">Close</button>
   <a href="#top" onclick="closeMenu(); goHome(); return false;">Home</a>
@@ -1075,7 +1075,7 @@
 
       <div class="deck-slide" data-slide="5" hidden>
         <p class="deck-body">Yeh Media is a focused team of concept strategists, art directors and content producers working across the hospitality industry. Our international network of photographers, filmmakers and stylists is curated project by project, matched to each property's own story.</p>
-        <a href="#contact" class="contact-cta-bw" style="margin-top:24px;" onclick="leaveDeckTo('contact'); return false;">Work With Us!</a>
+        <a href="mailto:hello@yehmedia.nl?subject=Work%20with%20Yeh%20Media" class="contact-cta-bw" style="margin-top:24px;">Work With Us!</a>
       </div>
 
     </div>
@@ -1173,7 +1173,7 @@
   <section class="ph-section" id="phoneStudio" style="padding-bottom: 72px;">
     <h2 class="ph-title ph-reveal">The Studio.</h2>
     <p class="ph-body ph-reveal" style="--d:100ms">Yeh Media is a focused team of concept strategists, art directors and content producers working across the hospitality industry. Our international network of photographers, filmmakers and stylists is curated project by project, matched to each property's own story.</p>
-    <a href="#contact" class="contact-cta-bw ph-studio-cta ph-reveal" style="--d:200ms" onclick="leaveDeckTo('contact'); return false;">Work With Us!</a>
+    <a href="mailto:hello@yehmedia.nl?subject=Work%20with%20Yeh%20Media" class="contact-cta-bw ph-studio-cta ph-reveal" style="--d:200ms">Work With Us!</a>
   </section>
 </main>
 
@@ -2682,7 +2682,7 @@
   // The deck owns the viewport — except on phones, which scroll normally.
   if (!isPhone) document.body.style.overflow = "hidden";
 
-  var CONTACT_EMAIL = "hello@yehmedia.placeholder"; // swap for the real inbox once there is one
+  var CONTACT_EMAIL = "hello@yehmedia.nl";
 
   function openMenu() { document.getElementById("menuOverlay").classList.add("open"); }
   function closeMenu() { document.getElementById("menuOverlay").classList.remove("open"); }
@@ -2691,8 +2691,8 @@
   // multi-select) plus its submit. No backend: compiles one message and
   // hands off to the visitor's own mail client via a mailto: link,
   // addressed to CONTACT_EMAIL, mirroring buildSurveyMailtoLink in
-  // lib/contact.ts. Every "Work With Us" CTA on the site (the floating
-  // button, Studio slide, Menu) opens this page.
+  // lib/contact.ts. Menu's "Contact" opens this page; every "Work With Us"
+  // button opens an email to CONTACT_EMAIL instead.
   (function () {
     var toggleGroups = document.querySelectorAll(".contact-toggles");
     var contactState = {};

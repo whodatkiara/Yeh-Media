@@ -2,8 +2,8 @@ import siteData from "@/data/site.json";
 
 // The /contact page's qualifying questionnaire — see app/contact/page.tsx.
 // Zero-backend: compile the answers into one message and hand off to the
-// visitor's own mail client, addressed to the studio. contactEmail in
-// data/site.json is a placeholder until there's a real inbox to send to.
+// visitor's own mail client, addressed to the studio (contactEmail in
+// data/site.json).
 export type SurveyAnswers = {
   propertyType?: string;
   location?: string;
@@ -48,3 +48,7 @@ export function buildSurveyMailtoLink(a: SurveyAnswers): string {
   const body = buildSurveyMessage(a);
   return `mailto:${siteData.contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
+
+// Every "Work With Us" button opens a new email to the studio with the
+// subject already filled in.
+export const workWithUsMailto = `mailto:${siteData.contactEmail}?subject=${encodeURIComponent("Work with Yeh Media")}`;
