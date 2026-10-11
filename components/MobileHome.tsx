@@ -153,7 +153,7 @@ function Hotel() {
     <section
       id="hotel"
       ref={ref}
-      className="relative isolate h-[82svh] mt-4 overflow-hidden"
+      className="relative isolate h-[68svh] mt-4 overflow-hidden"
     >
       <HotelRow visible={inView} assemble={assemble} compact />
     </section>

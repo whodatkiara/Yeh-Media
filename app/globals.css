@@ -531,6 +531,7 @@ body {
   --hotel-gap-ms: 520ms; /* stagger: centre -> left -> right */
   --hotel-shift-x: 3vw; /* whole row nudged left of dead-centre */
   display: flex;
+  flex: none;
   align-items: flex-end;
   justify-content: center;
   /* --hotel-pan is set by HotelRow.tsx on phones only, to bring the lit
@@ -544,6 +545,7 @@ body {
 .hotel-piece {
   position: relative;
   display: block;
+  flex-shrink: 0;
   opacity: 0;
   will-change: transform, opacity;
   transition:
@@ -555,6 +557,13 @@ body {
   display: block;
   height: var(--hotel-h);
   width: auto;
+  /* Tailwind's reset gives every <img> max-width:100%, and an image with a
+     percentage max-width counts as zero-width when the browser works out
+     how much a flex row can shrink — so on a phone it shrank the three
+     ~1200px-wide buildings to fit a 375px screen, squeezing them (and the
+     windows/clips inside them) sideways. They keep their true proportions
+     now; the row pans to the lit window instead (see HotelRow.tsx). */
+  max-width: none;
   filter: drop-shadow(5px 9px 14px rgba(0, 0, 0, 0.13));
 }
 
@@ -709,7 +718,7 @@ body {
   }
 
   .hotel-row-track {
-    --hotel-h: 56vh;
+    --hotel-h: 50vh;
     --hotel-overlap-left: 14vw;
     --hotel-overlap-right: 8vw;
     --hotel-nudge-left: 3vw;

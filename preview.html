@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Yeh Media: Preview</title>
+<link rel="icon" href="app/icon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link
@@ -384,6 +385,7 @@
     --hotel-gap-ms: 520ms;
     --hotel-shift-x: 3vw; /* whole row nudged left of dead-centre */
     display: flex;
+    flex: none;
     align-items: flex-end;
     justify-content: center;
     /* --hotel-pan is set by panHotelTo() on phones only, to bring the lit
@@ -397,6 +399,7 @@
   .hotel-piece {
     position: relative;
     display: block;
+    flex-shrink: 0;
     opacity: 0;
     will-change: transform, opacity;
     transition:
@@ -407,6 +410,9 @@
     display: block;
     height: var(--hotel-h);
     width: auto;
+    /* Never squeezed by a flex row (see the matching note in globals.css):
+       the buildings keep their true proportions and the row pans instead. */
+    max-width: none;
     filter: drop-shadow(5px 9px 14px rgba(0, 0, 0, 0.13));
   }
 
@@ -500,7 +506,7 @@
 
   @media (max-width: 767px) {
     .hotel-row-track {
-      --hotel-h: 56vh;
+      --hotel-h: 50vh;
       --hotel-overlap-left: 14vw;
       --hotel-overlap-right: 8vw;
       --hotel-nudge-left: 3vw;
@@ -894,7 +900,7 @@
      at 1% — imperceptible, but still "visible" to the browser. */
   html.is-phone .hotel-win { opacity: 0.01; }
   html.is-phone .hotel-win.is-current { opacity: 1; }
-  .ph-hotel { position: relative; isolation: isolate; height: 82vh; height: 82svh; margin-top: 16px; overflow: hidden; }
+  .ph-hotel { position: relative; isolation: isolate; height: 68vh; height: 68svh; margin-top: 16px; overflow: hidden; }
 
   .ph-section { padding: 96px 24px 8px; }
   .ph-title { font-family: "Archivo", sans-serif; font-weight: 600; font-size: clamp(28px, 9vw, 40px); letter-spacing: -0.01em; text-transform: uppercase; line-height: 1.1; margin: 0 0 28px; }

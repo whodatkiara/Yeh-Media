@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useReducedMotion } from "@/lib/use-reduced-motion";
 import siteData from "@/data/site.json";
 
 const PHRASES = siteData.heroMorphPhrases;
@@ -20,14 +19,17 @@ const ROLL_MS = 600;
  * Uses the same rolling-cube mechanic (see .roll-window/.roll-face in
  * globals.css) as the deck's title transition, just driven by an internal
  * interval instead of a scroll/swipe gesture.
+ *
+ * It keeps cycling under Reduce Motion too — there the roll is swapped for a
+ * plain cross-fade (see globals.css) rather than the phrase freezing on its
+ * first word.
  */
 export default function HeroPhrase() {
-  const reducedMotion = useReducedMotion();
   const [current, setCurrent] = useState(0);
   const [phase, setPhase] = useState<"idle" | "rolling">("idle");
 
   useEffect(() => {
-    if (reducedMotion || PHRASES.length <= 1) return;
+    if (PHRASES.length <= 1) return;
 
     let holdTimer: ReturnType<typeof setTimeout>;
     let rollTimer: ReturnType<typeof setTimeout>;
@@ -48,7 +50,7 @@ export default function HeroPhrase() {
       clearTimeout(holdTimer);
       clearTimeout(rollTimer);
     };
-  }, [reducedMotion]);
+  }, []);
 
   const nextIndex = (current + 1) % PHRASES.length;
 
