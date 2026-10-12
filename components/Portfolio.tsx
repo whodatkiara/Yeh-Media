@@ -29,10 +29,6 @@ export type Project = {
   // cover is clickable and opens the lightbox to page through all of them.
   media?: MediaItem[];
   description: string;
-  // Small stat row shown under a /work card's description, counting up
-  // into view — see KpiRow. Placeholder numbers for now (marked below);
-  // swap in the real figures once they're in hand.
-  kpis?: { label: string; value: number; suffix?: string }[];
 };
 
 // Order matters: the first FEATURED_COUNT entries are what the homepage
@@ -63,11 +59,6 @@ export const projects: Project[] = [
     aspect: "9/16",
     description:
       "An ongoing edit of Paris interiors, each pick chosen for atmosphere and material, never for a star rating.",
-    kpis: [
-      { label: "Views", value: 88300 },
-      { label: "Saves", value: 3700 },
-      { label: "Follows", value: 180 },
-    ],
   },
   {
     tag: "Rotterdam",
@@ -97,11 +88,6 @@ export const projects: Project[] = [
     aspect: "9/16",
     description:
       "A recurring edit of hotel picks, framed on atmosphere first and amenities second: a format, not a one-off post.",
-    kpis: [
-      { label: "Views", value: 45700 },
-      { label: "Follows", value: 270 },
-      { label: "Saves", value: 1300 },
-    ],
   },
   {
     tag: "Rotterdam",
@@ -135,7 +121,6 @@ export const projects: Project[] = [
     aspect: "9/16",
     description:
       "Paris' retail interiors, read with the same eye for form and detail as the fashion inside them.",
-    kpis: [{ label: "Views", value: 15900 }],
   },
   {
     tag: "Rotterdam",

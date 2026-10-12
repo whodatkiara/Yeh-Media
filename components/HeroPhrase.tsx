@@ -12,15 +12,14 @@ const HOLD_MS = 1800;
 const ROLL_MS = 600;
 
 /**
- * The hero slide's own right-side content: a single self-contained line
- * cycling through guest outcomes, sized to match the left panel's "Yeh
- * Media" treatment (small, thin, tracked) so both sides read as one
- * centered row rather than the right side sitting lower than the left.
- * Uses the same rolling-cube mechanic (see .roll-window/.roll-face in
- * globals.css) as the deck's title transition, just driven by an internal
- * interval instead of a scroll/swipe gesture.
+ * The hero's right-hand content (and, on phones, the block under the
+ * wordmark): the positioning line (siteData.copy.heroLine), which stays put,
+ * with a single line of words under it cycling through what the studio
+ * does. The cycling line uses the same rolling-cube mechanic (see
+ * .roll-window/.roll-face in globals.css) as the deck's title transition,
+ * driven by an internal interval instead of a scroll/swipe gesture.
  *
- * It keeps cycling under Reduce Motion too — there the roll is swapped for a
+ * It keeps cycling under Reduce Motion too: there the roll is swapped for a
  * plain cross-fade (see globals.css) rather than the phrase freezing on its
  * first word.
  */
@@ -55,19 +54,26 @@ export default function HeroPhrase() {
   const nextIndex = (current + 1) % PHRASES.length;
 
   return (
-    <div className="roll-window w-full font-mono font-normal text-[clamp(15px,2.3vw,28px)] tracking-[0.06em] uppercase whitespace-nowrap">
-      {phase === "rolling" ? (
-        <>
-          <span key={`out-${current}`} className="roll-face roll-out">
-            {PHRASES[current]}
-          </span>
-          <span key={`in-${nextIndex}`} className="roll-face roll-in">
-            {PHRASES[nextIndex]}
-          </span>
-        </>
-      ) : (
-        <span className="roll-face">{PHRASES[current]}</span>
-      )}
+    <div className="flex w-full flex-col items-center gap-6 text-center">
+      {/* The positioning line: what makes the studio different, said once
+          and staying put, while the words below it keep changing. */}
+      <p className="max-w-[24ch] font-mono font-normal text-[clamp(17px,1.9vw,26px)] leading-snug text-black">
+        {siteData.copy.heroLine}
+      </p>
+      <div className="roll-window w-full font-mono font-normal text-[clamp(12px,1.35vw,15px)] tracking-[0.2em] uppercase whitespace-nowrap text-black/50">
+        {phase === "rolling" ? (
+          <>
+            <span key={`out-${current}`} className="roll-face roll-out">
+              {PHRASES[current]}
+            </span>
+            <span key={`in-${nextIndex}`} className="roll-face roll-in">
+              {PHRASES[nextIndex]}
+            </span>
+          </>
+        ) : (
+          <span className="roll-face">{PHRASES[current]}</span>
+        )}
+      </div>
     </div>
   );
 }

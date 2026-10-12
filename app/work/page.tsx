@@ -6,7 +6,6 @@ import { useRef, useState } from "react";
 import { projects, type Project } from "@/components/Portfolio";
 import { PORTFOLIO_SLIDE_INDEX } from "@/components/HomeDeck";
 import Lightbox from "@/components/Lightbox";
-import KpiRow from "@/components/KpiRow";
 import ScrollReveal from "@/components/ScrollReveal";
 import { useVideoErrorRetry } from "@/lib/use-video-retry";
 
@@ -91,7 +90,6 @@ function WorkCard({
         <p className="font-mono text-sm text-black/60 leading-relaxed">
           {item.description}
         </p>
-        {item.kpis && <KpiRow kpis={item.kpis} />}
       </div>
     </ScrollReveal>
   );
