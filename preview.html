@@ -335,11 +335,10 @@
     transition-delay: 350ms;
   }
 
-  /* Hero: the positioning line stays put, the words under it keep
-     changing. Mirrors components/HeroPhrase.tsx. */
-  .hero-block { display: flex; flex-direction: column; align-items: center; gap: 24px; width: 100%; text-align: center; }
-  .hero-line { font-family: "Onest", sans-serif; font-weight: 400; font-size: clamp(17px, 1.9vw, 26px); line-height: 1.3; max-width: 24ch; margin: 0; color: #000; }
-  .hero-rotator { font-size: clamp(12px, 1.35vw, 15px) !important; letter-spacing: 0.2em !important; color: rgba(0,0,0,0.5); }
+  /* Hero: short hotel-facing lines that take turns (two lines tall so a long
+     one can wrap on a narrow screen). Mirrors components/HeroPhrase.tsx. */
+  .hero-rotator { height: 2.7em !important; padding: 0 8px; text-align: center; white-space: normal !important; text-transform: none !important; letter-spacing: 0 !important; line-height: 1.25; font-family: "Onest", sans-serif; font-weight: 400; font-size: clamp(18px, 2vw, 28px) !important; color: #000; }
+  .hero-rotator .roll-face { text-align: center; }
 
   .deck-body {
     font-family: "Onest", sans-serif;
@@ -872,9 +871,8 @@
 
   .ph-hero { position: relative; min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 0 24px; text-align: center; }
   .ph-hero-title { font-family: "Archivo", sans-serif !important; font-weight: 600 !important; font-size: clamp(34px, 11vw, 52px) !important; letter-spacing: -0.01em !important; }
-  .ph-hero-line { font-family: "Onest", sans-serif; font-weight: 400; font-size: clamp(17px, 4.8vw, 20px); line-height: 1.3; max-width: 24ch; margin: 0; color: #000; opacity: 0; transition: opacity 0.9s ease; }
-  .ph-hero-line.is-in { opacity: 1; }
-  .ph-hero-phrase { font-size: 12px !important; letter-spacing: 0.2em !important; color: rgba(0,0,0,0.5); opacity: 0; transition: opacity 0.9s ease; }
+  .ph-hero-phrase { height: 2.7em !important; padding: 0 8px; text-align: center; white-space: normal !important; text-transform: none !important; letter-spacing: 0 !important; line-height: 1.25; font-size: clamp(18px, 5.2vw, 22px) !important; color: #000; opacity: 0; transition: opacity 0.9s ease; }
+  .ph-hero-phrase .roll-face { text-align: center; }
   .ph-hero-phrase.is-in { opacity: 1; }
   .ph-cue { position: absolute; bottom: 32px; left: calc(50% - 0.5px); width: 1px; height: 48px; background: rgba(0,0,0,0.12); overflow: hidden; opacity: 0; transition: opacity 0.9s ease; }
   .ph-cue.is-in { opacity: 1; }
@@ -937,7 +935,7 @@
   .lightbox-stage img, .lightbox-stage video { max-height: 85vh; max-width: 100%; object-fit: contain; }
 
   @media (prefers-reduced-motion: reduce) {
-    .roll-out, .roll-in, .deck-fade-out, .deck-fade-in, .deck-stack, .reveal, .pillars-intro-group, .neuro-emphasis, .envelope-flying, .ph-reveal, .ph-media, .ph-hero-phrase, .ph-hero-line,
+    .roll-out, .roll-in, .deck-fade-out, .deck-fade-in, .deck-stack, .reveal, .pillars-intro-group, .neuro-emphasis, .envelope-flying, .ph-reveal, .ph-media, .ph-hero-phrase,
     .portfolio-filmstrip-track, .portfolio-filmstrip-row, .portfolio-thumb, .portfolio-thumb img,
     .hotel-piece {
       animation-duration: 250ms !important;
@@ -979,11 +977,8 @@
     <div class="deck-stack deck-loading" id="deckStack">
 
       <div class="deck-slide" data-slide="0">
-        <div class="hero-block">
-          <p class="hero-line">We read the space first, then make the content.</p>
-          <div class="roll-window hero-rotator" id="heroPhraseWindow">
-            <span class="roll-face">Creative Direction.</span>
-          </div>
+        <div class="roll-window hero-rotator" id="heroPhraseWindow">
+          <span class="roll-face">Hotels, through a designer's eyes.</span>
         </div>
       </div>
 
@@ -1129,7 +1124,6 @@
 <main class="phone-home" id="phoneHome">
   <section class="ph-hero" id="phoneHero">
     <div class="roll-window ph-hero-title" id="phoneHeroTitle"></div>
-    <p class="ph-hero-line" id="phoneHeroLine">We read the space first, then make the content.</p>
     <div class="roll-window ph-hero-phrase" id="phoneHeroPhrase"></div>
     <span class="ph-cue" id="phoneCue" aria-hidden="true"></span>
   </section>
@@ -1472,7 +1466,13 @@
   // standalone phrases) — label + single landing word, mirroring the left
   // panel's title — rather than the same trick twice in a row. Static on
   // the first word if the user prefers reduced motion.
-  var HERO_PHRASES = ["Creative Direction.", "Content Creation.", "Strategy.", "For Hospitality."];
+  var HERO_PHRASES = [
+    "Hotels, through a designer's eyes.",
+    "The story starts in the space.",
+    "Content that fills rooms.",
+    "Built from the space out.",
+    "From first scroll to check-in."
+  ];
   var rollWindowEl = document.getElementById("heroPhraseWindow");
   if (rollWindowEl && HERO_PHRASES.length > 1 && !prefersReducedMotion) {
     var heroCurrent = 0;
@@ -1487,7 +1487,7 @@
           rollWindowEl.innerHTML = '<span class="roll-face">' + HERO_PHRASES[heroCurrent] + "</span>";
           scheduleHeroRoll();
         }, 600); // must match .roll-out/.roll-in's animation-duration above
-      }, 1800);
+      }, 2800);
     })();
   }
 
@@ -2303,7 +2303,6 @@
     // phrase fades in and starts cycling, and a scroll cue appears.
     function startPhrase() {
       phraseEl.classList.add("is-in");
-      document.getElementById("phoneHeroLine").classList.add("is-in");
       cueEl.classList.add("is-in");
       phraseEl.innerHTML = '<span class="roll-face">' + HERO_PHRASES[0] + "</span>";
       var cur = 0;
@@ -2318,7 +2317,7 @@
             phraseEl.innerHTML = '<span class="roll-face">' + HERO_PHRASES[cur] + "</span>";
             schedule();
           }, LOAD_ROLL_MS);
-        }, 1800);
+        }, 2800);
       })();
     }
     // The intro always plays: with Reduce Motion on, the 3D roll is swapped

@@ -119,7 +119,7 @@ function Hero({ scrolledPast }: { scrolledPast: (past: boolean) => void }) {
         )}
       </div>
       <div
-        className={`w-full text-black/70 transition-opacity duration-1000 ${
+        className={`w-full text-black transition-opacity duration-1000 ${
           ready ? "opacity-100" : "opacity-0"
         }`}
       >
