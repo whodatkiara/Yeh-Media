@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { projects, type Project } from "@/components/Portfolio";
 import PinnedRail from "@/components/PinnedRail";
 import RailPageHeader from "@/components/RailPageHeader";
@@ -25,14 +25,27 @@ function sizeFor(aspect: string) {
 }
 
 // The rail (PinnedRail) plays the clip nearest the centre and pauses the
-// rest, so nothing here autoplays on its own.
-function RailVideo({ project }: { project: Project }) {
+// rest, so nothing here autoplays on its own. Tapping a clip switches sound
+// on (or off) for all of them.
+function RailVideo({
+  project,
+  onTap,
+  onMutedChange,
+}: {
+  project: Project;
+  onTap: () => void;
+  onMutedChange: (muted: boolean) => void;
+}) {
   const ref = useRef<HTMLVideoElement>(null);
   useVideoErrorRetry(ref);
   const size = sizeFor(project.aspect ?? "9/16");
   return (
     <figure>
-      <div className={`relative overflow-hidden bg-black/[0.04] ${size.className}`} style={size.style}>
+      <div
+        className={`relative cursor-pointer overflow-hidden bg-black/[0.04] ${size.className}`}
+        style={size.style}
+        onClick={onTap}
+      >
         <video
           ref={ref}
           src={project.video}
@@ -41,6 +54,7 @@ function RailVideo({ project }: { project: Project }) {
           loop
           playsInline
           preload="metadata"
+          onVolumeChange={(e) => onMutedChange(e.currentTarget.muted)}
           className="absolute inset-0 h-full w-full object-cover"
         />
       </div>
@@ -57,17 +71,82 @@ function RailVideo({ project }: { project: Project }) {
  */
 export default function WorkVideosView() {
   const videos = projects.filter((p) => p.video);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [sound, setSound] = useState(false);
+
+  function allVideos() {
+    return Array.from(rootRef.current?.querySelectorAll("video") ?? []);
+  }
+
+  // Browsers only allow sound after a tap, so it starts off and this runs
+  // inside the tap: unmuting whatever is playing right now is what lets the
+  // browser count the tap as permission for the clips that follow.
+  function toggleSound() {
+    const next = !sound;
+    allVideos().forEach((v) => {
+      v.muted = !next;
+    });
+    setSound(next);
+  }
+
+  // If a browser refuses sound on a clip and the rail has to fall back to
+  // silent playback (see PinnedRail), the button should say so.
+  function onMutedChange(muted: boolean) {
+    setSound((current) => (current === !muted ? current : !muted));
+  }
+
+  // Keep every clip in step with the button, including ones that haven't
+  // been reached yet.
+  useEffect(() => {
+    allVideos().forEach((v) => {
+      v.muted = !sound;
+    });
+  }, [sound]);
+
   return (
-    <div className="bg-white text-black">
+    <div ref={rootRef} className="bg-white text-black">
       <RailPageHeader
         title="In Motion."
-        intro="This part of the site shows the films only. Scroll to move through them, one at a time."
+        intro="This part of the site shows the films only. Scroll to move through them, one at a time. Tap the speaker icon, or any film, to hear them."
       />
       <PinnedRail>
         {videos.map((project) => (
-          <RailVideo key={project.project} project={project} />
+          <RailVideo
+            key={project.project}
+            project={project}
+            onTap={toggleSound}
+            onMutedChange={onMutedChange}
+          />
         ))}
       </PinnedRail>
+      <button
+        type="button"
+        onClick={toggleSound}
+        aria-pressed={sound}
+        aria-label={sound ? "Turn sound off" : "Turn sound on"}
+        className="fixed bottom-4 left-4 z-40 flex h-12 w-12 items-center justify-center border border-black bg-white text-black transition-colors hover:bg-black hover:text-white sm:bottom-6 sm:left-6"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          className="h-6 w-6"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5H4z" />
+          {sound ? (
+            <>
+              <path d="M15.5 9a4 4 0 0 1 0 6" />
+              <path d="M18 6.5a7.5 7.5 0 0 1 0 11" />
+            </>
+          ) : (
+            <path d="M16 9.5l5 5M21 9.5l-5 5" />
+          )}
+        </svg>
+      </button>
     </div>
   );
 }

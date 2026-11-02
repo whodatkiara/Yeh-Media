@@ -93,7 +93,15 @@ export default function PinnedRail({
         const prev = items[active]?.querySelector("video");
         const next = items[best]?.querySelector("video");
         prev?.pause();
-        next?.play().catch(() => {});
+        // If the browser refuses to start a clip with sound (iPhones can,
+        // outside a tap), fall back to playing it silently rather than
+        // leaving it frozen; the page's Sound button then reads "off".
+        next?.play().catch(() => {
+          if (next && !next.muted) {
+            next.muted = true;
+            next.play().catch(() => {});
+          }
+        });
         active = best;
       }
     }
