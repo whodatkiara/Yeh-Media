@@ -23,7 +23,8 @@ const MIN_OPACITY = 0.55;
  *
  * Each frame (scroll / resize) writes transform, grayscale and opacity
  * straight to the DOM instead of through React state, and any <video>
- * inside the item nearest the centre plays while the others pause.
+ * inside the item nearest the centre plays while the others pause (the
+ * playing one is marked data-live="1").
  */
 export default function PinnedRail({
   children,
@@ -92,16 +93,25 @@ export default function PinnedRail({
       if (best !== active) {
         const prev = items[active]?.querySelector("video");
         const next = items[best]?.querySelector("video");
-        prev?.pause();
-        // If the browser refuses to start a clip with sound (iPhones can,
-        // outside a tap), fall back to playing it silently rather than
-        // leaving it frozen; the page's Sound button then reads "off".
-        next?.play().catch(() => {
-          if (next && !next.muted) {
-            next.muted = true;
-            next.play().catch(() => {});
-          }
-        });
+        if (prev) {
+          prev.dataset.live = "0";
+          prev.pause();
+        }
+        if (next) {
+          next.dataset.live = "1";
+          // Only a NotAllowedError means the browser refused sound (iPhones
+          // can, outside a tap): then play silently rather than leave the
+          // clip frozen, and the page's speaker icon reads "off". An
+          // AbortError just means the row moved on again before the clip
+          // started, which is normal when scrolling fast and must not mute
+          // anything.
+          next.play().catch((error: unknown) => {
+            if ((error as DOMException)?.name === "NotAllowedError" && !next.muted) {
+              next.muted = true;
+              next.play().catch(() => {});
+            }
+          });
+        }
         active = best;
       }
     }

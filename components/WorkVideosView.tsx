@@ -79,12 +79,26 @@ export default function WorkVideosView() {
   }
 
   // Browsers only allow sound after a tap, so it starts off and this runs
-  // inside the tap: unmuting whatever is playing right now is what lets the
-  // browser count the tap as permission for the clips that follow.
+  // inside the tap. Unmuting whatever is playing right now is what lets the
+  // browser count the tap as permission. iPhones decide per clip, though: a
+  // clip that has never been started inside a tap can't later start with
+  // sound on its own. So every other clip is started and stopped again right
+  // here, inside the tap, which is what clears it to play with sound later
+  // (clips the row has already moved onto in the meantime are left alone).
   function toggleSound() {
     const next = !sound;
     allVideos().forEach((v) => {
       v.muted = !next;
+      if (next && v.paused) {
+        v.play()
+          .then(() => {
+            if (v.dataset.live !== "1") {
+              v.pause();
+              v.currentTime = 0;
+            }
+          })
+          .catch(() => {});
+      }
     });
     setSound(next);
   }
