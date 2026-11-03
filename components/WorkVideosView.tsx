@@ -123,7 +123,7 @@ export default function WorkVideosView() {
         title="In Motion."
         intro="This part of the site shows the films only. Scroll to move through them, one at a time. Tap the speaker icon, or any film, to hear them."
       />
-      <PinnedRail>
+      <PinnedRail nudge>
         {videos.map((project) => (
           <RailVideo
             key={project.project}

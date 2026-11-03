@@ -48,11 +48,12 @@ export default function WorkStillsView() {
         title="In Stills."
         intro="This part of the site shows the photographs only, grouped by shoot. Scroll to move through each series."
       />
-      {series.map((project) => {
+      {series.map((project, index) => {
         const photos = project.media!.filter((m) => m.type === "image");
         return (
           <PinnedRail
             key={project.project}
+            nudge={index === 0}
             title={project.project}
             caption={`${project.tag} · ${photos.length} photos`}
           >

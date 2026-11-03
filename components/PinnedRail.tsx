@@ -30,11 +30,16 @@ export default function PinnedRail({
   children,
   title,
   caption,
+  nudge = false,
 }: {
   children: ReactNode;
   // Optional heading pinned above the row (used for the stills sections).
   title?: string;
   caption?: string;
+  // Once, shortly after load, slide the row a little to the side and let it
+  // settle back, so it is clear the films move. Only meant for the first rail
+  // on a page.
+  nudge?: boolean;
 }) {
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -53,6 +58,10 @@ export default function PinnedRail({
     let vw = 0;
     let frame = 0;
     let active = -1;
+    let nudgeX = 0;
+    let nudgeTimer = 0;
+    let nudgeFrame = 0;
+    let inertia = 0;
 
     function measure() {
       const items = Array.from(track!.children) as HTMLElement[];
@@ -72,7 +81,7 @@ export default function PinnedRail({
       if (!items.length) return;
       const top = section!.getBoundingClientRect().top;
       const t = range > 0 ? Math.min(Math.max((-top - hold) / range, 0), 1) : 0;
-      const x = vw / 2 - (first + t * range);
+      const x = vw / 2 - (first + t * range) + nudgeX;
       track!.style.transform = `translate3d(${x}px,0,0)`;
 
       let best = 0;
@@ -124,25 +133,120 @@ export default function PinnedRail({
       schedule();
     }
 
+    // Sideways input drives the same vertical scroll the row is tied to, so
+    // swiping or trackpad-scrolling sideways moves the films just like
+    // scrolling down does.
+    function inView() {
+      const r = section!.getBoundingClientRect();
+      return r.top < window.innerHeight && r.bottom > 0;
+    }
+    function nudgeScroll(dy: number) {
+      window.scrollBy({ top: dy, behavior: "instant" });
+    }
+    function onWheel(e: WheelEvent) {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || !inView()) return;
+      e.preventDefault();
+      nudgeScroll(e.deltaX);
+    }
+
+    let startX = 0;
+    let startY = 0;
+    let lastX = 0;
+    let lastT = 0;
+    let velocity = 0; // px per ms, in scroll direction
+    let axis: 0 | 1 | 2 = 0; // 0 undecided, 1 sideways, 2 vertical
+    function glide() {
+      velocity *= 0.95;
+      if (Math.abs(velocity) < 0.02) {
+        inertia = 0;
+        return;
+      }
+      nudgeScroll(velocity * 16);
+      inertia = requestAnimationFrame(glide);
+    }
+    function onTouchStart(e: TouchEvent) {
+      cancelAnimationFrame(inertia);
+      inertia = 0;
+      const p = e.touches[0];
+      startX = lastX = p.clientX;
+      startY = p.clientY;
+      lastT = e.timeStamp;
+      velocity = 0;
+      axis = 0;
+    }
+    function onTouchMove(e: TouchEvent) {
+      const p = e.touches[0];
+      if (axis === 0) {
+        const dx = Math.abs(p.clientX - startX);
+        const dy = Math.abs(p.clientY - startY);
+        if (dx < 8 && dy < 8) return;
+        axis = dx > dy ? 1 : 2;
+      }
+      if (axis !== 1) return;
+      e.preventDefault();
+      const step = lastX - p.clientX;
+      const dt = Math.max(e.timeStamp - lastT, 1);
+      velocity = step / dt;
+      nudgeScroll(step);
+      lastX = p.clientX;
+      lastT = e.timeStamp;
+    }
+    function onTouchEnd(e: TouchEvent) {
+      // A pause before letting go means no glide.
+      if (axis === 1 && e.timeStamp - lastT < 80 && Math.abs(velocity) > 0.05) {
+        inertia = requestAnimationFrame(glide);
+      }
+    }
+
+    // One gentle push to the side and back. Skipped if the visitor has
+    // already started scrolling.
+    function runNudge() {
+      if (window.scrollY > 40) return;
+      const distance = Math.min(90, pitch * 0.3);
+      const duration = 1800;
+      const start = performance.now();
+      function step(now: number) {
+        const u = Math.min((now - start) / duration, 1);
+        nudgeX = -distance * Math.sin(Math.PI * u);
+        schedule();
+        if (u < 1) nudgeFrame = requestAnimationFrame(step);
+        else nudgeX = 0;
+      }
+      nudgeFrame = requestAnimationFrame(step);
+    }
+
     measure();
     paint();
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", onResize);
+    window.addEventListener("wheel", onWheel, { passive: false });
+    section.addEventListener("touchstart", onTouchStart, { passive: true });
+    section.addEventListener("touchmove", onTouchMove, { passive: false });
+    section.addEventListener("touchend", onTouchEnd, { passive: true });
     const ro = new ResizeObserver(onResize);
     ro.observe(track);
+    if (nudge) nudgeTimer = window.setTimeout(runNudge, 900);
     return () => {
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", onResize);
+      window.removeEventListener("wheel", onWheel);
+      section.removeEventListener("touchstart", onTouchStart);
+      section.removeEventListener("touchmove", onTouchMove);
+      section.removeEventListener("touchend", onTouchEnd);
       ro.disconnect();
       cancelAnimationFrame(frame);
+      cancelAnimationFrame(inertia);
+      cancelAnimationFrame(nudgeFrame);
+      clearTimeout(nudgeTimer);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <section
       ref={sectionRef}
       className="relative"
-      style={{ height: `calc(100svh + ${extra}px)` }}
+      style={{ height: `calc(100svh + ${extra}px)`, touchAction: "pan-y pinch-zoom" }}
     >
       <div className="sticky top-0 flex h-svh flex-col justify-center overflow-hidden pt-20 pb-8 md:pt-16">
         {title && (
