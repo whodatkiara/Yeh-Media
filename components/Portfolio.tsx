@@ -52,7 +52,7 @@ export const projects: Project[] = [
   {
     tag: "Paris",
     project: "Paris, by Design",
-    format: "Instagram · 88.3K views",
+    format: "Instagram · 147.6K views",
     type: "video",
     src: "/images/portfolio/paris-by-design.jpg",
     video: "/video/portfolio/paris-by-design.mp4",
@@ -81,7 +81,7 @@ export const projects: Project[] = [
   {
     tag: "Paris",
     project: "Where to Stay, by Design",
-    format: "Instagram · 45.7K views",
+    format: "Instagram · 48.1K views",
     type: "video",
     src: "/images/portfolio/where-to-stay.jpg",
     video: "/video/portfolio/where-to-stay.mp4",
@@ -114,7 +114,7 @@ export const projects: Project[] = [
   {
     tag: "Paris",
     project: "Fashion Interiors",
-    format: "Instagram · 15.9K views",
+    format: "Instagram · 16.3K views",
     type: "video",
     src: "/images/portfolio/saint-martin-walk.jpg",
     video: "/video/portfolio/saint-martin-walk.mp4",

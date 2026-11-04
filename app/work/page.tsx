@@ -7,6 +7,7 @@ import { projects, type Project } from "@/components/Portfolio";
 import { PORTFOLIO_SLIDE_INDEX } from "@/components/HomeDeck";
 import Lightbox from "@/components/Lightbox";
 import ScrollReveal from "@/components/ScrollReveal";
+import { caseStudyFor } from "@/data/case-studies";
 import { useVideoErrorRetry } from "@/lib/use-video-retry";
 
 /**
@@ -24,6 +25,7 @@ function WorkCard({
   onOpen: () => void;
   staggerMs: number;
 }) {
+  const study = caseStudyFor(item.project);
   const multi = (item.media?.length ?? 0) > 1;
   // Videos need an explicit box (a <video> has no size until it loads);
   // photo-only pieces are left to their own real size.
@@ -85,11 +87,28 @@ function WorkCard({
           {item.tag} · {item.format}
         </p>
         <h3 className="font-sans font-semibold text-xl tracking-tight mb-2">
-          {item.project}
+          {study ? (
+            <Link
+              href={`/work/${study.slug}`}
+              className="underline decoration-transparent underline-offset-4 transition-colors hover:decoration-black/40"
+            >
+              {item.project}
+            </Link>
+          ) : (
+            item.project
+          )}
         </h3>
         <p className="font-mono text-sm text-black/60 leading-relaxed">
           {item.description}
         </p>
+        {study && (
+          <Link
+            href={`/work/${study.slug}`}
+            className="mt-4 inline-block font-mono text-[11px] tracking-[0.15em] uppercase text-black underline underline-offset-4 decoration-black/40 transition-colors hover:decoration-black"
+          >
+            Behind the piece →
+          </Link>
+        )}
       </div>
     </ScrollReveal>
   );
