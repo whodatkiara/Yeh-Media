@@ -43,7 +43,10 @@ export default function Footer() {
   }
 
   return (
-    <footer className="bg-white text-black px-6 md:px-16 pb-28">
+    // The generous space above and below is deliberate: it lets the last line
+    // of any page scroll well clear of the screen's bottom edge and of the
+    // floating Work With Us button, so no sentence is left half cut off.
+    <footer className="bg-white text-black px-6 md:px-16 pt-32 md:pt-48 pb-40 md:pb-44">
       <div
         className={`${
           pathname === "/work" ? "max-w-6xl" : "max-w-2xl"

@@ -11,12 +11,14 @@ export type CaseStudy = {
   project: string;
   eyebrow: string;
   standfirst: string;
+  // One plain sentence that carries the whole idea, shown large above the detail.
+  takeaway: string;
   thinking: string[];
   // Three short things the eye picks up, each a label and a sentence.
   reads: { label: string; text: string }[];
   results?: {
     headline: string;
-    metrics: { value: string; label: string }[];
+    metrics: { value: string; label: string; hint: string }[];
     compared: { lead: string; text: string }[];
   };
 };
@@ -28,6 +30,7 @@ export const caseStudies: CaseStudy[] = [
     eyebrow: "Paris · Instagram Reel",
     standfirst:
       "Five restaurants, chosen by a designer. The room comes first, the menu second.",
+    takeaway: "People decide how a room feels long before they decide what to order.",
     thinking: [
       "Most restaurant roundups lead with the food. This one leads with how it feels to walk in, because that is what a guest decides first. Every pick was made on atmosphere and material: green marble, brass, silver, soft light on dark surfaces.",
       "Neuroaesthetics gives the reasoning. Warm, low light reads as shelter and slows people down. Smooth, curved forms feel safer to the brain than hard corners. A reflective surface adds depth and lets a guest see the room fill with other people before they have sat down. We filmed for those three signals, so viewers feel the room before they read a word of the caption.",
@@ -50,10 +53,10 @@ export const caseStudies: CaseStudy[] = [
     results: {
       headline: "Seen by almost 100,000 people.",
       metrics: [
-        { value: "147,613", label: "Views" },
-        { value: "99,713", label: "People reached" },
-        { value: "6.6K", label: "Saves" },
-        { value: "280", label: "New follows" },
+        { value: "147,613", label: "Views", hint: "Times the reel was played" },
+        { value: "99,713", label: "People reached", hint: "Different people who saw it" },
+        { value: "6.6K", label: "Saves", hint: "Kept to come back to" },
+        { value: "280", label: "New follows", hint: "People who followed after watching" },
       ],
       compared: [
         {
@@ -77,6 +80,7 @@ export const caseStudies: CaseStudy[] = [
     eyebrow: "Paris · Instagram Reel",
     standfirst:
       "The best designer hotels in Paris, picked by someone who designs them.",
+    takeaway: "A lobby tells a guest who they will be there, before they ever see a room.",
     thinking: [
       "A hotel recommendation is usually a list of amenities. This one is a list of feelings. The edit opens in a lobby and lets the details do the persuading: a round table with greenery, a velvet bench, a dark textured artwork against pale walls, and black and white floor tiles that give the room its rhythm.",
       "That rhythm is the neuroaesthetics. Pattern and contrast give the eye an order to follow, soft wall light keeps it calm, and natural materials and plants signal that a space is cared for. A guest reads all of that in a second, and it decides whether a place feels like somewhere they would stay.",
@@ -99,10 +103,10 @@ export const caseStudies: CaseStudy[] = [
     results: {
       headline: "Watched almost twice by each viewer.",
       metrics: [
-        { value: "48,063", label: "Views" },
-        { value: "26,664", label: "People reached" },
-        { value: "1.4K", label: "Saves" },
-        { value: "289", label: "New follows" },
+        { value: "48,063", label: "Views", hint: "Times the reel was played" },
+        { value: "26,664", label: "People reached", hint: "Different people who saw it" },
+        { value: "1.4K", label: "Saves", hint: "Kept to come back to" },
+        { value: "289", label: "New follows", hint: "People who followed after watching" },
       ],
       compared: [
         {
@@ -126,6 +130,7 @@ export const caseStudies: CaseStudy[] = [
     eyebrow: "Paris · Instagram Reel",
     standfirst:
       "A Paris boutique, read with a hospitality designer's eye.",
+    takeaway: "A well-ordered space persuades without saying a word.",
     thinking: [
       "The brief we gave ourselves: find the shop that is quietly a masterclass in atmosphere, and show it the way a guest walks through a lobby. Pink tile, walnut shelves, a deep green display counter with rounded corners, lighting set in one clean line.",
       "Neuroaesthetics again. Rounded forms feel friendlier than sharp ones, a restrained palette of warm tones keeps the eye calm, and an ordered ceiling line leads it straight to the display. Nothing competes with what matters, and nothing needs to.",
@@ -148,10 +153,10 @@ export const caseStudies: CaseStudy[] = [
     results: {
       headline: "Held attention best.",
       metrics: [
-        { value: "16,346", label: "Views" },
-        { value: "12,475", label: "People reached" },
-        { value: "40.8%", label: "Skip rate" },
-        { value: "159", label: "Saves" },
+        { value: "16,346", label: "Views", hint: "Times the reel was played" },
+        { value: "12,475", label: "People reached", hint: "Different people who saw it" },
+        { value: "40.8%", label: "Skip rate", hint: "Left in the opening seconds. Lower is better." },
+        { value: "159", label: "Saves", hint: "Kept to come back to" },
       ],
       compared: [
         {
@@ -171,6 +176,7 @@ export const caseStudies: CaseStudy[] = [
     eyebrow: "Rotterdam · Interview · Website Feature",
     standfirst:
       "One long conversation, built for the website rather than the feed.",
+    takeaway: "Trust is built at the pace of a real conversation.",
     thinking: [
       "A hotel deciding who to trust wants more than a reel. So we filmed a long, unhurried conversation in a Rotterdam interior and gave it room to breathe: no rush, no cuts for the sake of cuts.",
       "The set was chosen as carefully as the questions. Daylight from the side, a dark stone with a visible pattern, a warm neutral wall: calm surroundings with enough contrast to keep attention on the speaker and make a long film easy to stay with. The frame is wide enough to include the room, because the room is part of what is being said.",
