@@ -131,6 +131,35 @@ export default function PinnedRail({
       }
     }
 
+    // Scrolling down with a trackpad over the row nearly always carries a
+    // little sideways drift, and the snap points turn that drift into a jump
+    // to the next picture, so the row would arrive already moved on. Each
+    // wheel gesture is therefore classed as sideways or vertical when it
+    // starts (a gap in the events starts a new one); during a vertical one
+    // the row is held where it was.
+    let wheelAxis: 0 | 1 | 2 = 0; // 0 none, 1 sideways, 2 vertical
+    let wheelHold = 0;
+    let wheelTimer = 0;
+    function onWheel(e: WheelEvent) {
+      if (wheelAxis === 0) {
+        const ax = Math.abs(e.deltaX);
+        const ay = Math.abs(e.deltaY);
+        if (ax === 0 && ay === 0) return;
+        wheelAxis = ax > ay ? 1 : 2;
+        wheelHold = scroller!.scrollLeft;
+      }
+      clearTimeout(wheelTimer);
+      wheelTimer = window.setTimeout(() => {
+        wheelAxis = 0;
+      }, 140);
+    }
+    function onScrollerScroll() {
+      if (wheelAxis === 2 && scroller!.scrollLeft !== wheelHold) {
+        scroller!.scrollLeft = wheelHold;
+      }
+      schedule();
+    }
+
     function schedule() {
       if (!frame) frame = requestAnimationFrame(paint);
     }
@@ -158,15 +187,18 @@ export default function PinnedRail({
 
     measure();
     paint();
-    scroller.addEventListener("scroll", schedule, { passive: true });
+    scroller.addEventListener("scroll", onScrollerScroll, { passive: true });
+    scroller.addEventListener("wheel", onWheel, { passive: true });
     window.addEventListener("resize", onResize);
     const ro = new ResizeObserver(onResize);
     ro.observe(track);
     ro.observe(scroller);
     if (nudge) nudgeTimer = window.setTimeout(runNudge, 900);
     return () => {
-      scroller.removeEventListener("scroll", schedule);
+      scroller.removeEventListener("scroll", onScrollerScroll);
+      scroller.removeEventListener("wheel", onWheel);
       window.removeEventListener("resize", onResize);
+      clearTimeout(wheelTimer);
       ro.disconnect();
       cancelAnimationFrame(frame);
       cancelAnimationFrame(nudgeFrame);
