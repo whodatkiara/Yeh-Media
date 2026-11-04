@@ -63,8 +63,15 @@ export default function PinnedRail({
     let nudgeFrame = 0;
     let inertia = 0;
 
+    // Cached so a frame doesn't rebuild the list, and so an item whose look
+    // hasn't changed (everything away from the centre) isn't rewritten:
+    // re-filtering video layers is what makes a phone stutter.
+    let items: HTMLElement[] = [];
+    const looks: string[] = [];
+
     function measure() {
-      const items = Array.from(track!.children) as HTMLElement[];
+      items = Array.from(track!.children) as HTMLElement[];
+      looks.length = 0;
       vw = window.innerWidth;
       centers = items.map((el) => el.offsetLeft + el.offsetWidth / 2);
       first = centers[0] ?? 0;
@@ -77,7 +84,6 @@ export default function PinnedRail({
 
     function paint() {
       frame = 0;
-      const items = Array.from(track!.children) as HTMLElement[];
       if (!items.length) return;
       const top = section!.getBoundingClientRect().top;
       const t = range > 0 ? Math.min(Math.max((-top - hold) / range, 0), 1) : 0;
@@ -89,10 +95,14 @@ export default function PinnedRail({
       items.forEach((el, i) => {
         const d = Math.abs(x + centers[i] - vw / 2);
         const linear = Math.min(Math.max(1 - d / pitch, 0), 1);
-        const p = linear * linear * (3 - 2 * linear);
-        el.style.transform = `scale(${MIN_SCALE + (1 - MIN_SCALE) * p})`;
-        el.style.filter = `grayscale(${1 - p})`;
-        el.style.opacity = String(MIN_OPACITY + (1 - MIN_OPACITY) * p);
+        const p = Math.round(linear * linear * (3 - 2 * linear) * 1000) / 1000;
+        const look = `${p}`;
+        if (looks[i] !== look) {
+          looks[i] = look;
+          el.style.transform = `scale(${MIN_SCALE + (1 - MIN_SCALE) * p})`;
+          el.style.filter = p >= 1 ? "none" : `grayscale(${1 - p})`;
+          el.style.opacity = String(MIN_OPACITY + (1 - MIN_OPACITY) * p);
+        }
         if (p > bestP) {
           bestP = p;
           best = i;
@@ -128,6 +138,12 @@ export default function PinnedRail({
     function schedule() {
       if (!frame) frame = requestAnimationFrame(paint);
     }
+    // Used while a finger is dragging: paint in the same event, so the row
+    // moves with the finger instead of a frame behind it.
+    function paintNow() {
+      cancelAnimationFrame(frame);
+      paint();
+    }
     function onResize() {
       measure();
       schedule();
@@ -142,6 +158,7 @@ export default function PinnedRail({
     }
     function nudgeScroll(dy: number) {
       window.scrollBy({ top: dy, behavior: "instant" });
+      paintNow();
     }
     function onWheel(e: WheelEvent) {
       if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || !inView()) return;
