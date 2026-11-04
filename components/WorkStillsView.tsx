@@ -46,13 +46,7 @@ export default function WorkStillsView() {
     <div className="bg-white text-black">
       <RailPageHeader
         title="In Stills."
-        intro={
-          <>
-            This part of the site shows the photographs only, grouped by shoot.{" "}
-            <span className="md:hidden">Swipe sideways</span>
-            <span className="hidden md:inline">Scroll</span> to move through each series.
-          </>
-        }
+        intro="This part of the site shows the photographs only, grouped by shoot. Swipe or scroll sideways to move through each series."
       />
       {series.map((project, index) => {
         const photos = project.media!.filter((m) => m.type === "image");
