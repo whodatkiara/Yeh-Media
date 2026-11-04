@@ -46,6 +46,17 @@ body {
   color: var(--color-ink);
 }
 
+/* The body is a one-screen-tall flex column (height: 100% above). Without
+   this, a page taller than the screen was squeezed back down to one screen
+   and its content spilled out underneath, which left the footer sitting in
+   the middle of the page, hid the page's own bottom spacing, and made long
+   pages end with the last line right against the screen edge. Letting each
+   direct child keep its full height puts the footer after the content and
+   keeps all the bottom space. */
+body > * {
+  flex-shrink: 0;
+}
+
 /* Base-layer type defaults, kept inside Tailwind's layer system so a
    per-element font-weight utility (font-light, font-medium, …) can still
    override them — an unlayered rule here would always win regardless of
