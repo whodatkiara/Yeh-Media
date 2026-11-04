@@ -1,25 +1,40 @@
 "use client";
 
-import { Children, useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  Children,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 
 // How far the neighbours shrink / fade while the centred item is at full
 // size and in colour.
 const MIN_SCALE = 0.7;
 const MIN_OPACITY = 0.55;
 
+// Below the md breakpoint the rail is an ordinary sideways scroller.
+const PHONE_QUERY = "(max-width: 767px)";
+
 /**
- * A row of items that stays pinned to the screen while ordinary vertical
- * scrolling slides it sideways — the page feels "frozen" and the row moves
- * instead. Whatever item is at the centre of the screen is full size and in
- * colour; the ones beside it are smaller and grey, and ease between the
- * two states continuously as they travel through the centre.
+ * A row of items. Whatever item is at the centre of the screen is full size
+ * and in colour; the ones beside it are smaller and grey, and ease between
+ * the two states continuously as they travel through the centre.
  *
- * How it works: the section is made as tall as the screen plus the exact
- * distance the row has to travel, with a sticky full-screen stage inside
- * it. Scroll progress through that extra height maps 1:1 onto a horizontal
- * translate of the row, so the scroll distance and the movement stay in
- * step at any width. A short hold at each end lets the first and last item
- * rest at the centre before the page carries on.
+ * Desktop and tablet: the row stays pinned to the screen while ordinary
+ * vertical scrolling slides it sideways, so the page feels "frozen" and the
+ * row moves instead. The section is made as tall as the screen plus the exact
+ * distance the row has to travel, with a sticky full-screen stage inside it;
+ * scroll progress through that extra height maps 1:1 onto a horizontal
+ * translate of the row. A short hold at each end lets the first and last item
+ * rest at the centre. Sideways wheel / swipe input is turned into that same
+ * vertical scroll, so both directions work.
+ *
+ * Phone: the row is a native sideways scroller that snaps one item to the
+ * centre at a time. Only sideways moves it (up and down just scrolls the
+ * page past), which is what keeps it smooth: the browser does the scrolling
+ * itself instead of a script chasing the finger.
  *
  * Each frame (scroll / resize) writes transform, grayscale and opacity
  * straight to the DOM instead of through React state, and any <video>
@@ -33,7 +48,7 @@ export default function PinnedRail({
   nudge = false,
 }: {
   children: ReactNode;
-  // Optional heading pinned above the row (used for the stills sections).
+  // Optional heading above the row (used for the stills sections).
   title?: string;
   caption?: string;
   // Once, shortly after load, slide the row a little to the side and let it
@@ -42,13 +57,18 @@ export default function PinnedRail({
   nudge?: boolean;
 }) {
   const sectionRef = useRef<HTMLElement>(null);
+  const scrollerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [extra, setExtra] = useState(0);
 
   useEffect(() => {
     const section = sectionRef.current;
+    const scroller = scrollerRef.current;
     const track = trackRef.current;
-    if (!section || !track) return;
+    if (!section || !scroller || !track) return;
+
+    const phoneMq = window.matchMedia(PHONE_QUERY);
+    const isPhone = () => phoneMq.matches;
 
     let centers: number[] = [];
     let first = 0;
@@ -73,6 +93,13 @@ export default function PinnedRail({
       items = Array.from(track!.children) as HTMLElement[];
       looks.length = 0;
       vw = window.innerWidth;
+      // On a phone the first and last item need room to reach the centre.
+      const lead = isPhone() ? Math.max((vw - (items[0]?.offsetWidth ?? 0)) / 2, 0) : 0;
+      const tail = isPhone()
+        ? Math.max((vw - (items[items.length - 1]?.offsetWidth ?? 0)) / 2, 0)
+        : 0;
+      track!.style.paddingLeft = lead ? `${lead}px` : "";
+      track!.style.paddingRight = tail ? `${tail}px` : "";
       centers = items.map((el) => el.offsetLeft + el.offsetWidth / 2);
       first = centers[0] ?? 0;
       range = (centers[centers.length - 1] ?? 0) - first;
@@ -85,10 +112,17 @@ export default function PinnedRail({
     function paint() {
       frame = 0;
       if (!items.length) return;
-      const top = section!.getBoundingClientRect().top;
-      const t = range > 0 ? Math.min(Math.max((-top - hold) / range, 0), 1) : 0;
-      const x = vw / 2 - (first + t * range) + nudgeX;
-      track!.style.transform = `translate3d(${x}px,0,0)`;
+      let x: number;
+      if (isPhone()) {
+        // The scroller moves the row; only the nudge is a transform.
+        x = -scroller!.scrollLeft + nudgeX;
+        track!.style.transform = nudgeX ? `translate3d(${nudgeX}px,0,0)` : "";
+      } else {
+        const top = section!.getBoundingClientRect().top;
+        const t = range > 0 ? Math.min(Math.max((-top - hold) / range, 0), 1) : 0;
+        x = vw / 2 - (first + t * range) + nudgeX;
+        track!.style.transform = `translate3d(${x}px,0,0)`;
+      }
 
       let best = 0;
       let bestP = -1;
@@ -138,8 +172,8 @@ export default function PinnedRail({
     function schedule() {
       if (!frame) frame = requestAnimationFrame(paint);
     }
-    // Used while a finger is dragging: paint in the same event, so the row
-    // moves with the finger instead of a frame behind it.
+    // Used while a finger is dragging the desktop-style rail: paint in the
+    // same event, so the row moves with the finger instead of a frame behind.
     function paintNow() {
       cancelAnimationFrame(frame);
       paint();
@@ -149,9 +183,9 @@ export default function PinnedRail({
       schedule();
     }
 
-    // Sideways input drives the same vertical scroll the row is tied to, so
-    // swiping or trackpad-scrolling sideways moves the films just like
-    // scrolling down does.
+    // Sideways input drives the same vertical scroll the pinned row is tied
+    // to, so swiping or trackpad-scrolling sideways moves the films just like
+    // scrolling down does. (Not used on phones, where the row scrolls itself.)
     function inView() {
       const r = section!.getBoundingClientRect();
       return r.top < window.innerHeight && r.bottom > 0;
@@ -161,7 +195,7 @@ export default function PinnedRail({
       paintNow();
     }
     function onWheel(e: WheelEvent) {
-      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || !inView()) return;
+      if (isPhone() || Math.abs(e.deltaX) <= Math.abs(e.deltaY) || !inView()) return;
       e.preventDefault();
       nudgeScroll(e.deltaX);
     }
@@ -182,6 +216,7 @@ export default function PinnedRail({
       inertia = requestAnimationFrame(glide);
     }
     function onTouchStart(e: TouchEvent) {
+      if (isPhone()) return;
       cancelAnimationFrame(inertia);
       inertia = 0;
       const p = e.touches[0];
@@ -192,6 +227,7 @@ export default function PinnedRail({
       axis = 0;
     }
     function onTouchMove(e: TouchEvent) {
+      if (isPhone()) return;
       const p = e.touches[0];
       if (axis === 0) {
         const dx = Math.abs(p.clientX - startX);
@@ -209,6 +245,7 @@ export default function PinnedRail({
       lastT = e.timeStamp;
     }
     function onTouchEnd(e: TouchEvent) {
+      if (isPhone()) return;
       // A pause before letting go means no glide.
       if (axis === 1 && e.timeStamp - lastT < 80 && Math.abs(velocity) > 0.05) {
         inertia = requestAnimationFrame(glide);
@@ -216,9 +253,9 @@ export default function PinnedRail({
     }
 
     // One gentle push to the side and back. Skipped if the visitor has
-    // already started scrolling.
+    // already started moving.
     function runNudge() {
-      if (window.scrollY > 40) return;
+      if (window.scrollY > 40 || scroller!.scrollLeft > 5) return;
       const distance = Math.min(90, pitch * 0.3);
       const duration = 1800;
       const start = performance.now();
@@ -235,6 +272,7 @@ export default function PinnedRail({
     measure();
     paint();
     window.addEventListener("scroll", schedule, { passive: true });
+    scroller.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", onResize);
     window.addEventListener("wheel", onWheel, { passive: false });
     section.addEventListener("touchstart", onTouchStart, { passive: true });
@@ -245,6 +283,7 @@ export default function PinnedRail({
     if (nudge) nudgeTimer = window.setTimeout(runNudge, 900);
     return () => {
       window.removeEventListener("scroll", schedule);
+      scroller.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", onResize);
       window.removeEventListener("wheel", onWheel);
       section.removeEventListener("touchstart", onTouchStart);
@@ -262,10 +301,10 @@ export default function PinnedRail({
   return (
     <section
       ref={sectionRef}
-      className="relative"
-      style={{ height: `calc(100svh + ${extra}px)`, touchAction: "pan-y pinch-zoom" }}
+      className="relative md:h-[var(--rail-h)] md:[touch-action:pan-y_pinch-zoom]"
+      style={{ "--rail-h": `calc(100svh + ${extra}px)` } as CSSProperties}
     >
-      <div className="sticky top-0 flex h-svh flex-col justify-center overflow-hidden pt-20 pb-8 md:pt-16">
+      <div className="flex flex-col justify-center py-6 md:sticky md:top-0 md:h-svh md:overflow-hidden md:pt-16 md:pb-8">
         {title && (
           <div className="mb-6 px-6 md:mb-10 md:px-16">
             <h2 className="font-sans text-2xl font-semibold uppercase leading-tight tracking-tight md:text-4xl">
@@ -279,12 +318,19 @@ export default function PinnedRail({
           </div>
         )}
         <div
-          ref={trackRef}
-          className="relative flex w-max items-center gap-4 will-change-transform md:gap-8"
+          ref={scrollerRef}
+          className="snap-x snap-mandatory overflow-x-auto overscroll-x-contain [scrollbar-width:none] md:snap-none md:overflow-visible [&::-webkit-scrollbar]:hidden"
         >
-          {Children.map(children, (child) => (
-            <div className="shrink-0 origin-center will-change-transform">{child}</div>
-          ))}
+          <div
+            ref={trackRef}
+            className="relative flex w-max items-center gap-4 will-change-transform md:gap-8"
+          >
+            {Children.map(children, (child) => (
+              <div className="shrink-0 origin-center snap-center will-change-transform md:snap-align-none">
+                {child}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

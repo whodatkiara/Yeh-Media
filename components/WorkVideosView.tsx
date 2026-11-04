@@ -121,7 +121,14 @@ export default function WorkVideosView() {
     <div ref={rootRef} className="bg-white text-black">
       <RailPageHeader
         title="In Motion."
-        intro="This part of the site shows the films only. Scroll to move through them, one at a time. Tap the speaker icon, or any film, to hear them."
+        intro={
+          <>
+            This part of the site shows the films only.{" "}
+            <span className="md:hidden">Swipe sideways</span>
+            <span className="hidden md:inline">Scroll</span> to move through them, one at a time.
+            Tap the speaker icon, or any film, to hear them.
+          </>
+        }
       />
       <PinnedRail nudge>
         {videos.map((project) => (

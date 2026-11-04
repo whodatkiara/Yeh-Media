@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 
 /**
@@ -10,14 +11,14 @@ export default function RailPageHeader({
   intro,
 }: {
   title: string;
-  intro: string;
+  intro: ReactNode;
 }) {
   return (
-    <header className="px-6 pt-28 pb-10 md:px-16 md:pt-32 md:pb-16">
+    <header className="px-6 pt-24 pb-4 md:px-16 md:pt-32 md:pb-16">
       <div className="mx-auto max-w-6xl">
         <Link
           href="/work"
-          className="mb-12 inline-block font-mono text-[11px] uppercase tracking-[0.2em] text-black/50 underline decoration-black/30 underline-offset-4 transition-colors hover:text-black"
+          className="mb-8 inline-block md:mb-12 font-mono text-[11px] uppercase tracking-[0.2em] text-black/50 underline decoration-black/30 underline-offset-4 transition-colors hover:text-black"
         >
           ← Back to Our Work
         </Link>
