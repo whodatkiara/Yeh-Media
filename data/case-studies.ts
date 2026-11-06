@@ -51,10 +51,10 @@ export const caseStudies: CaseStudy[] = [
       },
     ],
     results: {
-      headline: "Seen by almost 100,000 people.",
+      headline: "Viewed 147,613 times.",
       metrics: [
         { value: "147,613", label: "Views", hint: "Times the reel was played" },
-        { value: "99,713", label: "People reached", hint: "Different people who saw it" },
+        { value: "9s", label: "Average watch time", hint: "How long people watched on average" },
         { value: "6.6K", label: "Saves", hint: "Kept to come back to" },
         { value: "280", label: "New follows", hint: "People who followed after watching" },
       ],
@@ -69,7 +69,7 @@ export const caseStudies: CaseStudy[] = [
         },
         {
           lead: "About three times the views of Where to Stay, by Design.",
-          text: "Average watch time was 9 seconds.",
+          text: "147,613 views against 48,063.",
         },
       ],
     },
@@ -101,10 +101,10 @@ export const caseStudies: CaseStudy[] = [
       },
     ],
     results: {
-      headline: "Watched almost twice by each viewer.",
+      headline: "Viewed 48,063 times.",
       metrics: [
         { value: "48,063", label: "Views", hint: "Times the reel was played" },
-        { value: "26,664", label: "People reached", hint: "Different people who saw it" },
+        { value: "9s", label: "Average watch time", hint: "How long people watched on average" },
         { value: "1.4K", label: "Saves", hint: "Kept to come back to" },
         { value: "289", label: "New follows", hint: "People who followed after watching" },
       ],
@@ -112,10 +112,6 @@ export const caseStudies: CaseStudy[] = [
         {
           lead: "More new follows than Paris, by Design.",
           text: "289 against 280, from about a third of the views.",
-        },
-        {
-          lead: "Replayed.",
-          text: "48,063 views from 26,664 people: on average, each viewer watched it close to twice.",
         },
         {
           lead: "Above the account's typical reel.",
@@ -151,10 +147,10 @@ export const caseStudies: CaseStudy[] = [
       },
     ],
     results: {
-      headline: "Held attention best.",
+      headline: "Viewed 16,346 times.",
       metrics: [
         { value: "16,346", label: "Views", hint: "Times the reel was played" },
-        { value: "12,475", label: "People reached", hint: "Different people who saw it" },
+        { value: "7s", label: "Average watch time", hint: "How long people watched on average" },
         { value: "40.8%", label: "Skip rate", hint: "Left in the opening seconds. Lower is better." },
         { value: "159", label: "Saves", hint: "Kept to come back to" },
       ],
