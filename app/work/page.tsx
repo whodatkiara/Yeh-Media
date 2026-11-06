@@ -104,9 +104,15 @@ function WorkCard({
         {study && (
           <Link
             href={`/work/${study.slug}`}
-            className="mt-4 inline-block font-mono text-[11px] tracking-[0.15em] uppercase text-black underline underline-offset-4 decoration-black/40 transition-colors hover:decoration-black"
+            className="group/cta mt-6 flex w-full items-center justify-between gap-6 border border-black px-5 py-3.5 font-mono text-[11px] uppercase tracking-[0.2em] text-black transition-colors hover:bg-black hover:text-white sm:inline-flex sm:w-auto sm:justify-start"
           >
-            Behind the piece →
+            Behind the piece
+            <span
+              aria-hidden="true"
+              className="transition-transform duration-300 group-hover/cta:translate-x-1"
+            >
+              →
+            </span>
           </Link>
         )}
       </div>
