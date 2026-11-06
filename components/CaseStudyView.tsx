@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import Link from "next/link";
 import { projects } from "@/components/Portfolio";
+import CaseGallery from "@/components/CaseGallery";
 import CountUp from "@/components/CountUp";
 import ScrollReveal from "@/components/ScrollReveal";
 import { caseStudies, type CaseStudy } from "@/data/case-studies";
@@ -60,6 +61,8 @@ export default function CaseStudyView({ study }: { study: CaseStudy }) {
 
   const [aw, ah] = (project.aspect ?? "9/16").split("/").map(Number);
   const landscape = aw > ah;
+  // A photo series has no single video: its photos are paged through instead.
+  const series = !project.video && (project.media?.length ?? 0) > 1;
   const index = caseStudies.findIndex((c) => c.slug === study.slug);
   const next = caseStudies[(index + 1) % caseStudies.length];
 
@@ -105,10 +108,16 @@ export default function CaseStudyView({ study }: { study: CaseStudy }) {
                 className={
                   landscape
                     ? "w-full"
-                    : "mx-auto w-full max-w-[360px] md:mx-0 md:w-[min(100%,calc((100svh-9rem)*9/16))] md:max-w-none"
+                    : series
+                      ? "mx-auto w-full max-w-[360px] md:mx-0 md:w-[min(100%,calc((100svh-13rem)*2/3))] md:max-w-none"
+                      : "mx-auto w-full max-w-[360px] md:mx-0 md:w-[min(100%,calc((100svh-9rem)*9/16))] md:max-w-none"
                 }
               >
-                <Media project={project} />
+                {series ? (
+                  <CaseGallery media={project.media!} title={project.project} />
+                ) : (
+                  <Media project={project} />
+                )}
               </div>
             </ScrollReveal>
           </div>

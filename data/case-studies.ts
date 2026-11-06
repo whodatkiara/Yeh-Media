@@ -23,7 +23,7 @@ export type CaseStudy = {
   };
 };
 
-export const caseStudies: CaseStudy[] = [
+const entries: CaseStudy[] = [
   {
     slug: "paris-by-design",
     project: "Paris, by Design",
@@ -193,7 +193,188 @@ export const caseStudies: CaseStudy[] = [
       },
     ],
   },
+  {
+    slug: "rotterdam-in-motion",
+    project: "Rotterdam, in Motion",
+    eyebrow: "Rotterdam · Cinematic Film",
+    standfirst:
+      "A voiceover-led film that lets the designer introduce the space, in her own voice.",
+    takeaway:
+      "A space should be introduced the way a person is: slowly, and in their own voice.",
+    thinking: [
+      "The film opens close, on a sketchbook, a hand and the soft grain of paper, while Hsiu-Li says her name. There is no wide establishing shot and no sweep of the room. Starting small tells the viewer that what follows was made by someone, with care, and that the space has a point of view behind it.",
+      "Neuroaesthetics says the brain reads texture and warmth before it reads layout. Soft focus, warm paper tones and slow movement lower the pace of the whole film, so the viewer arrives at the space calm and curious rather than sold to.",
+      "It is cut like a story, not a walkthrough. Each shot is there because it moves the story forward, and the narration carries the thread, which is what keeps a film about a room worth watching to the end.",
+    ],
+    reads: [
+      {
+        label: "Voice",
+        text: "A human voice up front gives the space an author, and an author is easier to trust than a brochure.",
+      },
+      {
+        label: "Texture",
+        text: "Paper, pencil and skin in soft focus. Tactile detail reads as craft.",
+      },
+      {
+        label: "Pace",
+        text: "Slow, close shots set a calm rhythm before the room is ever shown.",
+      },
+    ],
+  },
+  {
+    slug: "bts-content",
+    project: "BTS Content",
+    eyebrow: "Rotterdam · Photo Series · 6 photos",
+    standfirst:
+      "The set, the light, the moments between takes: how one Rotterdam shoot came together.",
+    takeaway: "Showing how a shoot is made shows how a studio thinks.",
+    thinking: [
+      "Behind-the-scenes photographs are the most honest thing a studio can publish. These six follow one Rotterdam shoot from the empty chair to the monitor: the set, the light, the camera, and the quiet moments between takes.",
+      "For a hotel choosing a partner, process is reassurance. A calm set, a considered frame and a team at ease tell them how the day will feel with us, long before they brief us.",
+      "The photographs borrow the interview's own palette: dark stone, warm wood, soft window light. The behind-the-scenes and the final film look like they belong together because they were made in the same light.",
+    ],
+    reads: [
+      {
+        label: "Frame",
+        text: "Shooting past the equipment puts the viewer behind the camera, as part of the crew.",
+      },
+      {
+        label: "Light",
+        text: "Warm daylight from the side, the same as in the film itself.",
+      },
+      {
+        label: "Calm",
+        text: "A relaxed sitter and an ordered set. Ease is visible, and it is catching.",
+      },
+    ],
+  },
+  {
+    slug: "a-morning-slowed-down",
+    project: "A Morning, Slowed Down",
+    eyebrow: "Studio · Cinematic Film",
+    standfirst:
+      "A quieter film, paced around light and stillness, with no dialogue at all.",
+    takeaway: "Stillness is a luxury, and it can be filmed.",
+    thinking: [
+      "No dialogue and no explanation: a hand on a leather handle, warm light falling across one curve. The film asks the viewer to slow down, and then rewards them for it.",
+      "The neuroaesthetics here is rhythm. Slow, unhurried movement and warm, low-contrast light bring the viewer's own pace down. Smooth, rounded forms feel safe and tactile, and a close frame lets you feel the material instead of only looking at it.",
+      "A hotel sells the first slow morning. It is hard to describe in a sentence, so the film simply lets you have one.",
+    ],
+    reads: [
+      {
+        label: "Light",
+        text: "Warm and low, falling across one curve at a time.",
+      },
+      {
+        label: "Touch",
+        text: "Leather, skin, a rounded handle. Close frames let you feel the material.",
+      },
+      {
+        label: "Pace",
+        text: "Long, still takes. Nothing demands attention, so attention is given freely.",
+      },
+    ],
+  },
+  {
+    slug: "a-rotterdam-interior",
+    project: "A Rotterdam Interior",
+    eyebrow: "Rotterdam · Process · Photo Series · 14 photos",
+    standfirst:
+      "The decisions behind a finished space, caught while they were still being made.",
+    takeaway: "A finished room hides its decisions. This series shows them.",
+    thinking: [
+      "Most interior photography starts when the work is over. This series begins earlier: a slab of dark stone still wrapped in plastic, a kitchen island with tape still on its edge, a corridor with the light just right and someone checking it.",
+      "That is where the quality of a space is really set. Material is chosen against light, edges are chosen against hands, and every sightline is walked before it is built. Neuroaesthetics tells us people sense these decisions even when they cannot name them: a space that has been thought through feels calmer to be in.",
+      "For a hotel, it is proof of method. Guests will never see this stage, but owners will recognise it, and trust it.",
+    ],
+    reads: [
+      {
+        label: "Material",
+        text: "Veined stone, warm wood, brass handles. Natural pattern gives the eye something to explore.",
+      },
+      {
+        label: "Light",
+        text: "Warm light from slim fittings turns raw surfaces into somewhere you would want to stay.",
+      },
+      {
+        label: "Order",
+        text: "Straight lines, clean sightlines and a clear route through the rooms tell the eye where to go next.",
+      },
+    ],
+  },
+  {
+    slug: "details-worth-staying-for",
+    project: "Details Worth Staying For",
+    eyebrow: "Studio · Cinematic Film",
+    standfirst: "Where the eye lingers: the small things a wide shot would miss.",
+    takeaway: "Comfort is made of small things.",
+    thinking: [
+      "Rain on the window, a dog asleep on the sill, a candle burning low, someone reading. None of it is a feature. All of it is the reason people stay.",
+      "Neuroaesthetics calls this the feeling of refuge: a sheltered place from which you can watch the weather outside. Soft textures, warm points of light and a view you are protected from are among the oldest comfort signals we respond to. The film is built from them.",
+      "It carries one line, design felt, not explained, and that is the whole approach. We do not tell a guest a room is comforting. We let them feel it.",
+    ],
+    reads: [
+      {
+        label: "Refuge",
+        text: "A sheltered seat by a window, with weather outside and warmth inside.",
+      },
+      {
+        label: "Warmth",
+        text: "A candle, a lamp, a blanket. Small warm points of light and soft textures signal comfort.",
+      },
+      {
+        label: "Life",
+        text: "A dog, a book, a pause. A space with someone living in it feels welcoming.",
+      },
+    ],
+  },
+  {
+    slug: "everything-is-in-the-details",
+    project: "Everything Is in the Details",
+    eyebrow: "Studio · Photo Series · 7 photos",
+    standfirst:
+      "Material, texture, finish: what makes a space feel considered.",
+    takeaway: "A space feels considered long before anyone can say why.",
+    thinking: [
+      "Seven photographs of a designer's working surface: leather and velvet, marble and wood, black gloves, a hand turning over a small monogrammed box, a mood board of woven timber, hand-drawn sketches. Nothing here is a finished room, and everything here is why a finished room works.",
+      "Neuroaesthetics tells us that touch and sight are close partners: we judge a surface by how we imagine it would feel. Natural materials, fine finishes and variety in texture are read as care, and care is felt as comfort. That is the difference between a space that looks good and one that feels considered.",
+      "These images are also a point of view for a hotel's own content: show the material, and the guest does the rest.",
+    ],
+    reads: [
+      {
+        label: "Touch",
+        text: "Leather, velvet, stone and timber. Surfaces you want to touch, shown so you can almost feel them.",
+      },
+      {
+        label: "Palette",
+        text: "Warm woods, deep greens, a flash of pink and burnt orange. Colour chosen as carefully as material.",
+      },
+      {
+        label: "Craft",
+        text: "Sketches, swatches and monograms. Signs of a hand at work.",
+      },
+    ],
+  },
 ];
+
+// Same order as the Our Work page, which is also the order the "Next" link
+// at the bottom of each page follows.
+const ORDER = [
+  "Rotterdam, in Motion",
+  "Paris, by Design",
+  "BTS Content",
+  "Where to Stay, by Design",
+  "The Rotterdam Interview",
+  "A Morning, Slowed Down",
+  "Fashion Interiors",
+  "A Rotterdam Interior",
+  "Details Worth Staying For",
+  "Everything Is in the Details",
+];
+
+export const caseStudies: CaseStudy[] = [...entries].sort(
+  (a, b) => ORDER.indexOf(a.project) - ORDER.indexOf(b.project),
+);
 
 export function caseStudyFor(project: string): CaseStudy | undefined {
   return caseStudies.find((c) => c.project === project);
