@@ -199,7 +199,7 @@ export default function CaseStudyView({ study }: { study: CaseStudy }) {
 
                 <div className="mt-16">
                   <ScrollReveal>
-                    <Label>How it compares</Label>
+                    <Label>What stands out</Label>
                   </ScrollReveal>
                   <ul className="mt-5 border-t border-black/15">
                     {study.results.compared.map((c, i) => (
