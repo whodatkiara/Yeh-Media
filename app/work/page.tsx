@@ -7,7 +7,7 @@ import { projects, type Project } from "@/components/Portfolio";
 import { PORTFOLIO_SLIDE_INDEX } from "@/components/HomeDeck";
 import Lightbox from "@/components/Lightbox";
 import ScrollReveal from "@/components/ScrollReveal";
-import { caseStudyFor } from "@/data/case-studies";
+import { caseStudyFor, ctaFor, teaserFor } from "@/data/case-studies";
 import { useVideoErrorRetry } from "@/lib/use-video-retry";
 
 /**
@@ -102,18 +102,25 @@ function WorkCard({
           {item.description}
         </p>
         {study && (
-          <Link
-            href={`/work/${study.slug}`}
-            className="group/cta mt-6 flex w-full items-center justify-between gap-6 border border-black px-5 py-3.5 font-mono text-[11px] uppercase tracking-[0.2em] text-black transition-colors hover:bg-black hover:text-white sm:inline-flex sm:w-auto sm:justify-start"
-          >
-            Behind the piece
-            <span
-              aria-hidden="true"
-              className="transition-transform duration-300 group-hover/cta:translate-x-1"
+          <div className="mt-6">
+            {teaserFor(study) && (
+              <p className="mb-3 border-l-2 border-black pl-3 font-mono text-[11px] uppercase tracking-[0.2em] text-black">
+                {teaserFor(study)}
+              </p>
+            )}
+            <Link
+              href={`/work/${study.slug}`}
+              className="group/cta flex w-full items-center justify-between gap-6 border border-black bg-black px-5 py-4 font-mono text-xs uppercase tracking-[0.2em] text-white transition-colors hover:bg-white hover:text-black sm:inline-flex sm:w-auto sm:justify-start"
             >
-              →
-            </span>
-          </Link>
+              {ctaFor(study)}
+              <span
+                aria-hidden="true"
+                className="text-base leading-none transition-transform duration-300 group-hover/cta:translate-x-1.5"
+              >
+                →
+              </span>
+            </Link>
+          </div>
         )}
       </div>
     </ScrollReveal>

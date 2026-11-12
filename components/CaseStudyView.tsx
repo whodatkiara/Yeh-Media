@@ -50,9 +50,10 @@ function Label({ children }: { children: string }) {
 
 /**
  * One "Behind the piece" page. On a laptop the piece stays frozen on the left
- * for the whole page while the words scroll past on the right: the idea in one
- * line, the thinking, what the eye picks up, and (where there are real
- * numbers) the results, each part fading in as it arrives. On a phone it all
+ * for the whole page while the words scroll past on the right. Where there are
+ * real numbers they come first, straight under the title; then the idea in one
+ * line, the thinking and what the eye picks up, each part fading in as it
+ * arrives. On a phone it all
  * runs in a single column. Content lives in data/case-studies.ts.
  */
 export default function CaseStudyView({ study }: { study: CaseStudy }) {
@@ -168,8 +169,10 @@ export default function CaseStudyView({ study }: { study: CaseStudy }) {
               </div>
             </section>
 
+            {/* Where there are numbers they lead: this section sits above the
+                thinking. Pages without numbers keep the thinking first. */}
             {study.results && (
-              <section>
+              <section className="order-first -mt-4 md:-mt-12">
                 <ScrollReveal>
                   <SectionTitle>The Results.</SectionTitle>
                 </ScrollReveal>
@@ -181,7 +184,7 @@ export default function CaseStudyView({ study }: { study: CaseStudy }) {
                 <div className="grid grid-cols-2 gap-x-6 gap-y-12">
                   {study.results.metrics.map((m, i) => (
                     <ScrollReveal key={m.label} delayMs={(i % 2) * 120}>
-                      <p className="font-sans text-5xl font-semibold leading-none tracking-tight md:text-6xl">
+                      <p className="font-sans text-5xl font-semibold leading-none tracking-tight md:text-7xl">
                         <CountUp value={m.value} />
                       </p>
                       <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.2em] text-black">

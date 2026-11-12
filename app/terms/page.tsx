@@ -44,6 +44,34 @@ export default function TermsPage() {
           ))}
         </div>
 
+        <section className="pt-14">
+          <h2 className="mb-6 font-sans font-semibold text-lg tracking-tight uppercase">
+            {terms.definitions.title}
+          </h2>
+          <p className="mb-4 font-mono font-normal text-sm leading-relaxed text-black/70">
+            {terms.definitions.intro}
+          </p>
+          <ul className="flex flex-col gap-4">
+            {terms.definitions.items.map((item) => {
+              const colon = item.indexOf(":");
+              return (
+                <li
+                  key={item}
+                  className="grid grid-cols-[2.75rem_1fr] font-mono font-normal text-sm leading-relaxed text-black/70"
+                >
+                  <span aria-hidden="true" className="text-black/30">
+                    •
+                  </span>
+                  <span>
+                    <span className="text-black">{item.slice(0, colon)}</span>
+                    {item.slice(colon)}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+
         {terms.sections.map((section) => (
           <section key={section.number} className="pt-14">
             <h2 className="flex items-baseline gap-3 mb-6 font-sans font-semibold text-lg tracking-tight uppercase">

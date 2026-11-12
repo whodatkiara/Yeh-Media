@@ -383,3 +383,21 @@ export function caseStudyFor(project: string): CaseStudy | undefined {
 export function caseStudyBySlug(slug: string): CaseStudy | undefined {
   return caseStudies.find((c) => c.slug === slug);
 }
+
+// What the button on the Our Work card says. A piece with numbers promises the
+// reason it worked; the others promise a look at the thinking.
+export function ctaFor(study: CaseStudy): string {
+  return study.results ? "See why it worked" : "Step inside the thinking";
+}
+
+// A short real-numbers line shown above the button, to make a card worth
+// opening. Only for pieces that have results.
+const TEASERS: Record<string, string> = {
+  "paris-by-design": "147.6K views · 6.6K saves",
+  "where-to-stay-by-design": "48.1K views · 289 new follows",
+  "fashion-interiors": "16.3K views · 159 saves",
+};
+
+export function teaserFor(study: CaseStudy): string | undefined {
+  return TEASERS[study.slug];
+}

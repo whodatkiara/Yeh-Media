@@ -1,10 +1,20 @@
 {
   "title": "General Terms and Conditions",
-  "subtitle": "Business clients | 7 October 2026",
+  "subtitle": "Business clients | 3 November 2026",
   "intro": [
-    "These terms govern brand strategy, photography, film, content creation and social media management supplied by Yeh Media to business clients. The accepted proposal specifies the services, fees, deliverables, accounts and production arrangements for each engagement.",
+    "These Terms & Conditions (T&C) govern brand strategy, photography, film, content creation and social media management supplied by Yeh Media to business clients. The accepted proposal specifies the services, fees, deliverables, accounts and production arrangements for each engagement.",
     "Yeh Media is a trading name of the sole proprietorship trading as Yeh Design, registered with the Dutch Chamber of Commerce under number 34167235. Registered business address: Schouwweg 23, 2243 BB Wassenaar, the Netherlands. Contact: hello@yehmedia.nl. Website: https://yehmedia.nl."
   ],
+  "definitions": {
+    "title": "Definitions",
+    "intro": "Under these T&C is understood:",
+    "items": [
+      "Terms and Conditions: the present T&C regarding T&C in the sense of article 6:231 of the Dutch Civil Code;",
+      "Client: a natural person or legal entity acting in the exercise of its profession or business; and purchasing (a) service(s) and/or product(s) from Yeh Media or commissions an order of (a) service(s) and/or product(s) to Yeh Media;",
+      "Proposal: The written offer or quotation issued by Yeh Media to Client, setting out the proposed services, scope of work, deliverables, applicable fees, service hours and any other specific terms and conditions agreed between the parties;",
+      "Contract: The agreement, both verbal and written, between Yeh Media and Client, following acceptance of the Proposal."
+    ]
+  },
   "business": {
     "tradingName": "Yeh Media",
     "legalName": "Yeh Design",
@@ -20,15 +30,15 @@
       "clauses": [
         {
           "number": "1.1",
-          "text": "These terms apply to business clients acting in the course of their trade or profession (the Client). Yeh Media will provide these terms before or when the agreement is concluded. An engagement is formed by written acceptance of the proposal, including by email or electronic signature."
+          "text": "These T&C apply to all Clients, proposals and Contracts. Yeh Media will provide these T&C upon sending the proposal to Client. A contract is formed by written acceptance of the Proposal, including by email or electronic signature."
         },
         {
           "number": "1.2",
-          "text": "Unless the proposal states otherwise, it remains open for acceptance for 30 days. The accepted proposal prevails over these terms if there is a conflict. A signed data processing agreement prevails on matters of personal data processing. Deviations and additional commitments must be agreed in writing."
+          "text": "Unless the Proposal states otherwise, it remains open for acceptance for 30 days. The accepted Proposal prevails over these T&C if there is a conflict. A signed data processing agreement prevails on matters of personal data processing. Deviations and additional commitments must be agreed in writing."
         },
         {
           "number": "1.3",
-          "text": "The proposal identifies the contracting entity, hotel or property, brands, accounts, websites, scope, deliverables, timetable, fees and authorised contacts. Work for additional properties, brands or group companies requires a separate written agreement. Client purchasing terms are expressly rejected."
+          "text": "The Proposal identifies the contracting entity, hotel or property, brands, accounts, websites, scope, deliverables, timetable, fees and authorised contacts. Work for additional properties, brands or group companies requires a separate written agreement. Client purchasing terms are expressly rejected."
         }
       ]
     },
@@ -38,15 +48,15 @@
       "clauses": [
         {
           "number": "2.1",
-          "text": "Yeh Media develops the strategy with the Client using the Client’s brand identity, objectives and information. Services may include creative direction, photography, film, editing, reels, carousels, captions, scheduling, publication, account management and reporting, as specified in the proposal."
+          "text": "Yeh Media develops the strategy with Client using Client’s brand identity, objectives and information. Services may include creative direction, photography, film, editing, reels, carousels, captions, scheduling, publication, account management and reporting, as specified in the proposal."
         },
         {
           "number": "2.2",
-          "text": "Yeh Media will perform its services with reasonable professional care and skill. Followers, reach, engagement, bookings, revenue, media coverage and particular platform outcomes are not guaranteed. Strategic recommendations do not include legal advice or trademark clearance."
+          "text": "Yeh Media will perform its services with reasonable professional care and skill. Followers, reach, engagement, bookings, revenue, media coverage and particular platform outcomes are not guaranteed as it pertains to an obligation of effort. Strategic recommendations do not include legal advice or trademark clearance."
         },
         {
           "number": "2.3",
-          "text": "Production may be carried out by Yeh Media’s own team or by local creators selected and engaged by Yeh Media. The proposal specifies the approach. Yeh Media retains responsibility for the agreed services, creative direction, editing and final quality control, including when it appoints subcontractors."
+          "text": "Production may be carried out by Yeh Media’s own team or by local creators selected and engaged by Yeh Media. The Proposal specifies the approach. Yeh Media retains responsibility for the agreed services, creative direction, editing and final quality control, including when it appoints subcontractors."
         }
       ]
     },
@@ -56,15 +66,19 @@
       "clauses": [
         {
           "number": "3.1",
-          "text": "The Client supplies timely, accurate information, brand assets, factual claims, access, permissions and consolidated feedback. It appoints a contact authorised to approve work and expenditure. The Client is responsible for the accuracy of supplied information, including prices, offers and statements about its facilities."
+          "text": "Client supplies timely, accurate information, brand assets, factual claims, access, permissions and consolidated feedback. It appoints a contact authorised to approve work and expenditure. The Client is responsible for the accuracy of supplied information, including prices, offers and statements about its facilities."
         },
         {
           "number": "3.2",
-          "text": "The Client remains owner and administrator of its social media accounts. It provides role-based access where available, supports appropriate security measures and retains recovery credentials. Yeh Media will use access only for agreed services and will not claim ownership of the Client’s accounts or audience."
+          "text": "Yeh Media reserves the right to refuse, reject, remove or suspend any content submitted by or on behalf of Client if such content violates applicable laws and regulations, infringes upon the rights of third parties, or is contrary to the terms, conditions, policies or guidelines of the relevant platform(s) on which the content is intended to be published. Yeh Media shall not be obliged to publish or distribute any such content."
         },
         {
           "number": "3.3",
-          "text": "Account management covers only the activities and service hours stated in the proposal. Direct messages, customer service, complaints, crisis communications, weekend coverage and advertising management are included only if expressly agreed. Yeh Media escalates matters outside its mandate to the designated Client contact."
+          "text": "Client remains owner and administrator of its social media accounts. It provides role-based access where available, supports appropriate security measures and retains recovery credentials. Yeh Media will use access only for agreed services and will not claim ownership of Client’s accounts or audience."
+        },
+        {
+          "number": "3.4",
+          "text": "Account management covers only the activities and service hours stated in the proposal. Direct messages, customer service, complaints, crisis communications, weekend coverage and advertising management are included only if expressly agreed. Yeh Media escalates matters outside its mandate to the designated Client contact. Any unused service hours or undelivered deliverables remaining at the end of the applicable service period shall automatically expire and shall not be carried forward, transferred to any subsequent period or credited or refunded to Client."
         }
       ]
     },
@@ -74,19 +88,19 @@
       "clauses": [
         {
           "number": "4.1",
-          "text": "The proposal specifies shoot dates, locations, production time, deliverable quantities and technical formats. Deadlines are estimates unless expressly designated as binding. Yeh Media promptly notifies the Client of material delay and its proposed remedy."
+          "text": "The Proposal specifies shoot dates, locations, production time, deliverable quantities and technical formats. Deadlines are estimates unless expressly designated as binding. Yeh Media promptly notifies Client of material delay and its proposed remedy."
         },
         {
           "number": "4.2",
-          "text": "The Client arranges safe access and availability of the property, rooms, products and Client-provided personnel. Yeh Media arranges permissions and releases for talent it engages; the Client arranges these for guests, staff and talent it supplies. Both parties verify that the intended recording and publication are authorised before proceeding."
+          "text": "Client arranges safe access and availability of the property, rooms, products and Client-provided personnel. Yeh Media arranges permissions and releases for talent it engages; Client arranges these for guests, staff and talent it supplies. Both parties verify that the intended recording and publication are authorised before proceeding."
         },
         {
           "number": "4.3",
-          "text": "The proposal allocates responsibility for local filming, drone, location and other permits. Neither party may instruct unlawful or unsafe work. Weather, access restrictions and travel disruption may require an agreed alternative date or approach."
+          "text": "The Proposal allocates responsibility for local filming, drone, location and other permits. Neither party may instruct unlawful or unsafe work. Weather, access restrictions and travel disruption may require an agreed alternative date or approach."
         },
         {
           "number": "4.4",
-          "text": "Changes or postponements are discussed promptly. The Client pays for completed work and approved, unavoidable third-party commitments attributable to its changes, taking account of savings and refunds. Any separate cancellation charge or reserved production fee must be stated in the accepted proposal; there is no automatic percentage penalty under these terms."
+          "text": "Changes or postponements are discussed promptly. Client pays for completed work and approved, unavoidable third-party commitments attributable to its changes, taking account of savings and refunds. Any separate cancellation charge or reserved production fee must be stated in the accepted Proposal; there is no automatic percentage penalty under these terms."
         }
       ]
     },
@@ -96,15 +110,15 @@
       "clauses": [
         {
           "number": "5.1",
-          "text": "Unless the proposal states otherwise, two consolidated revision rounds are included per agreed batch of content. A round comprises one combined set of feedback within the original brief. New concepts, reshoots, additional formats and changes after approval are additional work. Corrections of Yeh Media’s failure to meet the agreed brief are not charged as additional revisions."
+          "text": "Unless the Proposal states otherwise, two consolidated revision rounds are included per agreed batch of content. A round comprises one combined set of feedback within the original brief. New concepts, reshoots, additional formats and changes after approval are additional work. Corrections of Yeh Media’s failure to meet the agreed brief are not charged as additional revisions."
         },
         {
           "number": "5.2",
-          "text": "Unless another review timetable is agreed, the Client supplies feedback within five business days. Late feedback shifts the publication schedule. Silence is not permission to publish. Publication requires approval of the relevant content or an expressly agreed written approval workflow."
+          "text": "Unless another review timetable is agreed, Client supplies feedback within five business days. Late feedback shifts the publication schedule. Silence is not permission to publish. Publication requires approval of the relevant content or an expressly agreed written approval workflow."
         },
         {
           "number": "5.3",
-          "text": "Approval confirms the Client’s factual review and permission to publish; it does not remove Yeh Media’s responsibility for its own breach. The Client reports defects promptly and Yeh Media is given a reasonable opportunity to correct them. No short review period automatically extinguishes claims for latent defects."
+          "text": "Approval confirms Client’s factual review and permission to publish; it does not remove Yeh Media’s responsibility for its own breach. Client reports defects promptly and Yeh Media is given a reasonable opportunity to correct them. Any defects discovered after approval must be reported by Client in writing to Yeh Media within 14 days of discovery."
         }
       ]
     },
@@ -114,11 +128,11 @@
       "clauses": [
         {
           "number": "6.1",
-          "text": "Fees are stated in euros and exclude VAT unless otherwise specified. Applicable VAT and any agreed bank or currency conversion costs are specified in the proposal. Fees do not include travel, accommodation, talent, music, stock, advertising spend or other external costs unless expressly listed."
+          "text": "Fees are stated in euros and exclude VAT unless otherwise specified. Applicable VAT and any agreed bank or currency conversion costs are specified in the Proposal. Fees do not include travel, accommodation, talent, music, stock, advertising spend or other external costs unless expressly listed."
         },
         {
           "number": "6.2",
-          "text": "For standalone productions, 50% of the agreed fee is invoiced upon acceptance and 50% after approval of previews and before release of final files. Recurring services are invoiced monthly in advance. Invoices are payable within 14 calendar days; required advance payments must be received before the relevant work or booking begins."
+          "text": "For standalone productions, 50% of the agreed fee is invoiced upon acceptance and 50% after approval of previews and before release of final files. Recurring services are invoiced monthly in advance. Invoices are payable within 14 calendar days; required advance payments must be received before the relevant work or booking begins. The aforementioned 14 calendar days constitute a strict payment deadline and Client shall not be entitled to set off any amounts owed against outstanding invoices or to suspend its payment obligations."
         },
         {
           "number": "6.3",
@@ -132,23 +146,23 @@
     },
     {
       "number": 7,
-      "title": "Pilot and annual engagement",
+      "title": "Pilot and annual Contracts",
       "clauses": [
         {
           "number": "7.1",
-          "text": "A recurring engagement begins with a paid pilot of three calendar months from the start date stated in the proposal. Its scope and monthly fee are agreed in advance. The pilot ends automatically at the end of that period, without an automatic renewal or annual commitment."
+          "text": "A recurring Contract begins with a paid pilot of three calendar months from the start date stated in the Proposal. Its scope and monthly fee are agreed in advance. The pilot ends automatically at the end of that period, without an automatic renewal or annual commitment."
         },
         {
           "number": "7.2",
-          "text": "Following the pilot, the parties may enter a separate written agreement for twelve months. That annual agreement specifies its own start date, scope and fees. Monthly advance invoicing does not make the annual agreement cancellable each month."
+          "text": "Following the pilot, the parties may enter a separate Contract for twelve months. That annual Contract specifies its own start date, scope and fees. Monthly advance invoicing does not make the annual Contract cancellable each month."
         },
         {
           "number": "7.3",
-          "text": "Unless a different arrangement is expressly accepted in writing, the annual agreement ends at the end of its twelve-month term. Any extension requires written agreement. Yeh Media will seek to discuss continuation before expiry; an unanswered renewal proposal does not extend the contract."
+          "text": "Unless a different arrangement is expressly accepted in writing, the annual Contract ends at the end of its twelve-month term. Any extension requires written agreement. Yeh Media will seek to discuss continuation before expiry; an unanswered renewal proposal does not extend the Contract."
         },
         {
           "number": "7.4",
-          "text": "Neither party has an ordinary right to end a fixed term early for convenience unless agreed in the proposal. They may agree a written settlement. This does not limit termination for breach, mandatory statutory rights or the rights in sections 15 and 16. No automatic acceleration of all future monthly invoices is imposed by these terms."
+          "text": "Neither party has an ordinary right to terminate a fixed-term agreement early for convenience, unless expressly agreed otherwise in the Proposal. To the extent legally permissible, Client's rights to terminate the agreement under Article 7:408(1) of the Dutch Civil Code and any right to claim compensation under Article 7:411 of the Dutch Civil Code are expressly excluded. The parties may agree in writing to an early termination settlement. This does not affect either party's right to terminate the agreement in the event of a breach, any mandatory statutory rights, or the rights set out in Sections 15 and 16 of these T&C. In the event of early termination due to a breach by Client, Yeh Media reserves the right to claim payment of outstanding amounts and any further compensation to which it is legally entitled, including compensation for services not yet performed, to the extent permitted by law."
         }
       ]
     },
@@ -162,11 +176,15 @@
         },
         {
           "number": "8.2",
-          "text": "Yeh Media obtains from its subcontractors the permissions required to deliver the agreed Client licence and to edit their contributions. Existing methods, templates, tools, rejected concepts, working files and production materials are not transferred to the Client."
+          "text": "Yeh Media obtains from its subcontractors the permissions required to deliver the agreed Client licence and to edit their contributions. Existing methods, templates, tools, rejected concepts, working files and production materials are not transferred to Client."
         },
         {
           "number": "8.3",
-          "text": "The Client retains rights in its pre-existing trademarks and supplied materials and grants Yeh Media permission to use them for the services. Each party is responsible for ensuring it has the rights needed for materials it supplies or selects. Third-party restrictions are disclosed before affected content is approved."
+          "text": "To the extent permitted by Article 25 of the Dutch Copyright Act (Auteurswet), the relevant creators waive their moral rights, including the right to be credited by name, in relation to the agreed use and exploitation of their work. Where Client permits or requests attribution, Yeh Media may arrange for the relevant creator to be credited or tagged in connection with the publication of the work."
+        },
+        {
+          "number": "8.4",
+          "text": "Client retains rights in its pre-existing trademarks and supplied materials and grants Yeh Media permission to use them for the services. Each party is responsible for ensuring it has the rights needed for materials it supplies or selects. Third-party restrictions are disclosed before affected content is approved."
         }
       ]
     },
@@ -176,19 +194,19 @@
       "clauses": [
         {
           "number": "9.1",
-          "text": "Subject to payment of the amounts due for the relevant content, Yeh Media grants the Client a worldwide, non-exclusive licence to use the approved final deliverables for twelve months from their recorded final delivery date. Each delivery has its own licence period; continued collaboration does not automatically extend earlier licences."
+          "text": "Subject to full payment of all amounts due by Client under the Contract, Yeh Media grants Client a worldwide, non-exclusive licence to use the approved final deliverables for twelve months from their recorded final delivery date. Each delivery has its own licence period; continued collaboration does not automatically extend earlier licences. The licence may not be transferred or sublicensed, except as expressly permitted under Section 9.3."
         },
         {
           "number": "9.2",
-          "text": "The standard licence covers organic publication on the named Client social media accounts and use on the named website for the contracted hotel, property or brand. It does not cover paid advertising, boosted posts, creator-account advertising, print, booking platforms, press distribution, resale or use by other properties or entities unless specified in the proposal."
+          "text": "The standard licence covers organic publication on the named Client social media accounts and use on the named website for the contracted hotel, property or brand. It does not cover paid advertising, boosted posts, creator-account advertising, print, booking platforms, press distribution, resale or use by other properties or entities unless specified in the Proposal."
         },
         {
           "number": "9.3",
-          "text": "The Client may resize, crop and make technical adjustments needed for approved channels without distorting the work or exceeding third-party permissions. Substantive re-editing, new compilations, replacement music and materially different uses require prior written agreement. Client service providers may handle the content solely on its behalf for authorised uses, without independent use rights."
+          "text": "Client may resize, crop and make technical adjustments needed for approved channels without distorting the work or exceeding third-party permissions. Substantive re-editing, new compilations, replacement music and materially different uses require prior written agreement. Client service providers may handle the content solely on its behalf for authorised uses, without independent use rights."
         },
         {
           "number": "9.4",
-          "text": "Termination or expiry of the service agreement does not shorten an already paid licence period. Additional channels, duration, exclusivity or rights may be purchased by written agreement. Raw-file delivery does not itself grant broader rights."
+          "text": "Termination or expiry of the service agreement does not shorten an already paid licence period except where the Contract is terminated due to Client's failure to pay amounts due or Client's breach of the applicable licence terms. Additional channels, duration, exclusivity or rights may be purchased by written agreement. Raw-file delivery does not itself grant broader rights."
         }
       ]
     },
@@ -202,7 +220,7 @@
         },
         {
           "number": "10.2",
-          "text": "Website display and any separately licensed paid or other time-limited use must cease at expiry unless renewed in writing. The Client may retain private backup copies for records, without further publication rights. Yeh Media cannot promise perpetual historical display where talent, music or other permissions are shorter; these exceptions must be identified before approval."
+          "text": "Website display and any separately licensed paid or other time-limited use must cease at expiry unless renewed in writing. Client may retain private backup copies for records, without further publication rights. Yeh Media cannot promise perpetual historical display where talent, music or other permissions are shorter; these exceptions must be identified before approval."
         },
         {
           "number": "10.3",
@@ -220,7 +238,7 @@
         },
         {
           "number": "11.2",
-          "text": "The Client downloads and backs up final deliverables. Unless longer storage is agreed, Yeh Media keeps final exports for six months and raw production files for three months after final delivery, subject to applicable privacy obligations. Yeh Media will confirm the scheduled raw-file deletion date on delivery and cannot guarantee recovery afterwards."
+          "text": "Client downloads and backs up final deliverables. Unless longer storage is agreed, Yeh Media retains the right to keep final exports for six months and raw production files for three months after final delivery, subject to applicable privacy obligations. This does not constitute an obligation of storage or retention. Yeh Media will confirm the scheduled raw-file deletion date on delivery and cannot guarantee recovery afterwards."
         }
       ]
     },
@@ -230,11 +248,11 @@
       "clauses": [
         {
           "number": "12.1",
-          "text": "Music, stock assets, fonts and talent permissions must cover the agreed channels and purpose. Permission for a social platform does not automatically cover websites or advertisements. Yeh Media identifies relevant restrictions and obtains permissions for assets it selects; the Client does the same for assets it supplies."
+          "text": "Music, stock assets, fonts and talent permissions must cover the agreed channels and purpose. Permission for a social platform does not automatically cover websites or advertisements. Yeh Media identifies relevant restrictions and obtains permissions for assets it selects; Client does the same for assets it supplies."
         },
         {
           "number": "12.2",
-          "text": "A local creator engagement does not include publication to that creator’s own audience unless separately agreed. Influencer posts, publication duration, disclosure, usage rights, advertising access and reporting are specified in the proposal. Yeh Media requires its engaged creators to follow applicable advertising disclosure rules and agrees the Client’s responsibilities for factual claims and campaign approvals."
+          "text": "A local creator engagement does not include publication to that creator’s own audience unless separately agreed. Influencer posts, publication duration, disclosure, usage rights, advertising access and reporting are specified in the proposal. Yeh Media requires its engaged creators to follow applicable advertising disclosure rules and agrees Client’s responsibilities for factual claims and campaign approvals."
         }
       ]
     },
@@ -244,15 +262,11 @@
       "clauses": [
         {
           "number": "13.1",
-          "text": "Each party protects confidential information and discloses it only to persons who need it to perform the agreement and are bound by suitable confidentiality obligations, or where required by law. Public information and independently developed information are excluded."
+          "text": "Each party protects confidential information and discloses it only to persons who need it to perform the agreement and are bound by suitable confidentiality obligations, or where required by law. Public information and independently developed information are excluded. Trade secrets remain protected for as long as they qualify as such under applicable law."
         },
         {
           "number": "13.2",
-          "text": "Yeh Media may request permission to show published work and identify the Client in its portfolio, website or case studies. Portfolio use requires prior written Client approval and adequate permissions from creators and identifiable persons. Confidential information, unpublished campaigns and private analytics are not disclosed without separate approval."
-        },
-        {
-          "number": "13.3",
-          "text": "Visitors to Yeh Media’s own website receive no licence to reproduce its original content. Rights in website material remain with the relevant rights holders. The Client’s agreed licence is governed by sections 9 and 10."
+          "text": "Yeh Media may use published work and identify Client in its portfolio, website or case studies, unless Client objects in writing. Such use remains subject to applicable third-party rights and permissions. Confidential information, unpublished campaigns and private analytics are not disclosed without separate approval."
         }
       ]
     },
@@ -262,15 +276,15 @@
       "clauses": [
         {
           "number": "14.1",
-          "text": "Each party complies with applicable privacy law for the processing it carries out. Roles and lawful bases are assessed for the actual services. Where Yeh Media processes personal data on the Client’s behalf, the parties sign an appropriate data processing agreement before that processing starts."
+          "text": "Each party complies with applicable privacy law for the processing it carries out. Roles and lawful bases are assessed for the actual services. Where Yeh Media processes personal data on Client’s behalf, the parties sign an appropriate data processing agreement before that processing starts."
         },
         {
           "number": "14.2",
-          "text": "That agreement addresses instructions, confidentiality, security, subprocessors, international transfers, assistance, incidents, retention and return or deletion of data. These general terms do not replace it. Access to messages or guest information is limited to what is needed for the agreed work."
+          "text": "That agreement addresses instructions, confidentiality, security, subprocessors, international transfers, assistance, incidents, retention and return or deletion of data. These general T&C do not replace it. Access to messages or guest information is limited to what is needed for the agreed work."
         },
         {
           "number": "14.3",
-          "text": "Yeh Media promptly informs the Client of security incidents affecting Client accounts or data and cooperates in response. The Client retains platform ownership. At the end of services, Yeh Media returns account control and agreed records and relinquishes access; a payment dispute does not entitle it to retain the Client’s account credentials."
+          "text": "Yeh Media promptly informs Client of security incidents affecting Client accounts or data and cooperates in response. Client retains platform ownership. At the end of services, Yeh Media returns account control and agreed records and relinquishes access; a payment dispute does not entitle it to retain Client’s account credentials."
         }
       ]
     },
@@ -280,15 +294,15 @@
       "clauses": [
         {
           "number": "15.1",
-          "text": "For a remediable material breach, the affected party gives written notice identifying the breach and a reasonable remedy period, normally 14 days. It may terminate the affected agreement if the breach is not remedied. Immediate termination remains available where legally justified and remedy is impossible."
+          "text": "For a remediable material breach, the affected party gives written notice identifying the breach and allow a reasonable period of 14 days to remedy it. If the breach is not remedied within this period, the affected party may terminate the Contract by written declaration in accordance with Article 6:267 of the Dutch Civil Code.  Yeh Media may immediately suspend its services or terminate the agreement by written declaration, to the extent legally permitted, if the Client becomes bankrupt, is granted a suspension of payments, or issues instructions that violate applicable laws, regulations or the terms, conditions or policies of relevant platforms. Such suspension or termination shall not affect any accrued payment obligations."
         },
         {
           "number": "15.2",
-          "text": "On lawful termination, the Client pays for properly performed work and approved unavoidable commitments, less savings and refunds. Further damages or refund rights depend on the reason for termination and applicable law. Yeh Media refunds prepaid sums for services it will not perform, subject to any lawful agreed settlement."
+          "text": "Upon termination, Client remains liable for all properly performed work and approved unavoidable commitments. Yeh Media shall only be required to refund prepaid amounts for services it will not perform where the agreement is terminated as a result of an attributable breach by Yeh Media or due to force majeure, subject to applicable law and Section 16.2. No refund shall be due where termination results from a breach by Client, including non-payment or violation of the applicable licence terms."
         },
         {
           "number": "15.3",
-          "text": "Both parties cooperate in an orderly handover of approved deliverables, Client materials, scheduled content and account access. Additional transition services may be separately quoted; returning the Client’s own access and materials is not conditional on purchasing them. Confidentiality, accrued payment obligations and applicable licences survive termination."
+          "text": "Both parties cooperate in an orderly handover of approved deliverables, Client materials, scheduled content and account access. Additional transition services may be separately quoted; returning Client’s own access and materials is not conditional on purchasing them. Confidentiality, accrued payment obligations and applicable licences survive termination."
         }
       ]
     },
@@ -298,7 +312,7 @@
       "clauses": [
         {
           "number": "16.1",
-          "text": "Neither party is responsible for a failure caused by circumstances beyond its reasonable control that legally constitute force majeure. The affected party promptly notifies the other, mitigates the impact and proposes alternatives. Ordinary staffing or budgeting difficulties do not automatically qualify."
+          "text": "Neither party is responsible for a failure caused by circumstances beyond its reasonable control that legally constitute force majeure under applicable law. Such circumstances may include but are not limited to illness or incapacity of Yeh Media's owner or a key creator, the unavailability of essential personnel or creators, or closure of Yeh Media's premises due to circumstances beyond its reasonable control. The affected party promptly notifies the other, mitigates the impact and proposes alternatives."
         },
         {
           "number": "16.2",
@@ -320,15 +334,19 @@
         },
         {
           "number": "17.2",
-          "text": "To the extent legally permitted, Yeh Media’s liability for attributable direct loss is limited, per engagement and contract year, to the fees paid or payable for the affected engagement during that contract year, excluding VAT and third-party pass-through costs. For a standalone project or pilot, the cap is the agreed service fee for that project or pilot."
+          "text": "To the extent legally permitted, Yeh Media’s liability for attributable direct loss is limited, per engagement and contract year, to the fees paid or payable for the affected engagement during that contract year, excluding VAT and third-party pass-through costs, or the amount paid out by its liability insurer for the relevant claim. For standalone projects or pilots, the same limit applies based on the agreed project fee or insurance payout, whichever is higher."
         },
         {
           "number": "17.3",
-          "text": "To the extent legally permitted, liability for indirect or consequential loss, including lost profit, missed bookings and lost business opportunities, is excluded. These exclusions and limits do not apply to intent or deliberate recklessness of Yeh Media’s proprietor or to liability that cannot lawfully be excluded or limited."
+          "text": "To the extent legally permitted, liability for indirect or consequential loss, including lost profit, missed bookings and lost business opportunities, is excluded. These limitations do not apply to intent or deliberate recklessness by Yeh Media's management or to liability that cannot legally be excluded."
         },
         {
           "number": "17.4",
-          "text": "Each party remains responsible for rights clearance, factual information and permissions allocated to it. No general indemnity shifts Yeh Media’s own attributable errors to the Client. Third-party claims are promptly notified and handled cooperatively without admissions or settlements binding the other party without consent."
+          "text": "Client indemnifies Yeh Media against third-party claims arising from materials supplied by the Client, claims concerning the Client's facilities, products, prices or offers, and missing permissions or consents for guests, employees or other persons appearing in Client-supplied materials, except to the extent caused by Yeh Media's own attributable breach."
+        },
+        {
+          "number": "17.5",
+          "text": "The limitations and exclusions in this Section also apply to Yeh Media's employees, subcontractors and other engaged third parties, who may invoke them as third-party beneficiaries under Article 6:257 of the Dutch Civil Code."
         }
       ]
     },
@@ -342,11 +360,11 @@
         },
         {
           "number": "18.2",
-          "text": "Neither party may transfer the agreement without the other’s written consent, except as permitted by mandatory law. If a provision is invalid, the remainder continues where legally possible; the parties seek a valid replacement consistent with its purpose."
+          "text": "Neither party may transfer the Contract without the other’s written consent, except as permitted by mandatory law. If a provision is invalid, the remainder continues where legally possible; the parties seek a valid replacement consistent with its purpose."
         },
         {
           "number": "18.3",
-          "text": "Changes to these terms do not affect an existing engagement without written agreement. Formal notices are sent to the contractual email contacts; each party promptly notifies the other of changes. English is the agreed contract language. These are Yeh Media’s own adapted terms; they are not represented as the official BNO terms."
+          "text": "Changes to these T&C do not affect an existing Contract without written agreement. Formal notices are sent to the contractual email contacts; each party promptly notifies the other of changes. English is the agreed contract language. These are Yeh Media’s own adapted terms; they are not represented as the official BNO terms."
         }
       ]
     }
