@@ -67,10 +67,6 @@ const entries: CaseStudy[] = [
           lead: "Above the account's typical reel.",
           text: "Instagram rates this reel's save rate (6.4%) and share rate (1.2%) higher than typical, and its skip rate (45.8%) lower.",
         },
-        {
-          lead: "About three times the views of Where to Stay, by Design.",
-          text: "147,613 views against 48,063.",
-        },
       ],
     },
   },
@@ -110,8 +106,8 @@ const entries: CaseStudy[] = [
       ],
       compared: [
         {
-          lead: "More new follows than Paris, by Design.",
-          text: "289 against 280, from about a third of the views.",
+          lead: "More than twice as many saves as likes.",
+          text: "1.4K saves against 543 likes. A save is how people keep a hotel they mean to visit.",
         },
         {
           lead: "Above the account's typical reel.",
@@ -156,8 +152,8 @@ const entries: CaseStudy[] = [
       ],
       compared: [
         {
-          lead: "The lowest skip rate of the three reels on this page.",
-          text: "40.8%, and lower than the account's typical reel. Fewer people left in the opening seconds.",
+          lead: "Only 40.8% skipped it in the opening seconds.",
+          text: "That is lower than the account's typical reel, so more people stayed to watch.",
         },
         {
           lead: "Saved as often as it was liked.",
