@@ -172,7 +172,7 @@ export default function CaseStudyView({ study }: { study: CaseStudy }) {
             {/* Where there are numbers they lead: this section sits above the
                 thinking. Pages without numbers keep the thinking first. */}
             {study.results && (
-              <section className="order-first -mt-4 md:-mt-12">
+              <section className="order-first">
                 <ScrollReveal>
                   <SectionTitle>The Results.</SectionTitle>
                 </ScrollReveal>
